@@ -144,34 +144,32 @@ fn counter() -> Html {
 
 #[function_component(Test)]
 fn test() -> Html {
-    let videos:Vec<String> = vec![ String::default() ];
-    let videos = use_state(|| vec![]);
+    let urls = use_state(|| vec![]);
     {
-        let videos = videos.clone();
+        let urls = urls.clone();
 
         use_effect_with_deps(move |_| {
-            let videos = videos.clone();
+            // Called after inital render finishes
+            let urls = urls.clone();
+
             spawn_local(async move {
                let string = get_request().await.unwrap();
-                //let fetched_videos: Vec<Video> = Request::get("https://yew.rs/tutorial/data.json")
-                //    .send()
-                //    .await
-                //    .unwrap()
-                //    .json()
-                //    .await
-                //    .unwrap();
-                videos.set(vec![ string ]);
-            });
+
+               urls.set(vec![ string ]);
+            }); 
+            
+            // Clean up after render
             || ()
-        }, ());
+        }, 
+            () // dependents on the effect (none)
+        );
     }
 
 
     html! { <>
         <p> { "this" } </p>
-        if videos.len() > 0 {
-            <p> { videos.get(0).unwrap().as_string().unwrap() } </p>
-
+        if urls.len() > 0 {
+            <p> { urls.get(0).unwrap().as_string().unwrap() } </p>
         }
         </>
     }
