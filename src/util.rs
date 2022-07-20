@@ -6,6 +6,7 @@ use web_sys::console;
 use web_sys::{Request, RequestInit, RequestMode, Response};
 
 use crate::config::PORT;
+use crate::log;
 
 pub async fn get_request() -> Result<JsValue, JsValue> {
     let mut opts = RequestInit::new();
@@ -24,9 +25,8 @@ pub async fn get_request() -> Result<JsValue, JsValue> {
     let resp: Response = resp_value.dyn_into().unwrap();
 
     // Convert this other `Promise` into a rust `Future`.
+    //let text = JsFuture::from(resp.text()?).await?;
     let text = JsFuture::from(resp.text()?).await?;
 
-
-    // Send the `Branch` struct back to JS as an `Object`.
     Ok(text)
 }

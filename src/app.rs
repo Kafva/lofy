@@ -15,8 +15,6 @@ use crate::util::get_request;
 //============================================================================//
 
 
-async fn async_stub() -> String { String::from("Rendered") }
-
 #[derive(PartialEq, Properties, Default)]
 pub struct Props {
     stream_url: String
@@ -32,65 +30,28 @@ impl Component for App {
         App
     }
     fn view(&self, _ctx: &Context<Self>) -> Html {
-
-        //let stream_url = use_state(|| "".to_string());
-        //{
-        //    let stream_url = stream_url.clone();
-        //    spawn_local(async move {
-
-        //        let string = get_request().await.unwrap();
-
-
-        //        //let mut string = async_stub().await;
-        //        //string.push_str(", async track!");
-        //        stream_url.set(string.as_string().unwrap().to_owned());
-        //    });
-        //}
-
-
         html! {
             <>
             <h1>{ format!("Running on {PORT}") }</h1>
             <Counter/>
-            <Test/>
-            //<Track stream_url="http://localhost:7777/LEGION.m4a"/>
-            //<Track stream_url="" />
-
+            <FetchUrl/>
             </>
         }
     }
 }
 
-
-pub struct Track {
-    url: String
-}
+pub struct Track;
 
 impl Component for Track {
     type Message = ();
     type Properties = Props;
 
     fn create(_: &Context<Self>) -> Self {
-        //let stream_url = use_state(|| "".to_string());
-        
-        //let stream_url = stream_url.clone();
-        //spawn_local(async move {
-
-        //    let string = get_request().await.unwrap();
-
-
-        //    //let mut string = async_stub().await;
-        //    //string.push_str(", async track!");
-        //    stream_url.set(string.as_string().unwrap().to_owned());
-        //});
-        
-
-        Track { url: "".to_string() }
+        Track
     }
 
     // Called when the component receives a message
-    fn update(&mut self, ctx: &Context<Self>, _msg: Self::Message) -> bool {
-        
+    fn update(&mut self, _ctx: &Context<Self>, _msg: Self::Message) -> bool {
             //spawn_local(async move {
             //    let string = get_request().await.unwrap();
             //    //self.url = string.as_string().unwrap();
@@ -101,7 +62,7 @@ impl Component for Track {
 
 
     // Called after `view()` has completed
-    fn rendered(&mut self, ctx: &Context<Self>, first_render: bool) {
+    fn rendered(&mut self, _ctx: &Context<Self>, first_render: bool) {
         if first_render {
             spawn_local(async {
                 //let string = get_request().await.unwrap();
@@ -140,22 +101,21 @@ fn counter() -> Html {
     }
 }
 
-
-
-#[function_component(Test)]
-fn test() -> Html {
-    let urls = use_state(|| vec![]);
+#[function_component(FetchUrl)]
+fn fetch_url() -> Html {
+    let url = use_state(|| String::default());
     {
-        let urls = urls.clone();
+        let url = url.clone();
 
         use_effect_with_deps(move |_| {
             // Called after inital render finishes
-            let urls = urls.clone();
+            let url = url.clone();
 
             spawn_local(async move {
                let string = get_request().await.unwrap();
+               log!(&string);
 
-               urls.set(vec![ string ]);
+               url.set(string.as_string().unwrap().trim().to_string());
             }); 
             
             // Clean up after render
@@ -168,9 +128,8 @@ fn test() -> Html {
 
     html! { <>
         <p> { "this" } </p>
-        if urls.len() > 0 {
-            <p> { urls.get(0).unwrap().as_string().unwrap() } </p>
-        }
+        <audio controls=true src={ (*url).clone() }/>
+        <p> {  (*url).clone() } </p>
         </>
     }
 }

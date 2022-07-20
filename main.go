@@ -1,7 +1,6 @@
 package main
 
 import (
-  "fmt"
   "strconv"
   "net/http"
   "os/exec"
@@ -14,7 +13,7 @@ func get_url(w http.ResponseWriter, r *http.Request) {
   out,_   := cmd.Output()
 
   w.Header().Set("Access-Control-Allow-Origin", "*")
-  fmt.Fprintf(w, string(out))
+  w.Write(out);
 }
 
 func main(){
