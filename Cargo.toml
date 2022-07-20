@@ -17,6 +17,8 @@ wasm-bindgen-futures = "0.4.31"
 # for browsers as well as Node etc.
 js-sys = "^0.3.58"
 
+reqwest = "0.11.11"
+
 [dependencies.web-sys]
 # WASM bindings for browser specific constructs
 # like `Event` and `Html` elements.

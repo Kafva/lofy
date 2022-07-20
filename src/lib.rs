@@ -3,12 +3,15 @@
 
 mod config;
 mod app;
+mod macros;
+mod util;
 
 use yew::prelude::*;
 use yew::{Callback, function_component, html, use_state};
 
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::{JsCast,JsValue};
+use wasm_bindgen_futures::spawn_local;
 
 use web_sys::console;
 use js_sys;
@@ -23,6 +26,7 @@ use js_sys;
 
 #[wasm_bindgen]
 pub fn run() -> Result<(), JsValue> {
+
     yew::start_app::<app::App>();
     Ok(())
 }
@@ -36,14 +40,4 @@ pub fn big_xd() -> Result<JsValue,JsValue> {
     Ok(JsValue::from("HEY"))
 }
 
-//#[function_component(App)]
-//fn app() -> Html {
-//
-//    html! {
-//        <>
-//        <h1>{ format!("Running on {PORT}") }</h1>
-//        <Counter/>
-//        </>
-//    }
-//}
 
