@@ -3,10 +3,30 @@ name = "lofy"
 version = "0.1.0"
 edition = "2021"
 
-
 [dependencies]
-log = "0.4.17"
-reqwasm = "0.2"
-wasm-bindgen-futures = "0.4"
-wasm-logger = "0.2.0"
 yew = "0.19.3"
+
+# The underlying dependency for web-sys and js-sys
+wasm-bindgen = "0.2.81"
+
+# Bindings for translation of Promises and async
+wasm-bindgen-futures = "0.4.31"
+
+# WASM bindings for global JS APIs, meant to work
+# for browsers as well as Node etc.
+js-sys = "0.3.58"
+
+reqwest = { version = "0.11", features = ["blocking","json"] }
+
+[dependencies.web-sys]
+# WASM bindings for browser specific constructs
+# like `Event` and `Html` elements.
+# The features we need haft to be explicitly enabled
+version = "0.3"
+features = [
+    "console",
+    "Request",
+    "RequestMode",
+    "RequestInit",
+    "Response"
+]
