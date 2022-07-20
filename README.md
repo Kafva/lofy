@@ -1,16 +1,13 @@
 # lofy
+
 ```bash
-rustup target add wasm32-unknown-unknown
+# Build dependencies
+cargo install wasm-pack
+npm i -g rollup
 
-# Bundling tool
-cargo install trunk
+# Build the frontend
+./scripts/build.sh
 
-# Create WASM output
-trunk build [--release]
-
-# Serve the output
-go-serve --webroot dist
-
-# Serve with hot-reload
-trunk serve
+# Run a basic HTTP server (features hot-reloading)
+go build && ./lofy
 ```

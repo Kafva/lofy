@@ -1,12 +1,13 @@
 [package]
+edition = "2021"
 name = "lofy"
 version = "0.1.0"
-edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
 
 [dependencies]
 yew = "0.19.3"
-
-# The underlying dependency for web-sys and js-sys
 wasm-bindgen = "0.2.81"
 
 # Bindings for translation of Promises and async
@@ -14,15 +15,13 @@ wasm-bindgen-futures = "0.4.31"
 
 # WASM bindings for global JS APIs, meant to work
 # for browsers as well as Node etc.
-js-sys = "0.3.58"
-
-reqwest = { version = "0.11", features = ["blocking","json"] }
+js-sys = "^0.3.58"
 
 [dependencies.web-sys]
 # WASM bindings for browser specific constructs
 # like `Event` and `Html` elements.
 # The features we need haft to be explicitly enabled
-version = "0.3"
+version = "^0.3"
 features = [
     "console",
     "Request",
