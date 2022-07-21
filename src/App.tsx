@@ -1,8 +1,13 @@
-import type { Component } from 'solid-js';
 import './scss/App.scss';
 
-const App: Component = () => {
-  return (<div> wow </div>)
+import Current from './Current';
+
+const App = () => {
+  return ( <>
+    <div>wow</div>
+    <Current video_id="hpF-WS0lU5A"/>
+  </>
+  )
 };
 
 export default App;
