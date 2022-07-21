@@ -1,4 +1,6 @@
+$primary-color: #87ceeb;
+
 div {
-  color: red;
+  color: $primary-color;
   position: absolute;
 }
