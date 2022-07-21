@@ -8,6 +8,8 @@ export default defineConfig({
   // in ./public:
   //  https://vitejs.dev/guide/#index-html-and-project-root
   publicDir: 'public',
+  // Mount all resources under the `/app` endpoint
+  base: "/app/",
   build: {
     target: 'esnext',
     outDir: 'dist',

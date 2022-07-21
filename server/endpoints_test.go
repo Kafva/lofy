@@ -13,7 +13,7 @@ func Test_fetch_yt_url(t *testing.T) {
 }
 func Test_get_albums(t *testing.T){
 	album_names := get_albums("../.mocks")
-	if reflect.DeepEqual(album_names, []string{"1","2"}) {
+	if !reflect.DeepEqual(album_names, []string{"1","2"}) {
 		t.Errorf("get_albums() failed")
 	}
 }

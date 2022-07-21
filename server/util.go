@@ -2,7 +2,14 @@ package server
 
 import (
 	"log"
+	"os"
+	"strings"
 )
+
+func TranslateTilde(path string) string {
+	home,_ := os.UserHomeDir()
+	return strings.ReplaceAll(path, "~", home)
+}
 
 func Die(strs ... interface{}) {
 	strs = append(strs, "\n")

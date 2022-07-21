@@ -48,10 +48,8 @@ func fetch_yt_url(video string) string {
 				return url
 			}
 		}
-
 		return ""
 }
-
 
 // Fetch a list of all albums, returns a JSON array (empty on failure)
 // Not applicable for YouTube
@@ -64,9 +62,7 @@ func GetAlbums(w http.ResponseWriter, r *http.Request){
 // the provided path.
 func get_albums(path string) []string {
 	album_names := make([]string, 0, MAX_ALBUM_CNT)
-	home,_ := os.UserHomeDir()
-	albums_dir := strings.ReplaceAll(path, "~", home)
-  if albums, err := os.ReadDir(albums_dir); err==nil {
+  if albums, err := os.ReadDir(TranslateTilde(path)); err==nil {
     for _,album := range albums {
 			if album.IsDir() && !strings.HasPrefix(album.Name(),".") {
 				album_names = append(album_names, album.Name())
