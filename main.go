@@ -17,7 +17,7 @@ func get_url(w http.ResponseWriter, r *http.Request) {
 }
 
 func main(){
-  fs := http.FileServer(http.Dir("./pkg/"))
+  fs := http.FileServer(http.Dir("./client/dist/"))
   http.Handle("/", fs)
 
   http.HandleFunc("/url", get_url)

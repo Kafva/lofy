@@ -81,7 +81,6 @@ impl Component for Track {
     }
 }
 
-
 #[function_component(Counter)]
 fn counter() -> Html {
     // `use_state` will trigger a re-render everytime a new value is encountered

@@ -1,12 +1,12 @@
 # lofy
+Tech stack: vite, solidjs, typescript and golang
 
 ```bash
 # Build dependencies
-cargo install wasm-pack
-npm i -g rollup
+npm i -g vite
 
 # Build the frontend
-./scripts/build.sh
+cd client && yarn && vite build
 
 # Run a basic HTTP server (features hot-reloading)
 go build && ./lofy
