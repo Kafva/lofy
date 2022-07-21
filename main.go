@@ -11,7 +11,7 @@ const PORT = 20111
 const ADDR = "127.0.0.1"
 
 // Fetch the media streaming URL for a given YouTube video
-// The video ID should be passed in '?v'
+// The video ID should be passed in `?v`
 // If no video was found or a server side error occurred
 // an empty response is returned.
 func get_url(w http.ResponseWriter, r *http.Request){
@@ -51,6 +51,19 @@ func get_err(w http.ResponseWriter, r *http.Request){
 
 	// Respond with a JSON message
 	json.NewEncoder(w).Encode(res)
+}
+
+// Fetch a list of all playlists, returns a JSON array (empty on failure)
+// If `mode=yt` is given, returns youtube playlists
+func get_playlists(w http.ResponseWriter, r *http.Request){
+}
+
+// Fetch metadata about a track, for local files:
+//		?v=playlist/<name>/<track name>
+//		?v=album/<name>/<track name>
+// For YouTube:
+//		?v=yt/<video id>
+func get_track_metadata(w http.ResponseWriter, r *http.Request){
 }
 
 func main(){
