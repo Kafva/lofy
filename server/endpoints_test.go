@@ -17,4 +17,10 @@ func Test_get_albums(t *testing.T){
 		t.Errorf("get_albums() failed")
 	}
 }
+func Test_get_playlists(t *testing.T){
+	playlist_names := get_playlists("../.mocks/1")
+	if !reflect.DeepEqual(playlist_names, []string{"a.m3u","b.m3u"}) {
+		t.Errorf("get_playlists() failed")
+	}
+}
 

@@ -3,9 +3,9 @@ package main
 import (
 	"net/http"
 	"strconv"
+
 	. "github.com/Kafva/lofy/server"
 )
-
 
 func main(){
   // Web app resources are mounted at `/app` and accessible directly from `/`
@@ -13,7 +13,6 @@ func main(){
   http.Handle("/app/", http.StripPrefix("/app", web_root))
   http.HandleFunc("/", redirect_to_app)
 
-  // Music referenced in a playlist must be within an album
   audio_root := http.FileServer(http.Dir(TranslateTilde(ALBUM_DIR)))
   http.Handle("/audio/", http.StripPrefix("/audio", audio_root))
 
@@ -26,6 +25,8 @@ func main(){
 }
 
 func redirect_to_app(w http.ResponseWriter, r *http.Request) {
-    http.Redirect(w, r, "/app", 301)
+		if r.URL.Path == "/" {
+			http.Redirect(w, r, "/app", 301)
+		}
 }
 

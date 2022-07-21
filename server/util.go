@@ -34,7 +34,6 @@ func Err(args ... interface{}) {
 	log.Println(args ...)
 }
 
-
 func logPrefix(color string, label string) {
 	if LOG_COLOR {
 		log.SetPrefix("\033["+color+"m"+label+"\033[0m ")

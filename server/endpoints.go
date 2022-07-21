@@ -58,8 +58,7 @@ func GetAlbums(w http.ResponseWriter, r *http.Request){
   w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(get_albums(ALBUM_DIR))
 }
-// Returns a sorted list of all non-hidden directories beneath
-// the provided path.
+// Returns a sorted list of all non-hidden directories beneath `path`.
 func get_albums(path string) []string {
 	album_names := make([]string, 0, MAX_ALBUM_CNT)
   if albums, err := os.ReadDir(TranslateTilde(path)); err==nil {
@@ -74,8 +73,30 @@ func get_albums(path string) []string {
 }
 
 // Fetch a list of all playlists, returns a JSON array (empty on failure)
-// If `mode=yt` is given, returns youtube playlists
+// If `mode=yt` is given, returns YouTube playlists
 func GetPlaylists(w http.ResponseWriter, r *http.Request){
+  w.Header().Set("Access-Control-Allow-Origin", "*")
+  w.Header().Set("Content-Type", "application/json")
+
+	switch mode := r.URL.Query().Get("mode"); mode {
+		case "yt":
+			json.NewEncoder(w).Encode([]string{})
+		default:
+			json.NewEncoder(w).Encode(get_playlists(PLAYLIST_DIR))
+	}
+}
+// Returns a sorted list of all non-hidden .m3u files beneath the provided path.
+func get_playlists(path string) []string {
+	playlist_names := make([]string, 0, MAX_PLAYLIST_CNT)
+  if playlists, err := os.ReadDir(TranslateTilde(path)); err==nil {
+    for _,playlist := range playlists {
+			if !playlist.IsDir() && strings.HasSuffix(playlist.Name(),".m3u") {
+				playlist_names = append(playlist_names, playlist.Name())
+			}
+    }
+  }
+	sort.Strings(playlist_names)
+	return playlist_names
 }
 
 // Fetch metadata about a track, for local files:

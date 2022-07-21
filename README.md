@@ -1,6 +1,6 @@
 # lofy
-Tech stack: vite, solidjs, typescript and golang
 
+## Installation
 ```bash
 # Build dependencies
 npm i -g vite
@@ -18,6 +18,6 @@ vite build --watch
 ## Testing
 ```bash
 # Run specific test(s)
-go test -v -run get_albums ./server
+go test -v --run get_albums ./server
 
 ```
