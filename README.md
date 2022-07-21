@@ -14,3 +14,10 @@ go build && ./lofy
 # Development
 vite build --watch
 ```
+
+## Testing
+```bash
+# Run specific test(s)
+go test -v -run get_albums ./server
+
+```
