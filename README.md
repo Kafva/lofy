@@ -19,5 +19,4 @@ vite build --watch
 ```bash
 # Run specific test(s)
 go test -v --run get_albums ./server
-
 ```

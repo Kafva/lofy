@@ -105,6 +105,9 @@ func get_playlists(path string) []string {
 // For YouTube:
 //		?v=yt/<video id>
 func GetTrackMetadata(w http.ResponseWriter, r *http.Request){
+	//	"github.com/dhowden/tag"
+
+	
 }
 
 func GetErr(w http.ResponseWriter, r *http.Request){
