@@ -1,10 +1,10 @@
 package main
 
 import (
-	"net/http"
-	"strconv"
+  "net/http"
+  "strconv"
 
-	. "github.com/Kafva/lofy/server"
+  . "github.com/Kafva/lofy/server"
 )
 
 func main(){
@@ -20,13 +20,13 @@ func main(){
   http.HandleFunc("/url", GetUrl)
   http.HandleFunc("/playlists", GetPlaylists)
   http.HandleFunc("/albums", GetAlbums)
-  http.HandleFunc("/err", GetErr)
+  http.HandleFunc("/meta", GetMetadata)
   http.ListenAndServe(ADDR+":"+strconv.Itoa(PORT), nil)
 }
 
 func redirect_to_app(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/" {
-			http.Redirect(w, r, "/app", 301)
-		}
+    if r.URL.Path == "/" {
+      http.Redirect(w, r, "/app", 301)
+    }
 }
 
