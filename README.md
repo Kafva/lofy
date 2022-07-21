@@ -6,7 +6,7 @@ Tech stack: vite, solidjs, typescript and golang
 npm i -g vite
 
 # Build the frontend
-cd client && yarn && vite build
+yarn && vite build
 
 # Run a basic HTTP server (features hot-reloading)
 go build && ./lofy
