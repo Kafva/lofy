@@ -26,3 +26,9 @@ func NewTrackInfo() TrackInfo {
     AlbumId: -1, 
   }
 }
+
+type TemplateData struct {
+	Albums []string
+	Playlists []string
+}
+

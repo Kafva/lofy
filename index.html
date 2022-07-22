@@ -10,5 +10,18 @@
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <script src="/client/index.tsx" type="module"></script>
+
+
+  <div id="playlists">
+    {{ range .Playlists }}
+      <li>{{.}}</li>
+    {{ end }}
+  </div>
+  <div id="albums">
+    {{ range .Albums }}
+      <li>{{.}}</li>
+    {{ end }}
+  </div>
+
   </body>
 </html>

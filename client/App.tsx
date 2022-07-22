@@ -1,5 +1,3 @@
-import './scss/App.scss';
-
 import Current from './Current';
 
 const App = () => {

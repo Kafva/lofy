@@ -1,0 +1,17 @@
+#playlists,#albums {
+  position: fixed;
+}
+#playlists {
+  left: 30%;
+}
+#albums {
+  left: 50%
+}
+
+$primary-color: #87ceeb;
+
+div {
+  color: $primary-color;
+  position: absolute;
+}
+
