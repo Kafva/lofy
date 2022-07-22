@@ -2,7 +2,6 @@ package server
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"os"
 	"os/exec"
@@ -41,7 +40,7 @@ func fetch_yt_url(video string) string {
     )
     out,_   := cmd.Output()
 
-		return gjson.Get(string(out), "url").String()
+    return gjson.Get(string(out), "url").String()
 }
 
 // Fetch a list of all albums, returns a JSON array (empty on failure)
@@ -78,6 +77,7 @@ func GetPlaylists(w http.ResponseWriter, r *http.Request){
       json.NewEncoder(w).Encode(get_playlists(PLAYLIST_DIR))
   }
 }
+
 // Returns a sorted list of all non-hidden .m3u files beneath the provided path.
 func get_playlists(path string) []string {
   playlist_names := make([]string, 0, MAX_PLAYLIST_CNT)
@@ -102,46 +102,47 @@ func get_playlists(path string) []string {
 func GetMetadata(w http.ResponseWriter, r *http.Request){
   w.Header().Set("Access-Control-Allow-Origin", "*")
   w.Header().Set("Content-Type", "application/json")
+  tracks := make([]TrackInfo, 0, MAX_TRACKS)
 
-  path, name, ok := strings.Cut(strings.TrimPrefix(r.URL.Path, "/meta/"), "/")
-  if !ok {
-      Warn("Invalid path in /meta request from "+r.RemoteAddr)
-  } else {
-    switch name {
-      case "playlist":
-      case "album":
+  endpoint, name, _ := 
+    strings.Cut(strings.TrimPrefix(r.URL.Path, "/meta/"), "/")
 
-        track_info, err := get_file_metadata(path)
-        if err != nil {
-          Warn("Invalid ffmpeg invocation from "+r.RemoteAddr)
-        } else {
-          fmt.Printf("%+v\n", track_info);
+  switch endpoint {
+    case "playlist":
+    case "album":
+      album_path := TranslateTilde(ALBUM_DIR)+"/"+name 
+      if files, err := os.ReadDir(album_path); err==nil {
+        for _,file := range files {
+          if !file.IsDir() {
+            track_info,err := get_file_metadata(
+              album_path+"/"+file.Name(),
+            )
+            if err == nil {
+              tracks = append(tracks, track_info)
+            }
+          }
         }
-
-        return;
-
-      case "yt":
-    }
-
+      }
+    case "yt":
   }
-
-  json.NewEncoder(w).Encode([]string{})
+  json.NewEncoder(w).Encode(tracks)
 }
 
 // Create a `TrackInfo` struct for the given file
+// TODO: go-routine
 func get_file_metadata(path string) (TrackInfo,error) {
   data, err := ffmpeg.Probe(path)
-	if err == nil {
-		track_info := TrackInfo {
-			title: 					gjson.Get(data, "format.tags.title").String(),
-			album: 					gjson.Get(data, "format.tags.album").String(),
-			artist:				 	gjson.Get(data, "format.tags.artist").String(),
-			albumArtist: 		gjson.Get(data, "format.tags.album_artist").String(),
-			duration: int(gjson.Get(data, "format.duration").Float()),
-			artworkUrl: "",
-		}
-		return track_info,nil
-	}
+  if err == nil {
+    track_info := TrackInfo {
+      Title:          gjson.Get(data, "format.tags.title").String(),
+      Album:          gjson.Get(data, "format.tags.album").String(),
+      Artist:         gjson.Get(data, "format.tags.artist").String(),
+      AlbumArtist:    gjson.Get(data, "format.tags.album_artist").String(),
+      Duration:       int(gjson.Get(data, "format.duration").Float()),
+      ArtworkUrl: "",
+    }
+    return track_info,nil
+  }
   return NewTrackInfo(),err
 }
 

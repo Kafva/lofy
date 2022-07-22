@@ -28,7 +28,7 @@ func Test_get_file_metadata(t *testing.T){
   //track_info,_ := get_file_metadata("/Users/jonas/Music/JB/01 Mark My Words.m4a")
   track_info,_ := get_file_metadata("../.mocks/2/track.m4a")
 
-  if track_info.title != 
+  if track_info.Title != 
     "You are in a field" {
     t.Errorf("get_file_metadata() failed")
   }

@@ -1,10 +1,10 @@
 package main
 
 import (
-  "net/http"
-  "strconv"
+	"net/http"
+	"strconv"
 
-  . "github.com/Kafva/lofy/server"
+	. "github.com/Kafva/lofy/server"
 )
 
 func main(){
@@ -16,11 +16,15 @@ func main(){
   audio_root := http.FileServer(http.Dir(TranslateTilde(ALBUM_DIR)))
   http.Handle("/audio/", http.StripPrefix("/audio", audio_root))
 
-  // API endpoints
-  http.HandleFunc("/url", GetUrl)
+  // HTTP API endpoints
   http.HandleFunc("/playlists", GetPlaylists)
   http.HandleFunc("/albums", GetAlbums)
-  http.HandleFunc("/meta", GetMetadata)
+
+	// TODO: WebSocket communication
+  http.HandleFunc("/meta/", GetMetadata)
+  http.HandleFunc("/url", GetUrl)
+
+	Debug("Listening on port "+strconv.Itoa(PORT)+"...")
   http.ListenAndServe(ADDR+":"+strconv.Itoa(PORT), nil)
 }
 
