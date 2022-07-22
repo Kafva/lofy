@@ -7,7 +7,11 @@ const WEBROOT_DIR  = "./dist"
 // Playlists are given as `.m3u` files
 // Music referenced in a playlist must be under `ALBUM_DIR`
 const PLAYLIST_DIR  =  "~/Music/.playlists"
+
 const ALBUM_DIR     =  "~/Music"
+
+// Playlists must have this extension to be recognized
+const PLAYLIST_EXT  = "m3u"
 
 // Maximum number of album directories that will be returned to the client
 const MAX_ALBUM_CNT = 200;
@@ -25,8 +29,8 @@ const PORT = 20111
 const ADDR = "127.0.0.1"
 const YTDL_BIN = "yt-dlp"
 
-// Allowed characters for the `v` paramater to `/url`
-const YT_ID_PARAM = "(?i)[-_0-9A-Z]{5,20}";
-
-// Allowed characters for the `page` parameter to `/meta`
-const NUMERIC_PARAM = "[0-9]{1,5}";
+// Allowed characters for:
+//		the `v` paramater to `/url`
+//		the subcommand parameter to `/meta`
+//		the `<name>` parameter to `/meta`
+const ALLOWED_STRS = "^(?i)[-_0-9A-Z]{1,20}$";

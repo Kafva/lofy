@@ -1,10 +1,12 @@
 package server
 
 import (
+	"bufio"
 	"encoding/json"
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"sort"
 	"strconv"
@@ -21,8 +23,8 @@ import (
 func GetUrl(w http.ResponseWriter, r *http.Request){
   w.Header().Set("Access-Control-Allow-Origin", "*")
   w.Header().Set("Content-Type", "text/plain")
-  // Input validation
-  input_regex := regexp.MustCompile(YT_ID_PARAM)
+  //== Input validation ==//
+  input_regex := regexp.MustCompile(ALLOWED_STRS)
 
   if video := r.URL.Query().Get("v"); input_regex.MatchString(video) {
     Debug("Fetching YouTube URL for: "+video)
@@ -114,11 +116,17 @@ func get_playlists(path string) []string {
 //    GET /meta/album/Purpose?page=3 -> { info:[], page: 3, last_page: true  }
 //
 func GetMetadata(w http.ResponseWriter, r *http.Request){
-  w.Header().Set("Access-Control-Allow-Origin", "*")
-  w.Header().Set("Content-Type", "application/json")
+  //==================== Parameter validation ================================//
+  endpoint, name, _ := 
+    strings.Cut(strings.TrimPrefix(r.URL.Path, "/meta/"), "/")
 
+  input_regex := regexp.MustCompile(ALLOWED_STRS)
+
+	if !input_regex.Match([]byte(endpoint)) || !input_regex.Match([]byte(name)) {
+		return; // Invalid subcommand or resource name
+	}
+	
   page := 1
-  // Parameter validation
   if page_param := r.URL.Query().Get("page"); page_param != "" {
     if page_as_int, err := strconv.Atoi(page_param); err == nil {
       page = page_as_int
@@ -126,45 +134,67 @@ func GetMetadata(w http.ResponseWriter, r *http.Request){
       return; // Non-numeric input
     }
   }
+	//==========================================================================//
 
-  endpoint, name, _ := 
-    strings.Cut(strings.TrimPrefix(r.URL.Path, "/meta/"), "/")
+  w.Header().Set("Access-Control-Allow-Origin", "*")
+  w.Header().Set("Content-Type", "application/json")
 
+	track_paths := make([]string, 0, MAX_TRACKS)
+	
+	// Populate the `track_paths` slice with data based on the given subcommand
   switch endpoint {
     case "playlist":
+			f, err := os.Open(TranslateTilde(PLAYLIST_DIR)+"/"+name+"."+PLAYLIST_EXT)
+			if err == nil {
+				defer f.Close()
+				scanner := bufio.NewScanner(f)
+
+				for scanner.Scan() {
+					track_paths = append(track_paths, scanner.Text())
+				}
+			} else {
+				Warn("Non-existent playlist requested by " + r.RemoteAddr)
+				return
+			}
     case "album":
       album_path := TranslateTilde(ALBUM_DIR)+"/"+name 
 
       if entries, err := os.ReadDir(album_path); err==nil {
-        // Reading on the `tracks_channel` will be blocked until
-        // it `len(files)` entries have become available
-        files          := FsFilter(entries, false)
-
-        // Extract the files relevant for the given page
-        if len(files) >= page*ITEMS_PER_REQ {
-          files = files[ (page-1)*ITEMS_PER_REQ : page*ITEMS_PER_REQ ]
-        } else if len(files) >= (page-1)*ITEMS_PER_REQ {
-          files = files[ (page-1)*ITEMS_PER_REQ :  ]
-        } else {
-            return; // Invalid page
-        }
-
-        tracks_channel := make(chan TrackInfo, len(files))
-        tracks         := make([]TrackInfo, len(files), len(files))
-
-        for _,file := range files {
-          go get_file_metadata(album_path+"/"+file.Name(), tracks_channel)
-        }
-
-        // Consume the data on the channel
-        for i:=0; i< len(files); i++ {
-          tracks[i] = <- tracks_channel
-        }
-
-        json.NewEncoder(w).Encode(tracks)
-      }
+				// Create a list of all files under the specified album
+				for _,f := range FsFilter(entries, false) {
+					track_paths = append(track_paths, album_path+"/"+f.Name())
+				} 
+      } else {
+				Warn("Non-existent album requested by " + r.RemoteAddr)
+				return
+			}
     case "yt":
   }
+
+	// Extract the files relevant for the given page index
+	if len(track_paths) >= page*ITEMS_PER_REQ {
+		track_paths = track_paths[ (page-1)*ITEMS_PER_REQ : page*ITEMS_PER_REQ ]
+	} else if len(track_paths) >= (page-1)*ITEMS_PER_REQ {
+		track_paths = track_paths[ (page-1)*ITEMS_PER_REQ :  ]
+	} else {
+			return; // Invalid page
+	}
+
+	// Reading on the `tracks_channel` will be blocked until
+	// `len(track_paths)` entries have become available
+	tracks_channel := make(chan TrackInfo, len(track_paths))
+	tracks         := make([]TrackInfo, len(track_paths), len(track_paths))
+
+	for _,p := range track_paths {
+		go get_file_metadata(p, tracks_channel)
+	}
+
+	// Consume the data on the channel
+	for i:=0; i< len(track_paths); i++ {
+		tracks[i] = <- tracks_channel
+	}
+
+	json.NewEncoder(w).Encode(tracks)
 }
 
 // Create a `TrackInfo` struct for the given file
@@ -174,9 +204,9 @@ func get_file_metadata(path string, c chan TrackInfo) {
   if err == nil {
     c <- TrackInfo {
       Title:          gjson.Get(data, "format.tags.title").String(),
-      Album:          gjson.Get(data, "format.tags.album").String(),
       Artist:         gjson.Get(data, "format.tags.artist").String(),
-      AlbumArtist:    gjson.Get(data, "format.tags.album_artist").String(),
+      AlbumMeta:      gjson.Get(data, "format.tags.album").String(),
+			Album:          filepath.Base(filepath.Dir(path)),
       Duration:       int(gjson.Get(data, "format.duration").Float()),
       ArtworkUrl: "",
     }
