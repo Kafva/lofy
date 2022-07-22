@@ -53,3 +53,12 @@ func FsFilter(entries []fs.DirEntry, isDir bool) []fs.DirEntry {
   }
   return filtered
 }
+
+func Contains(arr []string, target string) int {
+	for i,a := range arr {
+		if a==target {
+			return i
+		}
+	}
+	return -1
+}

@@ -11,7 +11,9 @@ type TrackInfo struct {
   Artist string
   AlbumMeta string
   Duration int
-  ArtworkUrl string 
+	// The index of the particular track on the filesystem
+	// this ID is passed to the server when requesting album artwork
+	AlbumId int
 }
 
 func NewTrackInfo() TrackInfo {
@@ -21,6 +23,6 @@ func NewTrackInfo() TrackInfo {
     Artist: "",
     AlbumMeta: "",
     Duration: 0,
-    ArtworkUrl: "", 
+    AlbumId: -1, 
   }
 }

@@ -16,10 +16,13 @@ func main(){
   audio_root := http.FileServer(http.Dir(TranslateTilde(ALBUM_DIR)))
   http.Handle("/audio/", http.StripPrefix("/audio", audio_root))
 
+  // Endpoints with a trailing slash accept subpaths
+
   // Non-paginated API endpoints
   http.HandleFunc("/playlists", GetPlaylists)
   http.HandleFunc("/albums", GetAlbums)
-  http.HandleFunc("/url", GetUrl)
+  http.HandleFunc("/yturl", GetYtUrl)
+  http.HandleFunc("/art/", GetArtwork)
 
   // Paginated API endpoints
   http.HandleFunc("/meta/", GetMetadata)

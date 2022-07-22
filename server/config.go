@@ -8,6 +8,7 @@ const WEBROOT_DIR  = "./dist"
 // Music referenced in a playlist must be under `ALBUM_DIR`
 const PLAYLIST_DIR  =  "~/Music/.playlists"
 
+// Album directory names MUST adhear to the regex defined by `ALBUM_NAME_REGEX`
 const ALBUM_DIR     =  "~/Music"
 
 // Playlists must have this extension to be recognized
@@ -30,7 +31,14 @@ const ADDR = "127.0.0.1"
 const YTDL_BIN = "yt-dlp"
 
 // Allowed characters for:
-//		the `v` paramater to `/url`
+//		the `v` paramater to `/yturl`
 //		the subcommand parameter to `/meta`
-//		the `<name>` parameter to `/meta`
 const ALLOWED_STRS = "^(?i)[-_0-9A-Z]{1,20}$";
+
+// Allowed characters for album names to:
+//		the `<name>` parameter of `/meta`
+//		the `<album>` parameter of `/art`
+const ALBUM_NAME_REGEX = "^(?i)[ -_0-9A-Z]{1,20}$";
+
+// Codec stream types that will be used to extract cover art
+var COVER_CODECS = [...]string{ "png", "mjpg", "mjpeg", "jpg", "jpeg" }

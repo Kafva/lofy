@@ -20,7 +20,7 @@ import (
 // The video ID should be passed in `?v`
 // If no video was found or a server side error occurred
 // an empty response is returned.
-func GetUrl(w http.ResponseWriter, r *http.Request){
+func GetYtUrl(w http.ResponseWriter, r *http.Request){
   w.Header().Set("Access-Control-Allow-Origin", "*")
   w.Header().Set("Content-Type", "text/plain")
   //== Input validation ==//
@@ -111,18 +111,19 @@ func get_playlists(path string) []string {
 // Even with parallelism, it could take to long for a response to be
 // sent from the server so we use paging for each `ITEMS_PER_REQ`
 // set of entries, returning incremental results
-//    GET /meta/album/Purpose        -> { info:[], page: 1, last_page: false }
-//    GET /meta/album/Purpose?page=2 -> { info:[], page: 2, last_page: false }
-//    GET /meta/album/Purpose?page=3 -> { info:[], page: 3, last_page: true  }
+//    GET /meta/album/<name>        -> { info:[], page: 1, last_page: false }
+//    GET /meta/album/<name>?page=2 -> { info:[], page: 2, last_page: false }
+//    GET /meta/album/<name>?page=3 -> { info:[], page: 3, last_page: true  }
 //
 func GetMetadata(w http.ResponseWriter, r *http.Request){
-  //==================== Parameter validation ================================//
+  //== Parameter validation ==//
   endpoint, name, _ := 
     strings.Cut(strings.TrimPrefix(r.URL.Path, "/meta/"), "/")
 
-  input_regex := regexp.MustCompile(ALLOWED_STRS)
+  endpoint_regex := regexp.MustCompile(ALLOWED_STRS)
+	album_regex 	 := regexp.MustCompile(ALBUM_NAME_REGEX)
 
-	if !input_regex.Match([]byte(endpoint)) || !input_regex.Match([]byte(name)) {
+	if !endpoint_regex.Match([]byte(endpoint)) || !album_regex.Match([]byte(name)) {
 		return; // Invalid subcommand or resource name
 	}
 	
@@ -134,7 +135,6 @@ func GetMetadata(w http.ResponseWriter, r *http.Request){
       return; // Non-numeric input
     }
   }
-	//==========================================================================//
 
   w.Header().Set("Access-Control-Allow-Origin", "*")
   w.Header().Set("Content-Type", "application/json")
@@ -185,8 +185,8 @@ func GetMetadata(w http.ResponseWriter, r *http.Request){
 	tracks_channel := make(chan TrackInfo, len(track_paths))
 	tracks         := make([]TrackInfo, len(track_paths), len(track_paths))
 
-	for _,p := range track_paths {
-		go get_file_metadata(p, tracks_channel)
+	for i,p := range track_paths {
+		go get_file_metadata(p, i, tracks_channel)
 	}
 
 	// Consume the data on the channel
@@ -197,9 +197,23 @@ func GetMetadata(w http.ResponseWriter, r *http.Request){
 	json.NewEncoder(w).Encode(tracks)
 }
 
+
+// Determine if the file has a stream with an image (cover art)
+// Accept `ffprobe` JSON as input and returns the stream index and codec name.
+func get_cover_stream(data string) (int,string) {
+	stream_cnt  := gjson.Get(data, "streams.#").Int()
+	for s:=0; s<int(stream_cnt); s++ {
+		codec := gjson.Get(data, "streams."+strconv.Itoa(s)+".codec_name").String()
+		if idx := Contains(COVER_CODECS[:], codec); idx != -1 {
+			return s, codec
+		}
+	}
+	return -1,""
+}
+
 // Create a `TrackInfo` struct for the given file
 // and send it back to the caller over the `c` channel
-func get_file_metadata(path string, c chan TrackInfo) {
+func get_file_metadata(path string, id int, c chan TrackInfo) {
   data, err := ffmpeg.Probe(path)
   if err == nil {
     c <- TrackInfo {
@@ -208,14 +222,36 @@ func get_file_metadata(path string, c chan TrackInfo) {
       AlbumMeta:      gjson.Get(data, "format.tags.album").String(),
 			Album:          filepath.Base(filepath.Dir(path)),
       Duration:       int(gjson.Get(data, "format.duration").Float()),
-      ArtworkUrl: "",
+			AlbumId:				id,
     }
   } else {
     c <- NewTrackInfo()
   }
 }
 
+//    GET /art/<album>/<album_id>   -> <data>
 func GetArtwork(w http.ResponseWriter, r *http.Request){
+	// ffmpeg -i Daenerys\ I,\ TWoW\ \(Sweetrobin\'s\ The\ Winds\ of\ Winter\ Fan-Fiction\).m4a -an -vcodec copy cover.jpg
+	// We exclude audio/subtitle/data streams using [-an/-sn/-dn] and simply copy
+	// out the remaining data to an image file.
+  album, album_id_str, _ := 
+    strings.Cut(strings.TrimPrefix(r.URL.Path, "/art/"), "/")
+
+	//== Parameter validation ==//
+	album_id,err := strconv.Atoi(album_id_str)
+	if err != nil {
+		return  // Non-numeric album id
+	}
+	if !regexp.MustCompile(ALBUM_NAME_REGEX).Match([]byte(album)) {
+		return; // Invalid album name
+	}
+
+	// Translate ID to filename
+
+  //data, err := ffmpeg.Probe(path)
+	//get_cover_stream()
+
+	Debug(album,album_id)
 }
 
 
