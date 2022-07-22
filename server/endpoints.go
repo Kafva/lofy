@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 
 	gjson "github.com/tidwall/gjson"
@@ -21,7 +22,7 @@ func GetUrl(w http.ResponseWriter, r *http.Request){
   w.Header().Set("Access-Control-Allow-Origin", "*")
   w.Header().Set("Content-Type", "text/plain")
   // Input validation
-  var input_regex = regexp.MustCompile(ALLOWED_GET_PARAM)
+  input_regex := regexp.MustCompile(YT_ID_PARAM)
 
   if video := r.URL.Query().Get("v"); input_regex.MatchString(video) {
     Debug("Fetching YouTube URL for: "+video)
@@ -106,15 +107,25 @@ func get_playlists(path string) []string {
 // so this process needs to be parallelised
 //
 // Even with parallelism, it could take to long for a response to be
-// sent from the server so we use paging for each `PAGINATION_THRESHOLD`
+// sent from the server so we use paging for each `ITEMS_PER_REQ`
 // set of entries, returning incremental results
-//    GET /meta/album/Purpose        -> { info:[], page: 0, last_page: false }
-//    GET /meta/album/Purpose?page=1 -> { info:[], page: 1, last_page: false }
-//    GET /meta/album/Purpose?page=2 -> { info:[], page: 2, last_page: true  }
+//    GET /meta/album/Purpose        -> { info:[], page: 1, last_page: false }
+//    GET /meta/album/Purpose?page=2 -> { info:[], page: 2, last_page: false }
+//    GET /meta/album/Purpose?page=3 -> { info:[], page: 3, last_page: true  }
 //
 func GetMetadata(w http.ResponseWriter, r *http.Request){
   w.Header().Set("Access-Control-Allow-Origin", "*")
   w.Header().Set("Content-Type", "application/json")
+
+  page := 1
+  // Parameter validation
+  if page_param := r.URL.Query().Get("page"); page_param != "" {
+    if page_as_int, err := strconv.Atoi(page_param); err == nil {
+      page = page_as_int
+    } else {
+      return; // Non-numeric input
+    }
+  }
 
   endpoint, name, _ := 
     strings.Cut(strings.TrimPrefix(r.URL.Path, "/meta/"), "/")
@@ -123,10 +134,21 @@ func GetMetadata(w http.ResponseWriter, r *http.Request){
     case "playlist":
     case "album":
       album_path := TranslateTilde(ALBUM_DIR)+"/"+name 
+
       if entries, err := os.ReadDir(album_path); err==nil {
         // Reading on the `tracks_channel` will be blocked until
         // it `len(files)` entries have become available
         files          := FsFilter(entries, false)
+
+        // Extract the files relevant for the given page
+        if len(files) >= page*ITEMS_PER_REQ {
+          files = files[ (page-1)*ITEMS_PER_REQ : page*ITEMS_PER_REQ ]
+        } else if len(files) >= (page-1)*ITEMS_PER_REQ {
+          files = files[ (page-1)*ITEMS_PER_REQ :  ]
+        } else {
+            return; // Invalid page
+        }
+
         tracks_channel := make(chan TrackInfo, len(files))
         tracks         := make([]TrackInfo, len(files), len(files))
 

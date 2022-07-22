@@ -45,11 +45,11 @@ func logPrefix(color string, label string) {
 
 // Filters a slice of `fs.DirEntry` entries
 func FsFilter(entries []fs.DirEntry, isDir bool) []fs.DirEntry {
-	filtered := make([]fs.DirEntry, 0, len(entries))
-	for _,entry := range entries {
-		if entry.IsDir() == isDir {
-			filtered = append(filtered, entry)
-		}
-	}
-	return filtered
+  filtered := make([]fs.DirEntry, 0, len(entries))
+  for _,entry := range entries {
+    if entry.IsDir() == isDir {
+      filtered = append(filtered, entry)
+    }
+  }
+  return filtered
 }

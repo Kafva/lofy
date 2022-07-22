@@ -1,10 +1,10 @@
 package main
 
 import (
-	"net/http"
-	"strconv"
+  "net/http"
+  "strconv"
 
-	. "github.com/Kafva/lofy/server"
+  . "github.com/Kafva/lofy/server"
 )
 
 func main(){
@@ -24,7 +24,7 @@ func main(){
   // Paginated API endpoints
   http.HandleFunc("/meta/", GetMetadata)
 
-	Debug("Listening on port "+strconv.Itoa(PORT)+"...")
+  Debug("Listening on port "+strconv.Itoa(PORT)+"...")
   http.ListenAndServe(ADDR+":"+strconv.Itoa(PORT), nil)
 }
 

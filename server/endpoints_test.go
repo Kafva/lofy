@@ -25,9 +25,9 @@ func Test_get_playlists(t *testing.T){
 }
 
 func Test_get_file_metadata(t *testing.T){
-	c := make(chan TrackInfo, 1)
+  c := make(chan TrackInfo, 1)
   go get_file_metadata("../.mocks/2/track.m4a", c)
-	track_info := <- c
+  track_info := <- c
 
   if track_info.Title != 
     "You are in a field" {
