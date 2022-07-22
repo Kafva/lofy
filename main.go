@@ -9,7 +9,8 @@ import (
 
 
 func main(){
-  // Web app resources are mounted at `/app` and accessible directly from `/`
+  // Web app resources are mounted at `/app`
+	// The entrypoint is `/app/index.html`
   web_root := http.FileServer(http.Dir(WEBROOT_DIR))
   http.Handle("/app/", 
     http.StripPrefix("/app", TemplateHook(DisableDirListings(web_root)),
@@ -31,7 +32,7 @@ func main(){
 }
 
 func redirect_to_app(w http.ResponseWriter, r *http.Request) {
-    if r.URL.Path == "/" || r.URL.Path == "/app" {
+    if r.URL.Path == "/" {
       http.Redirect(w, r, "/app/index.html", 301)
     }
 }

@@ -147,7 +147,6 @@ func GetMetadata(w http.ResponseWriter, r *http.Request){
 	json.NewEncoder(w).Encode(tracks)
 }
 
-
 // Determine if the file has a stream with an image (cover art)
 // Accept `ffprobe` JSON as input and returns the stream index and codec name.
 func get_cover_stream(data string) (int,string) {

@@ -10,10 +10,16 @@ import (
 )
 
 // Return 404 for any request that ends on a '/'
+// An exception is made for `/app` which will result
+// in a redirect to index.html instead of a 404
 func DisableDirListings(next http.Handler) http.Handler {
   return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
     if strings.HasSuffix(r.URL.Path, "/") {
-      http.NotFound(w, r)
+			if strings.HasPrefix(r.URL.Path, "/app") {
+				http.Redirect(w, r, "/app/index.html", 301)
+			} else {
+				http.NotFound(w, r)
+			}
       return
     }
     next.ServeHTTP(w, r)
@@ -25,8 +31,8 @@ func DisableDirListings(next http.Handler) http.Handler {
 func TemplateHook(next http.Handler) http.Handler {
   return http.HandlerFunc( func(w http.ResponseWriter, r *http.Request) {
     if filepath.Base(r.URL.Path) == "index.html" {
-			// The version of `index.html` under `dist` has paths resolved
-			// by Vite, we cannot use the basic `index.html` at the project root
+			// We need to use the version of `index.html` under `dist` that 
+			// has paths resolved by Vite
 			var tmpl = template.Must(template.ParseFiles(WEBROOT_DIR+"/index.html"))
 
       data := TemplateData {
