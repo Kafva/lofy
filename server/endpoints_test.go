@@ -25,8 +25,9 @@ func Test_get_playlists(t *testing.T){
 }
 
 func Test_get_file_metadata(t *testing.T){
-  //track_info,_ := get_file_metadata("/Users/jonas/Music/JB/01 Mark My Words.m4a")
-  track_info,_ := get_file_metadata("../.mocks/2/track.m4a")
+	c := make(chan TrackInfo, 1)
+  go get_file_metadata("../.mocks/2/track.m4a", c)
+	track_info := <- c
 
   if track_info.Title != 
     "You are in a field" {
