@@ -4,8 +4,11 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/gorilla/websocket"
 	. "github.com/Kafva/lofy/server"
 )
+
+var upgrader = websocket.Upgrader{}
 
 func main(){
   // Web app resources are mounted at `/app` and accessible directly from `/`
@@ -24,8 +27,31 @@ func main(){
   http.HandleFunc("/meta/", GetMetadata)
   http.HandleFunc("/url", GetUrl)
 
+
+	http.HandleFunc("/ws",  ws)
+
+
 	Debug("Listening on port "+strconv.Itoa(PORT)+"...")
   http.ListenAndServe(ADDR+":"+strconv.Itoa(PORT), nil)
+}
+
+
+func ws(w http.ResponseWriter, r *http.Request) {
+    // Upgrade the connection to the WebSocket protocol
+    conn, err := upgrader.Upgrade(w, r, nil)
+    if err != nil {
+        Warn("Failed to upgrade connection for "+r.RemoteAddr)
+        return
+    }
+    defer conn.Close()
+
+    for {
+      err = conn.WriteMessage(websocket.PingMessage, []byte("🔰"))
+      if err != nil {
+        Err(err)
+        break
+      }
+    }
 }
 
 func redirect_to_app(w http.ResponseWriter, r *http.Request) {

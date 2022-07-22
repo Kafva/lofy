@@ -2,6 +2,8 @@ module github.com/Kafva/lofy
 
 go 1.18
 
+require github.com/gorilla/websocket v1.5.0
+
 require github.com/u2takey/ffmpeg-go v0.4.1
 
 require github.com/tidwall/gjson v1.14.1
