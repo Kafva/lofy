@@ -13,7 +13,6 @@ import (
 	"strings"
 
 	gjson "github.com/tidwall/gjson"
-	ffmpeg "github.com/u2takey/ffmpeg-go"
 )
 
 // Fetch the media streaming URL for a given YouTube video
@@ -28,7 +27,7 @@ func GetYtUrl(w http.ResponseWriter, r *http.Request){
 
   if video := r.URL.Query().Get("v"); input_regex.MatchString(video) {
     Debug("Fetching YouTube URL for: "+video)
-    w.Write( []byte(fetch_yt_url(video)) )
+    w.Write([]byte(fetch_yt_url(video)))
 
   } else {
     Warn("Invalid YouTube video ID requested by " + r.RemoteAddr )
@@ -43,6 +42,7 @@ func fetch_yt_url(video string) string {
     )
     out,_   := cmd.Output()
 
+		// yt-dlp --flat-playlist  --skip-download -j --format bestaudio
     return gjson.Get(string(out), "url").String()
 }
 
@@ -164,17 +164,25 @@ func get_cover_stream(data string) (int,string) {
 	return -1,""
 }
 
+func ffprobe(path string) ([]byte,error) {
+		return exec.Command(FFPROBE_BIN, "-v", "quiet", "-print_format", 
+			"json", "-show_format", "-show_streams", path,
+		).Output()
+}
+
 // Create a `TrackInfo` struct for the given file
 // and send it back to the caller over the `c` channel
 func get_file_metadata(path string, id int, c chan TrackInfo) {
-  data, err := ffmpeg.Probe(path)
+	data,err := ffprobe(path)
+
   if err == nil {
+		data_str := string(data)
     c <- TrackInfo {
-      Title:          gjson.Get(data, "format.tags.title").String(),
-      Artist:         gjson.Get(data, "format.tags.artist").String(),
-      AlbumMeta:      gjson.Get(data, "format.tags.album").String(),
+      Title:          gjson.Get(data_str, "format.tags.title").String(),
+      Artist:         gjson.Get(data_str, "format.tags.artist").String(),
+      AlbumMeta:      gjson.Get(data_str, "format.tags.album").String(),
 			Album:          filepath.Base(filepath.Dir(path)),
-      Duration:       int(gjson.Get(data, "format.duration").Float()),
+      Duration:       int(gjson.Get(data_str, "format.duration").Float()),
 			AlbumId:				id,
     }
   } else {
@@ -217,28 +225,26 @@ func GetArtwork(w http.ResponseWriter, r *http.Request){
 	track_path := album_path+"/"+album_id_to_filename(album_id, album_path)
 
 	if track_path != "" {
-		data, err := ffmpeg.Probe(track_path)
+		data,err := ffprobe(track_path)
 		if err == nil {
-			stream_id,codec_name := get_cover_stream(data)
+			stream_id,codec_name := get_cover_stream(string(data))
 
 			// Set the content type based on the image format
 			if codec_name == "mjpeg" {
 				codec_name = "jpeg"
 			}
-			w.Header().Set("Content-Type","image/"+codec_name)
-
-			// Pick the image stream
-			stream := ffmpeg.Input(track_path).Get(strconv.Itoa(stream_id));
 
 			// Extract the image stream and pipe it to the HTTP response
-			// The 'compiled command' message should be removed:
-			//		https://github.com/u2takey/ffmpeg-go/pull/43
-			err := stream.Output("pipe:",
-				ffmpeg.KwArgs{"vframes": 1, "format": "image2", "vcodec": "copy"},
-			).WithOutput(w).Run()
+			cover,err := exec.Command(FFMPEG_BIN, "-i", track_path, "-map", 
+				"0:"+strconv.Itoa(stream_id), "-f", "image2", "-vcodec", "copy", 
+				"-vframes", "1", "pipe:",
+			).Output()
 
 			if err != nil {
 				Err(err)
+			} else {
+				w.Header().Set("Content-Type","image/"+codec_name)
+				w.Write(cover)
 			}
 		}
 	}

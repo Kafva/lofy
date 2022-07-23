@@ -1,5 +1,9 @@
 package server
 
+const YTDL_BIN = "yt-dlp"
+const FFMPEG_BIN = "ffmpeg"
+const FFPROBE_BIN = "ffprobe"
+
 const DEBUG = true
 const LOG_COLOR = true
 const WEBROOT_DIR  = "./dist"
@@ -28,7 +32,6 @@ const ITEMS_PER_REQ = 20;
 
 const PORT = 20111
 const ADDR = "127.0.0.1"
-const YTDL_BIN = "yt-dlp"
 
 // Allowed characters for:
 //		the `v` paramater to `/yturl`
