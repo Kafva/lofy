@@ -27,10 +27,9 @@ func Test_get_file_metadata(t *testing.T){
 
 func Test_get_cover_stream(t *testing.T){
 	data,_:= ffmpeg.Probe("../.mocks/2/track.m4a")
-	index,codec := get_cover_stream(data)
+	index,codec_name := get_cover_stream(data)
 
-  if index != 1 || codec != "png" {
+  if index != 1 || codec_name != "png" {
     t.Errorf("get_cover_stream() failed")
   }
 }
-

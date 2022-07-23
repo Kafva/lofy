@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -135,6 +136,9 @@ func GetMetadata(w http.ResponseWriter, r *http.Request){
 	tracks_channel := make(chan TrackInfo, len(track_paths))
 	tracks         := make([]TrackInfo, len(track_paths), len(track_paths))
 
+	// To ensure that we send a canonical album ID, sort the track paths
+	sort.Strings(track_paths)
+
 	for i,p := range track_paths {
 		go get_file_metadata(p, i, tracks_channel)
 	}
@@ -148,13 +152,13 @@ func GetMetadata(w http.ResponseWriter, r *http.Request){
 }
 
 // Determine if the file has a stream with an image (cover art)
-// Accept `ffprobe` JSON as input and returns the stream index and codec name.
+// Accepts `ffprobe` JSON as input and returns the stream index and codec name.
 func get_cover_stream(data string) (int,string) {
 	stream_cnt  := gjson.Get(data, "streams.#").Int()
 	for s:=0; s<int(stream_cnt); s++ {
-		codec := gjson.Get(data, "streams."+strconv.Itoa(s)+".codec_name").String()
-		if idx := Contains(COVER_CODECS[:], codec); idx != -1 {
-			return s, codec
+		codec_name := gjson.Get(data, "streams."+strconv.Itoa(s)+".codec_name").String()
+		if idx := Contains(COVER_CODECS[:], codec_name); idx != -1 {
+			return s, codec_name
 		}
 	}
 	return -1,""
@@ -178,11 +182,24 @@ func get_file_metadata(path string, id int, c chan TrackInfo) {
   }
 }
 
+// Translate an album ID into a filename, the translation assumes
+// that the filepaths under an album are sorted
+func album_id_to_filename(album_id int, path string) string {
+	if entries, err := os.ReadDir(path); err==nil {
+		if files := FsFilter(entries, false); album_id < len(files) {
+
+			// Sort by filename
+			sort.Slice(files, func(i,j int) bool {
+					return files[i].Name() < files[j].Name()
+			})
+			return files[album_id].Name()
+		}
+	}
+	return ""
+}
+
 //    GET /art/<album>/<album_id>   -> <data>
 func GetArtwork(w http.ResponseWriter, r *http.Request){
-	// ffmpeg -i Daenerys\ I,\ TWoW\ \(Sweetrobin\'s\ The\ Winds\ of\ Winter\ Fan-Fiction\).m4a -an -vcodec copy cover.jpg
-	// We exclude audio/subtitle/data streams using [-an/-sn/-dn] and simply copy
-	// out the remaining data to an image file.
   album, album_id_str, _ := 
     strings.Cut(strings.TrimPrefix(r.URL.Path, "/art/"), "/")
 
@@ -195,12 +212,36 @@ func GetArtwork(w http.ResponseWriter, r *http.Request){
 		return; // Invalid album name
 	}
 
-	// Translate ID to filename
+	// Translate the album ID to a filename
+	album_path := TranslateTilde(ALBUM_DIR)+"/"+album
+	track_path := album_path+"/"+album_id_to_filename(album_id, album_path)
 
-  //data, err := ffmpeg.Probe(path)
-	//get_cover_stream()
+	if track_path != "" {
+		data, err := ffmpeg.Probe(track_path)
+		if err == nil {
+			stream_id,codec_name := get_cover_stream(data)
 
-	Debug(album,album_id)
+			// Set the content type based on the image format
+			if codec_name == "mjpeg" {
+				codec_name = "jpeg"
+			}
+			w.Header().Set("Content-Type","image/"+codec_name)
+
+			// Pick the image stream
+			stream := ffmpeg.Input(track_path).Get(strconv.Itoa(stream_id));
+
+			// Extract the image stream and pipe it to the HTTP response
+			// The 'compiled command' message should be removed:
+			//		https://github.com/u2takey/ffmpeg-go/pull/43
+			err := stream.Output("pipe:",
+				ffmpeg.KwArgs{"vframes": 1, "format": "image2", "vcodec": "copy"},
+			).WithOutput(w).Run()
+
+			if err != nil {
+				Err(err)
+			}
+		}
+	}
 }
 
 

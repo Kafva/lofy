@@ -41,4 +41,4 @@ const ALLOWED_STRS = "^(?i)[-_0-9A-Z]{1,20}$";
 const ALBUM_NAME_REGEX = "^(?i)[ -_0-9A-Z]{1,20}$";
 
 // Codec stream types that will be used to extract cover art
-var COVER_CODECS = [...]string{ "png", "mjpg", "mjpeg", "jpg", "jpeg" }
+var COVER_CODECS = [...]string{ "png", "mjpeg", "jpeg" }
