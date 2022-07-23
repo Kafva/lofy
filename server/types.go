@@ -6,10 +6,16 @@ import (
 	gjson "github.com/tidwall/gjson"
 )
 
-type TemplateData struct {
-	Albums []string
-	Playlists []string
+type YtPlaylist struct {
+	DisplayName string
+	Id string
 }
+type TemplateData struct {
+	Albums 			 []string
+	Playlists 	 []string
+	YtPlaylists  []YtPlaylist
+}
+
 
 // Fields need to be capitalised (public) for them to appear in
 // the serialised output of `json.Encode()`

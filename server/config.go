@@ -8,14 +8,20 @@ const DEBUG = true
 const LOG_COLOR = true
 const WEBROOT_DIR  = "./dist"
 
-// Playlists are given as `.m3u` files
+// Local playlists are given as `.m3u` files
 // Music referenced in a playlist must be under `ALBUM_DIR`
 const PLAYLIST_DIR  =  "~/Music/.playlists"
+
+// List of YouTube playlits on the following format
+//	<Display name>; <`list=` value>
+// Leading and trailing whitespaces are ignored
+const YT_PLAYLIST_FILE = "~/Music/.playlists/yt"
+const YT_MAX_PLAYLIST_CNT = 255;
 
 // Album directory names MUST adhear to the regex defined by `ALBUM_NAME_REGEX`
 const ALBUM_DIR     =  "~/Music"
 
-// Playlists must have this extension to be recognized
+// Local playlists must have this extension to be recognized
 const PLAYLIST_EXT  = "m3u"
 
 // Maximum number of album directories that will be returned to the client

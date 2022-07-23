@@ -11,13 +11,12 @@ func Test_get_albums(t *testing.T){
     t.Errorf("get_albums() failed")
   }
 }
-func Test_get_playlists(t *testing.T){
-  playlist_names := get_playlists("../.tests/1")
+func Test_get_local_playlists(t *testing.T){
+  playlist_names := get_local_playlists("../.tests/1")
   if !reflect.DeepEqual(playlist_names, []string{"a","b"}) {
-    t.Errorf("get_playlists() failed")
+    t.Errorf("get_local_playlists() failed")
   }
 }
-
 func Test_fetch_yt_playlist(t *testing.T) {
 	pls := fetch_yt_playlist("PLeO-rHNGADqzCkDOyEUZbJMnuu5s9yIGh")
 	if len(pls) != 21 || pls[0].Title != "Intro" {

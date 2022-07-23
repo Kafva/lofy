@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bufio"
 	"html/template"
 	"net/http"
 	"os"
@@ -40,14 +41,42 @@ func TemplateHook(next http.Handler) http.Handler {
 			var tmpl = template.Must(template.ParseFiles(WEBROOT_DIR+"/index.html"))
 
       data := TemplateData {
-        Playlists: get_playlists(PLAYLIST_DIR),
+        Playlists: get_local_playlists(PLAYLIST_DIR),
         Albums: get_albums(ALBUM_DIR),
+				YtPlaylists: get_yt_playlists(),
       }
       tmpl.Execute(w, data)
     } else {
       next.ServeHTTP(w, r)
     }
   })
+}
+
+// Return a list of all playlists defined in `YT_PLAYLIST_FILE` 
+func get_yt_playlists() []YtPlaylist  {
+	playlists := make([]YtPlaylist,0,YT_MAX_PLAYLIST_CNT)
+	f, err := os.Open(TranslateTilde(YT_PLAYLIST_FILE))
+	if err == nil {
+		defer f.Close()
+		scanner := bufio.NewScanner(f)
+
+		line:=1
+		for scanner.Scan() {
+			split := strings.Split(scanner.Text(), ";") 
+			if len(split)!=2 {
+				Die("Invalid format of '"+YT_PLAYLIST_FILE+"', line "+strconv.Itoa(line))
+			}
+			playlists = append(playlists, YtPlaylist{
+				DisplayName: strings.TrimSpace(split[0]),
+				Id: strings.TrimSpace(split[1]),
+			})
+			line++
+		}
+	} else {
+		Die("Failed to locate '" + YT_PLAYLIST_FILE+"'")
+	}
+
+	return playlists
 }
 
 // Returns a sorted list of all non-hidden directories beneath `path`.
@@ -66,7 +95,7 @@ func get_albums(path string) []string {
 
 // Returns a sorted list of all non-hidden .m3u files beneath the provided path
 // with the .m3u suffix removed.
-func get_playlists(path string) []string {
+func get_local_playlists(path string) []string {
   playlist_names := make([]string, 0, MAX_PLAYLIST_CNT)
   if playlists, err := os.ReadDir(TranslateTilde(path)); err==nil {
     for _,playlist := range playlists {

@@ -11,14 +11,14 @@ func Test_FsFilter(t *testing.T) {
     dirs_expected := []string{ "d.m3u" }
     for i, d := range FsFilter(entries, true) {
       if d.Name() != dirs_expected[i] {
-        t.Fatalf("FsFilter() failed")
+        t.Fatalf("FsFilter() failed (dir)")
       }
     }
 
-    files_expected := []string{ ".keep", "a.m3u", "b.m3u", "c" }
+    files_expected := []string{ "a.m3u", "b.m3u", "c" }
     for i, f := range FsFilter(entries, false) {
       if f.Name() != files_expected[i] {
-        t.Fatalf("FsFilter() failed")
+        t.Fatalf("FsFilter() failed (file)")
       }
     }
 

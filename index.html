@@ -22,6 +22,11 @@
       <li>{{.}}</li>
     {{ end }}
   </div>
+  <div id="yt-playlists">
+    {{ range .YtPlaylists }}
+    <li class={{.Id}}>{{.DisplayName}}</li>
+    {{ end }}
+  </div>
 
   </body>
 </html>
