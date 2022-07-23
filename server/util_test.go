@@ -6,7 +6,7 @@ import (
 )
 
 func Test_FsFilter(t *testing.T) {
-  if entries, err := os.ReadDir("../.mocks/1"); err==nil {
+  if entries, err := os.ReadDir("../.tests/1"); err==nil {
     
     dirs_expected := []string{ "d.m3u" }
     for i, d := range FsFilter(entries, true) {

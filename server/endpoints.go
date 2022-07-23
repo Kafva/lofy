@@ -21,29 +21,21 @@ import (
 // an empty response is returned.
 func GetYtUrl(w http.ResponseWriter, r *http.Request){
   w.Header().Set("Access-Control-Allow-Origin", "*")
-  w.Header().Set("Content-Type", "text/plain")
   //== Input validation ==//
   input_regex := regexp.MustCompile(ALLOWED_STRS)
 
   if video := r.URL.Query().Get("v"); input_regex.MatchString(video) {
     Debug("Fetching YouTube URL for: "+video)
-    w.Write([]byte(fetch_yt_url(video)))
+		yt_track := NewYtTrack()
+		yt_track.FetchYtUrl(video)
+
+		w.Header().Set("Content-Type", "text/plain")
+    w.Write([]byte(yt_track.AudioUrl))
 
   } else {
     Warn("Invalid YouTube video ID requested by " + r.RemoteAddr )
     w.Write([]byte(""))
   }
-}
-func fetch_yt_url(video string) string {
-    cmd     := exec.Command(
-      YTDL_BIN, "-j", "--format", "bestaudio", 
-      "--extract-audio", "--skip-download",
-      "https://www.youtube.com/watch?v="+video,
-    )
-    out,_   := cmd.Output()
-
-		// yt-dlp --flat-playlist  --skip-download -j --format bestaudio
-    return gjson.Get(string(out), "url").String()
 }
 
 // Fetch metadata about a track 
@@ -133,8 +125,8 @@ func GetMetadata(w http.ResponseWriter, r *http.Request){
 
 	// Reading on the `tracks_channel` will be blocked until
 	// `len(track_paths)` entries have become available
-	tracks_channel := make(chan TrackInfo, len(track_paths))
-	tracks         := make([]TrackInfo, len(track_paths), len(track_paths))
+	tracks_channel := make(chan LocalTrack, len(track_paths))
+	tracks         := make([]LocalTrack, len(track_paths), len(track_paths))
 
 	// To ensure that we send a canonical album ID, sort the track paths
 	sort.Strings(track_paths)
@@ -170,23 +162,25 @@ func ffprobe(path string) ([]byte,error) {
 		).Output()
 }
 
-// Create a `TrackInfo` struct for the given file
+// Create a `Track` struct for the given file
 // and send it back to the caller over the `c` channel
-func get_file_metadata(path string, id int, c chan TrackInfo) {
+func get_file_metadata(path string, id int, c chan LocalTrack) {
 	data,err := ffprobe(path)
 
   if err == nil {
 		data_str := string(data)
-    c <- TrackInfo {
-      Title:          gjson.Get(data_str, "format.tags.title").String(),
-      Artist:         gjson.Get(data_str, "format.tags.artist").String(),
-      AlbumMeta:      gjson.Get(data_str, "format.tags.album").String(),
-			Album:          filepath.Base(filepath.Dir(path)),
-      Duration:       int(gjson.Get(data_str, "format.duration").Float()),
-			AlbumId:				id,
+    c <- LocalTrack {
+			Track: Track {
+				Title:    gjson.Get(data_str, "format.tags.title").String(),
+				Artist:   gjson.Get(data_str, "format.tags.artist").String(),
+				Album:    gjson.Get(data_str, "format.tags.album").String(),
+				Duration: int(gjson.Get(data_str, "format.duration").Float()),
+			},
+			AlbumFS: filepath.Base(filepath.Dir(path)),
+			AlbumId: id,
     }
   } else {
-    c <- NewTrackInfo()
+    c <- NewLocalTrack()
   }
 }
 

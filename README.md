@@ -12,6 +12,7 @@ yarn && vite build
 go build && ./lofy
 
 # Development
+./live.sh
 vite build --watch
 ```
 
