@@ -1,9 +1,11 @@
-import Current from './Current';
+import List from './List';
 
 const App = () => {
+  //<Current video_id="hpF-WS0lU5A"/>
   return ( <>
-    <div>wow</div>
-    <Current video_id="hpF-WS0lU5A"/>
+  <List selector="_playlists"/>
+  <List selector="_albums"/>
+  <List selector="_yt-playlists"/>
   </>
   )
 };

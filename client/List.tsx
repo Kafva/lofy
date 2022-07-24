@@ -1,4 +1,4 @@
-import { createResource, splitProps } from 'solid-js';
+import { createSignal, splitProps } from 'solid-js';
 //import Config from './config'
 
 
@@ -12,19 +12,32 @@ import { createResource, splitProps } from 'solid-js';
 //  }
 //}
 
-interface MediaLink {
-  displayName: string;
-  dataUrl: string;
-}
+//interface MediaLink {
+//  displayName: string;
+//  dataUrl: string;
+//}
 
 
-const List  = (props: {items: MediaLink[]}) => {
+/// The lists need reactivity so that we can keep
+/// track of which playlist and which item in a playlist is currently
+/// selected and update the UI accordingly
+const List = (props: {selector: string, selected: number}) => {
   
-  
+  //const [selected,_] = createSignal(selected)
+  //const [arr,_] = createSignal(["a","b","c"])
 
-  //<For each={items} =>
+  // Note that we do NOT create a signal for the selector since we
+  // do not need it to be reactive
+  const arr = Array.from(document.querySelectorAll(`#${props.selector} > li`))
+
   return (
   <ul> 
+    <For each={arr}>{ (item,_) =>
+      <li data-id={ item.getAttribute('data-id')}>
+        {item.getAttribute('data-name')}
+      </li>
+    }
+    </For>
   </ul>
   );
 };
