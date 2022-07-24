@@ -1,5 +1,5 @@
 import { createResource, splitProps } from 'solid-js';
-import Config from './config'
+import Config from '../config'
 
 const getYtUrl = async (videoId:string) =>
   (await fetch(
