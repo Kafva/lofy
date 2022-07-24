@@ -1,4 +1,4 @@
-import { createEffect, createSignal, Index } from 'solid-js';
+import { createSignal, Index } from 'solid-js';
 import List from './List';
 import Tracks from './Tracks';
 import { MediaListType, LIST_TYPES } from '../config'
@@ -29,8 +29,8 @@ const App = () => {
     }</Index>
 
     <Tracks activeList={activeList()} 
-            selected={selected()} 
-            setSelected={(s)=> setSelected(s)} 
+      selected={selected()} 
+      setSelected={(s)=> setSelected(s)} 
     />
   </>)
 };

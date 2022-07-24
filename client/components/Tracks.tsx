@@ -1,4 +1,4 @@
-import { createSignal, splitProps } from 'solid-js';
+import { MediaListType } from '../config';
 
 /**
 * The `Tracks` component will fetch Tracks from the server

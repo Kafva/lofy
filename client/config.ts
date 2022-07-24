@@ -15,15 +15,6 @@ const LIST_TYPES = [
   MediaListType.YouTube
 ]
 
-/**
-* The title field is only used by YouTube
-* since their `name` is a hash
-*/
-interface MediaList {
-  title: string
-  name: string
-  typing: MediaListType
-}
 
 /**
 * Note: each of the <ul> lists that we want to render
@@ -33,11 +24,11 @@ interface MediaList {
 const exctractFromTemplate = (selector: string) =>
   Array.from(document.querySelectorAll(`#${selector} > li`))
 
-const media_selectors = {
-  [MediaListType.LocalPlaylist]:  "_playlists",
-  [MediaListType.LocalAlbum]:     "_albums",
-  [MediaListType.YouTube]:        "_yt-playlists"
-}
+//const media_selectors = {
+//  [MediaListType.LocalPlaylist]:  "_playlists",
+//  [MediaListType.LocalAlbum]:     "_albums",
+//  [MediaListType.YouTube]:        "_yt-playlists"
+//}
 
 const MEDIA_LISTS = {
   [MediaListType.LocalPlaylist]: exctractFromTemplate("_playlists"),

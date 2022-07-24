@@ -1,4 +1,4 @@
-import { Index, Show, splitProps } from 'solid-js';
+import { Index, Show } from 'solid-js';
 import { MEDIA_TITLES, MEDIA_LISTS, MediaListType } from '../config'
 
 /**
