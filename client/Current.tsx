@@ -1,18 +1,18 @@
 import { createResource, splitProps } from 'solid-js';
 import Config from './config'
 
-const get_yt_url = async (video_id:string) =>
+const getYtUrl = async (videoId:string) =>
   (await fetch(
-    `${Config.server_proto}://${Config.server_ip}:${Config.server_port}`+
-    `/yturl?v=${video_id}`)
+    `${Config.serverProto}://${Config.serverIp}:${Config.serverPort}`+
+    `/yturl?v=${videoId}`)
   ).text()
 
 
-const Current  = (props: {video_id: string}) => {
-  const [local]     = splitProps(props, ["video_id"]);
-  const [yt_url]    = createResource(local.video_id, get_yt_url)
+const Current  = (props: {videoId: string}) => {
+  const [local]     = splitProps(props, ["videoId"]);
+  const [ytUrl]    = createResource(local.videoId, getYtUrl)
 
-  return (<audio controls src={ yt_url() || "" }> </audio>);
+  return (<audio controls src={ ytUrl() || "" }> </audio>);
 };
 
 export default Current

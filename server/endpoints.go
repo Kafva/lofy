@@ -58,7 +58,7 @@ func GetYtPlaylist(w http.ResponseWriter, r *http.Request) {
 // The `AudioUrl` field will be empty and needs to be requested separately
 func fetch_yt_playlist(playlist_id string) []YtTrack {
     cmd     := exec.Command(
-      YTDL_BIN, "-j", "--format", "bestaudio", 
+      YTDL_BIN, "-j", "--format", "bestaudio",
       "--flat-playlist", "--skip-download",
       "https://www.youtube.com/watch?list="+playlist_id,
     )
@@ -88,7 +88,7 @@ func fetch_yt_playlist(playlist_id string) []YtTrack {
 		return []YtTrack{}
 }
 
-// Fetch metadata about a track 
+// Fetch metadata about a track
 // For local files:
 //    /meta/playlist/<name>
 //    /meta/album/<name>
@@ -108,7 +108,7 @@ func fetch_yt_playlist(playlist_id string) []YtTrack {
 //
 func GetLocalMetadata(w http.ResponseWriter, r *http.Request){
   //== Parameter validation ==//
-  endpoint, name, _ := 
+  endpoint, name, _ :=
     strings.Cut(strings.TrimPrefix(r.URL.Path, "/meta/"), "/")
 
   endpoint_regex := regexp.MustCompile(ALLOWED_STRS)
@@ -117,7 +117,7 @@ func GetLocalMetadata(w http.ResponseWriter, r *http.Request){
 	if !endpoint_regex.Match([]byte(endpoint)) || !name_regex.Match([]byte(name)) {
 		return; // Invalid subcommand or resource name
 	}
-	
+
   page := 1
   if page_param := r.URL.Query().Get("page"); page_param != "" {
     if page_as_int, err := strconv.Atoi(page_param); err == nil {
@@ -131,7 +131,7 @@ func GetLocalMetadata(w http.ResponseWriter, r *http.Request){
   w.Header().Set("Content-Type", "application/json")
 
 	track_paths := make([]string, 0, MAX_TRACKS)
-	
+
 	// Populate the `track_paths` slice with data based on the given subcommand
   switch endpoint {
     case "playlist":
@@ -141,20 +141,24 @@ func GetLocalMetadata(w http.ResponseWriter, r *http.Request){
 				scanner := bufio.NewScanner(f)
 
 				for scanner.Scan() {
-					track_paths = append(track_paths, scanner.Text())
+					line := strings.TrimSpace(scanner.Text())
+					if !strings.HasPrefix("#", line) {
+						// Skip '#' lines in a playlist
+						track_paths = append(track_paths, line)
+					}
 				}
 			} else {
 				Warn("Non-existent playlist requested by " + r.RemoteAddr)
 				return
 			}
     case "album":
-      album_path := TranslateTilde(ALBUM_DIR)+"/"+name 
+      album_path := TranslateTilde(ALBUM_DIR)+"/"+name
 
       if entries, err := os.ReadDir(album_path); err==nil {
 				// Create a list of all files under the specified album
 				for _,f := range FsFilter(entries, false) {
 					track_paths = append(track_paths, album_path+"/"+f.Name())
-				} 
+				}
       } else {
 				Warn("Non-existent album requested by " + r.RemoteAddr)
 				return
@@ -212,7 +216,7 @@ func get_cover_stream(data string) (int,string) {
 }
 
 func ffprobe(path string) ([]byte,error) {
-		return exec.Command(FFPROBE_BIN, "-v", "quiet", "-print_format", 
+		return exec.Command(FFPROBE_BIN, "-v", "quiet", "-print_format",
 			"json", "-show_format", "-show_streams", path,
 		).Output()
 }
@@ -257,7 +261,7 @@ func album_id_to_filename(album_id int, path string) string {
 
 //    GET /art/<album>/<album_id>   -> <data>
 func GetArtwork(w http.ResponseWriter, r *http.Request){
-  album, album_id_str, _ := 
+  album, album_id_str, _ :=
     strings.Cut(strings.TrimPrefix(r.URL.Path, "/art/"), "/")
 
 	//== Parameter validation ==//
@@ -284,8 +288,8 @@ func GetArtwork(w http.ResponseWriter, r *http.Request){
 			}
 
 			// Extract the image stream and pipe it to the HTTP response
-			cover,err := exec.Command(FFMPEG_BIN, "-i", track_path, "-map", 
-				"0:"+strconv.Itoa(stream_id), "-f", "image2", "-vcodec", "copy", 
+			cover,err := exec.Command(FFMPEG_BIN, "-i", track_path, "-map",
+				"0:"+strconv.Itoa(stream_id), "-f", "image2", "-vcodec", "copy",
 				"-vframes", "1", "pipe:",
 			).Output()
 

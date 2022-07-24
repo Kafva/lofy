@@ -1,19 +1,23 @@
 import { createSignal } from 'solid-js';
 import List from './List';
-import { TITLES, LIST_SELECTORS } from './config'
+import Tracks from './Tracks';
+import { MediaListType, LIST_TYPES } from './config'
 
 const App = () => {
-  const [activeList,setActiveList] = createSignal("_playlists")
+  const [activeList,setActiveList] = createSignal(MediaListType.LocalPlaylist)
 
-  // We can pass the setter function to a child as a normal prop
-  return (
-    <For each={LIST_SELECTORS}>{(selector) =>
-      <List setActiveList={(s)=> setActiveList(s)} 
-            activeList={activeList()} 
-            selector={selector} 
+
+  return (<>
+    <For each={LIST_TYPES}>{(listType) =>
+      // We can pass the setter function to a child as a normal prop
+      <List setActiveList={(s)=> setActiveList(s)}
+            activeList={activeList()}
+            listType={listType}
       />
     }</For>
-  )
+
+    <Tracks/>
+  </>)
 };
 
 export default App;

@@ -12,13 +12,13 @@ func main(){
   // Web app resources are mounted at `/app`
 	// The entrypoint is `/app/index.html`
   web_root := http.FileServer(http.Dir(WEBROOT_DIR))
-  http.Handle("/app/", 
+  http.Handle("/app/",
     http.StripPrefix("/app", TemplateHook(DisableDirListings(web_root)),
   ))
   http.HandleFunc("/", redirect_to_app)
 
   audio_root := http.FileServer(http.Dir(TranslateTilde(ALBUM_DIR)))
-  http.Handle("/audio/", 
+  http.Handle("/audio/",
     http.StripPrefix("/audio", DisableDirListings(audio_root),
   ))
 
