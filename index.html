@@ -12,21 +12,21 @@
     <script src="/client/index.tsx" type="module"></script>
 
 
-  <div id="playlists">
+  <ul id="_playlists" hidden>
     {{ range .Playlists }}
-      <li>{{.}}</li>
+      <li data-name={{.}}></li>
     {{ end }}
-  </div>
-  <div id="albums">
+  </ul>
+  <ul id="_albums" hidden>
     {{ range .Albums }}
-      <li>{{.}}</li>
+      <li data-name={{.}}></li>
     {{ end }}
-  </div>
-  <div id="yt-playlists">
+  </ul>
+  <ul id="_yt-playlists" hidden>
     {{ range .YtPlaylists }}
-    <li class={{.Id}}>{{.DisplayName}}</li>
+    <li data-id={{.Id}} data-name={{.DisplayName}} ></li>
     {{ end }}
-  </div>
+  </ul>
 
   </body>
 </html>

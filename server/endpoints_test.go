@@ -13,6 +13,14 @@ func Test_fetch_yt_url(t *testing.T) {
   }
 }
 
+func Test_fetch_yt_playlist(t *testing.T) {
+	pls := fetch_yt_playlist("PLeO-rHNGADqzCkDOyEUZbJMnuu5s9yIGh")
+	if len(pls) != 21 || pls[0].Title != "Intro" {
+    t.Errorf("fetch_yt_playlists() failed")
+	}
+}
+
+
 func Test_get_file_metadata(t *testing.T){
   c := make(chan LocalTrack, 1)
   //go get_file_metadata("/Users/jonas/Music/JB/01 Mark My Words.m4a", c)

@@ -23,9 +23,12 @@ func main(){
   ))
 
   // Endpoints with a trailing slash accept subpaths
+  http.HandleFunc("/yt/", GetYtPlaylist)
   http.HandleFunc("/yturl", GetYtUrl)
+
+  // Local files
+  http.HandleFunc("/meta/", GetLocalMetadata)
   http.HandleFunc("/art/", GetArtwork)
-  http.HandleFunc("/meta/", GetMetadata)
 
   Debug("Listening on port "+strconv.Itoa(PORT)+"...")
   http.ListenAndServe(ADDR+":"+strconv.Itoa(PORT), nil)

@@ -40,14 +40,15 @@ const PORT = 20111
 const ADDR = "127.0.0.1"
 
 // Allowed characters for:
-//		the `v` paramater to `/yturl`
+//		the `<video id>` paramater to `/yturl`
 //		the subcommand parameter to `/meta`
-const ALLOWED_STRS = "^(?i)[-_0-9A-Z]{1,20}$";
+//		the `<playlist id>` parameter for `/meta`
+const ALLOWED_STRS = "^(?i)[-_0-9A-Z]{1,40}$";
 
 // Allowed characters for album names to:
 //		the `<name>` parameter of `/meta`
 //		the `<album>` parameter of `/art`
-const ALBUM_NAME_REGEX = "^(?i)[ -_0-9A-Z]{1,20}$";
+const ALBUM_NAME_REGEX = "^(?i)[ -_0-9A-Z]{1,40}$";
 
 // Codec stream types that will be used to extract cover art
 var COVER_CODECS = [...]string{ "png", "mjpeg", "jpeg" }

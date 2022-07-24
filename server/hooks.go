@@ -5,13 +5,10 @@ import (
 	"html/template"
 	"net/http"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
-
-	"github.com/tidwall/gjson"
 )
 
 // Return 404 for any request that ends on a '/'
@@ -110,40 +107,3 @@ func get_local_playlists(path string) []string {
   sort.Strings(playlist_names)
   return playlist_names
 }
-
-// https://www.youtube.com/watch?list=PLeO-rHNGADqzCkDOyEUZbJMnuu5s9yIGh
-// Fetches a list of all YtTrack objects for a playlist
-// The `AudioUrl` field will be empty and needs to be requested separately
-func fetch_yt_playlist(playlist_id string) []YtTrack {
-    cmd     := exec.Command(
-      YTDL_BIN, "-j", "--format", "bestaudio", 
-      "--flat-playlist", "--skip-download",
-      "https://www.youtube.com/watch?list="+playlist_id,
-    )
-    out,err   := cmd.Output()
-		if err == nil {
-			// The JSON output lacks an outer array
-			out_str := "["+string(out)+"]"
-
-			length := gjson.Get(out_str, "#").Int()
-			yt_tracks := make([]YtTrack,0,length)
-
-			for i:=0; i < int(length); i++ {
-				idx := strconv.Itoa(i)
-				yt_tracks = append(yt_tracks, YtTrack{
-					Track: Track {
-						Title: 		gjson.Get(out_str, idx+".title").String(),
-						Artist: 	gjson.Get(out_str, idx+".uploader").String(),
-						Album: 		gjson.Get(out_str, idx+".playlist").String(),
-						Duration: int(gjson.Get(out_str, idx+".duration").Int()),
-					},
-					ArtworkUrl: gjson.Get(out_str, idx+".thumbnails.2.url").String(),
-					AudioUrl: "",
-				})
-			}
-			return yt_tracks
-		}
-		return []YtTrack{}
-}
-
-

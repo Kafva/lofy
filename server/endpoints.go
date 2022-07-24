@@ -38,12 +38,60 @@ func GetYtUrl(w http.ResponseWriter, r *http.Request){
   }
 }
 
+// Fetch an array of the `YtTrack` objects for a given playlist
+// since yt-dlp does not return paged resutlts, we only need to perform one
+// request
+// GET   /yt/<playlist id>
+func GetYtPlaylist(w http.ResponseWriter, r *http.Request) {
+	input_regex := regexp.MustCompile(ALLOWED_STRS)
+	if playlist_id := filepath.Base(r.URL.Path); input_regex.Match([]byte(playlist_id)) {
+
+		yt_tracks := fetch_yt_playlist(playlist_id)
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(yt_tracks)
+	}
+}
+
+// https://www.youtube.com/watch?list=PLeO-rHNGADqzCkDOyEUZbJMnuu5s9yIGh
+// Fetches a list of all YtTrack objects for a playlist
+// The `AudioUrl` field will be empty and needs to be requested separately
+func fetch_yt_playlist(playlist_id string) []YtTrack {
+    cmd     := exec.Command(
+      YTDL_BIN, "-j", "--format", "bestaudio", 
+      "--flat-playlist", "--skip-download",
+      "https://www.youtube.com/watch?list="+playlist_id,
+    )
+    out,err   := cmd.Output()
+		if err == nil {
+			// The JSON output lacks an outer array
+			out_str := "["+string(out)+"]"
+
+			length := gjson.Get(out_str, "#").Int()
+			yt_tracks := make([]YtTrack,0,length)
+
+			for i:=0; i < int(length); i++ {
+				idx := strconv.Itoa(i)
+				yt_tracks = append(yt_tracks, YtTrack{
+					Track: Track {
+						Title: 		gjson.Get(out_str, idx+".title").String(),
+						Artist: 	gjson.Get(out_str, idx+".uploader").String(),
+						Album: 		gjson.Get(out_str, idx+".playlist").String(),
+						Duration: int(gjson.Get(out_str, idx+".duration").Int()),
+					},
+					ArtworkUrl: gjson.Get(out_str, idx+".thumbnails.2.url").String(),
+					AudioUrl: "",
+				})
+			}
+			return yt_tracks
+		}
+		return []YtTrack{}
+}
+
 // Fetch metadata about a track 
 // For local files:
-//    ?v=playlist/<name>
-//    ?v=album/<name>
-// For YouTube:
-//    ?v=yt/<video id>
+//    /meta/playlist/<name>
+//    /meta/album/<name>
 // Returns an empty array on failure
 // Track artwork is fetched from a different endpoint
 //
@@ -54,19 +102,19 @@ func GetYtUrl(w http.ResponseWriter, r *http.Request){
 // Even with parallelism, it could take to long for a response to be
 // sent from the server so we use paging for each `ITEMS_PER_REQ`
 // set of entries, returning incremental results
-//    GET /meta/album/<name>        -> { info:[], page: 1, last_page: false }
-//    GET /meta/album/<name>?page=2 -> { info:[], page: 2, last_page: false }
-//    GET /meta/album/<name>?page=3 -> { info:[], page: 3, last_page: true  }
+//    GET /meta/album/<name>        -> { tracks:[], last_page: false }
+//    GET /meta/album/<name>?page=2 -> { tracks:[], last_page: false }
+//    GET /meta/album/<name>?page=3 -> { tracks:[], last_page: true  }
 //
-func GetMetadata(w http.ResponseWriter, r *http.Request){
+func GetLocalMetadata(w http.ResponseWriter, r *http.Request){
   //== Parameter validation ==//
   endpoint, name, _ := 
     strings.Cut(strings.TrimPrefix(r.URL.Path, "/meta/"), "/")
 
   endpoint_regex := regexp.MustCompile(ALLOWED_STRS)
-	album_regex 	 := regexp.MustCompile(ALBUM_NAME_REGEX)
+	name_regex 	   := regexp.MustCompile(ALBUM_NAME_REGEX)
 
-	if !endpoint_regex.Match([]byte(endpoint)) || !album_regex.Match([]byte(name)) {
+	if !endpoint_regex.Match([]byte(endpoint)) || !name_regex.Match([]byte(name)) {
 		return; // Invalid subcommand or resource name
 	}
 	
@@ -111,13 +159,17 @@ func GetMetadata(w http.ResponseWriter, r *http.Request){
 				Warn("Non-existent album requested by " + r.RemoteAddr)
 				return
 			}
-    case "yt":
+		default:
+			json.NewEncoder(w).Encode([]string{})
+			return
   }
 
 	// Extract the files relevant for the given page index
+	last_page := false
 	if len(track_paths) >= page*ITEMS_PER_REQ {
 		track_paths = track_paths[ (page-1)*ITEMS_PER_REQ : page*ITEMS_PER_REQ ]
 	} else if len(track_paths) >= (page-1)*ITEMS_PER_REQ {
+		last_page = true
 		track_paths = track_paths[ (page-1)*ITEMS_PER_REQ :  ]
 	} else {
 			return; // Invalid page
@@ -140,7 +192,10 @@ func GetMetadata(w http.ResponseWriter, r *http.Request){
 		tracks[i] = <- tracks_channel
 	}
 
-	json.NewEncoder(w).Encode(tracks)
+	res := map[string]interface{} {
+		"tracks": tracks, "last_page": last_page,
+	}
+	json.NewEncoder(w).Encode(res)
 }
 
 // Determine if the file has a stream with an image (cover art)

@@ -1,17 +1,17 @@
-#playlists,#albums {
+#_playlists,#_albums {
   position: fixed;
 }
-#playlists {
+#_playlists {
   left: 30%;
 }
-#albums {
+#_albums {
   left: 50%
 }
-#yt-playlists {
+#_yt-playlists {
   left: 70%
 }
 
-$primary-color: #87ceeb;
+$primary-color: #bb92ac;
 
 div {
   color: $primary-color;
