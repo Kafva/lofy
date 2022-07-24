@@ -3,18 +3,15 @@ import List from './List';
 import { TITLES, LIST_SELECTORS } from './config'
 
 const App = () => {
-  
   const [activeList,setActiveList] = createSignal("_playlists")
 
+  // We can pass the setter function to a child as a normal prop
   return (
-    <For each={LIST_SELECTORS}>{(selector, _) =>
-      <>
-      <h3 role="menuitem" 
-          onClick={() => setActiveList(selector)}>
-          {TITLES[selector]}
-      </h3>
-      <List activeList={activeList()} selector={selector} />
-      </>
+    <For each={LIST_SELECTORS}>{(selector) =>
+      <List setActiveList={(s)=> setActiveList(s)} 
+            activeList={activeList()} 
+            selector={selector} 
+      />
     }</For>
   )
 };

@@ -6,8 +6,8 @@ class Config {
 
 
 // Note: each of the <ul> lists that we want to render 
-// already exist in the DOM when we recieve index.html from the server.
-// We extract these values to ararys ONCE and not for every re-render
+// already exist in the DOM when we recieve `index.html` from the server.
+// We extract these values into ararys ONCE and not for every `render()`
 const extract_from_template = (selector: string) => 
   Array.from(document.querySelectorAll(`#${selector} > li`))
 
