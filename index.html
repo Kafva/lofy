@@ -14,17 +14,17 @@
 
   <ul id="_playlists" hidden>
     {{ range .Playlists }}
-      <li data-name={{.}}></li>
+      <li>{{.}}</li>
     {{ end }}
   </ul>
   <ul id="_albums" hidden>
     {{ range .Albums }}
-      <li data-name={{.}}></li>
+      <li>{{.}}</li>
     {{ end }}
   </ul>
   <ul id="_yt-playlists" hidden>
     {{ range .YtPlaylists }}
-    <li data-id={{.Id}} data-name={{.DisplayName}} ></li>
+    <li data-id={{.Id}}>{{.DisplayName}}</li>
     {{ end }}
   </ul>
 
