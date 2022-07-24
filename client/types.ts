@@ -15,3 +15,4 @@ interface YtTrack extends Track {
 	ArtworkUrl: string
 }
 
+export type { Track, LocalTrack, YtTrack }

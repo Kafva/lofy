@@ -1,7 +1,13 @@
-import { createSignal, Index } from 'solid-js';
+import { createSignal, Index, lazy } from 'solid-js';
 import List from './List';
 import Tracks from './Tracks';
 import { MediaListType, LIST_TYPES } from '../config'
+
+//const LazyTracks = lazy(async () => {
+//  
+//
+//})
+
 
 const App = () => {
   // Flag to determine the active media list

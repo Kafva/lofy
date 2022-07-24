@@ -1,25 +1,5 @@
-import { createEffect } from 'solid-js';
-import { MediaListType, MEDIA_LISTS } from '../config';
-
-import { LocalTrack } from '../types';
-
-const fetchMediaList = async (name: string, typing: MediaListType) => {
-    const baseUrl = 
-      `${Config.serverProto}://${Config.serverIp}:${Config.serverPort}/`
-
-    switch (typing) {
-      case MediaListType.LocalPlaylist:
-        const data = await (await fetch(`${baseUrl}/meta/playlist/${name}`)).json()
-        console.log(data)
-        break;
-      case MediaListType.LocalAlbum:
-        break;
-      case MediaListType.YouTube:
-        break;
-    }
-
-    return "wow"
-}
+import { createEffect, createResource, createSignal } from 'solid-js';
+import Config, { MediaListType, MEDIA_LISTS } from '../config';
 
 
 /**
@@ -33,10 +13,18 @@ const Tracks = (props: {
   setSelected: (arg0: number) => any,
 }) => {
   
+  //[current,setCurrent] = createSignal(props.activeList)
+
+  //createEffect( () => {
+  //  fetchMediaList(MEDIA_LISTS[props.activeList][props.selected].innerHTML,  props.activeList)
+  //  
+  //})
+
+  //const [lol] = createResource(MEDIA_LISTS[props.activeList][props.selected].innerHTML,  props.activeList, fetchMediaList)
+  //  <p> { lol() } </p>
 
   return (<>
     <p>{ "Current tracks: "+ props.activeList+" "+props.selected }</p>
-    <p> { fetchMediaList( MEDIA_LISTS[props.activeList][props.selected].innerHTML,  props.activeList ) } </p>
   </>);
 };
 
