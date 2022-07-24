@@ -50,7 +50,9 @@ func GetYtPlaylist(w http.ResponseWriter, r *http.Request) {
 
     w.Header().Set("Access-Control-Allow-Origin", "*") 
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(yt_tracks)
+
+		res := map[string]interface{} { "tracks": yt_tracks }
+		json.NewEncoder(w).Encode(res)
 	}
 }
 

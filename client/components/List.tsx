@@ -15,16 +15,18 @@ const List = (props: {
   selected: number,
   setSelected: (arg0: number) => any,
 }) => {
-  // Note that `item` needs to be called <Index> and `i` needs
+  // Note that `item` needs to be called when using <Index> and `i` needs
   // to be called for <For> components.
   // We use `role` to make elements clickable with Vimium
   return (<>
 
     <h3 role="menuitem"
       onClick={() => { 
-        props.setActiveList(props.listType) 
         // Auto-select the first entry of a list when switching to it
+        // Both of these actions will trigger updates, we need to perform
+        // the `selected()` update first to avoid intermediary out-of-bounds errors
         props.setSelected(0)
+        props.setActiveList(props.listType) 
       }}>
       {MEDIA_TITLES[props.listType]}
     </h3>
