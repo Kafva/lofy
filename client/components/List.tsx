@@ -23,10 +23,11 @@ const List = (props: {
     <h3 role="menuitem"
       onClick={() => { 
         // Auto-select the first entry of a list when switching to it
-        // Both of these actions will trigger updates, we need to perform
-        // the `selected()` update first to avoid intermediary out-of-bounds errors
-        props.setSelected(0)
+        // To avoid an intermediary state where we fetch data for the 0th
+        // entry of the current list we set the selection to -1 temporarily
+        props.setSelected(-1)
         props.setActiveList(props.listType) 
+        props.setSelected(0)
       }}>
       {MEDIA_TITLES[props.listType]}
     </h3>

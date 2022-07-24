@@ -36,9 +36,19 @@ const MEDIA_TITLES = {
   [MediaListType.YouTube]:      "YouTube"
 }
 
-// Create key for every playlist+type (there could be playlists with the 
-// same name from different sources)
-const FETCHED_CACHE = {}
+/**
+* Create key for every playlist+type (there could be playlists with the 
+* same name from different sources)
+*/
+//const fetchCache = (mediaList: MediaListType) => {
+//  let names = MEDIA_LISTS[mediaList].forEach(  )
+//}
+//
+//const FETCH_CACHE = {
+//  [MediaListType.LocalPlaylist]: 
+//  [MediaListType.LocalAlbum]:    
+//  [MediaListType.YouTube]:       
+//}
 
 
 const Log = (...args: any) => {

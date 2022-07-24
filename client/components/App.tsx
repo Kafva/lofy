@@ -43,11 +43,11 @@ const fetchMediaList = async (name: string, typing: MediaListType): Promise<Trac
 }
 
 
-// (async()=>{
-//   console.log( await fetchMediaList("86", MediaListType.LocalAlbum) )
-//   console.log( await fetchMediaList("JB", MediaListType.LocalPlaylist) )
-//   console.log( await fetchMediaList("PLOHoVaTp8R7dfrJW5pumS0iD_dhlXKv17", MediaListType.YouTube) )
-// })()
+//(async()=>{
+//  console.log( await fetchMediaList("86", MediaListType.LocalAlbum) )
+//  console.log( await fetchMediaList("JB", MediaListType.LocalPlaylist) )
+//  console.log( await fetchMediaList("PLOHoVaTp8R7dfrJW5pumS0iD_dhlXKv17", MediaListType.YouTube) )
+//})()
 
 const App = () => {
   // Flag to determine the active media list
@@ -59,17 +59,19 @@ const App = () => {
   const [currentList,setCurrentList] = createSignal([]) 
 
   createEffect( () => {
-    const el = MEDIA_LISTS[activeList()][selected()]
-    const mediaName = activeList() == MediaListType.YouTube ? 
-                      el.getAttribute("data-id") :  el.innerHTML 
-  
-    if (mediaName != "") {
-      Log(`Fetching data for ${mediaName}`)
-      // TODO: This triggers everytime that we select a new media list entry
-      // we should cache these requests and only make new requests
-      // if we are missing data
-      fetchMediaList(mediaName, activeList())
-        .then( (t:Track[]) => setCurrentList(t) )
+    if (selected() >= 0) {
+      const el = MEDIA_LISTS[activeList()][selected()]
+      const mediaName = activeList() == MediaListType.YouTube ? 
+                        el.getAttribute("data-id") :  el.innerHTML 
+    
+      if (mediaName != "") {
+        Log(`Fetching data for ${mediaName}`)
+        // TODO: This triggers everytime that we select a new media list entry
+        // we should cache these requests and only make new requests
+        // if we are missing data
+        fetchMediaList(mediaName, activeList())
+          .then( (t:Track[]) => setCurrentList(t) )
+      }
     }
   })
 
