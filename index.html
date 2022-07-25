@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link href="/public/assets/nerd-fonts.min.css" rel="stylesheet" , type="text/css">
     <link rel="shortcut icon" type="image/ico" href="/app/favicon.ico"/>
     <title>lofy</title>
   </head>
@@ -11,22 +12,20 @@
     <div id="root"></div>
     <script src="/client/index.tsx" type="module"></script>
 
-
-  <ul id="_playlists" hidden>
-    {{ range .Playlists }}
-      <li>{{.}}</li>
-    {{ end }}
-  </ul>
-  <ul id="_albums" hidden>
-    {{ range .Albums }}
-      <li>{{.}}</li>
-    {{ end }}
-  </ul>
-  <ul id="_yt-playlists" hidden>
-    {{ range .YtPlaylists }}
-    <li data-id={{.Id}}>{{.DisplayName}}</li>
-    {{ end }}
-  </ul>
-
+    <ul id="_playlists" hidden>
+      {{ range .Playlists }}
+        <li>{{.}}</li>
+      {{ end }}
+    </ul>
+    <ul id="_albums" hidden>
+      {{ range .Albums }}
+        <li>{{.}}</li>
+      {{ end }}
+    </ul>
+    <ul id="_yt-playlists" hidden>
+      {{ range .YtPlaylists }}
+      <li data-id={{.Id}}>{{.DisplayName}}</li>
+      {{ end }}
+    </ul>
   </body>
 </html>

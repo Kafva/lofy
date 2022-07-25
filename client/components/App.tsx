@@ -22,7 +22,7 @@ const App = () => {
     
       if (mediaName !== null && mediaName != "") {
         FetchMediaList(mediaName, activeList())
-          .then( (t:Track[]) => setCurrentList(t) )
+          .then((t:Track[]) => setCurrentList(t))
       }
     }
   })
@@ -38,16 +38,16 @@ const App = () => {
         listType={listType()}
 
         activeList={activeList()}
-        setActiveList={(s)=> setActiveList(s)}
+        setActiveList={(s:MediaListType)=> setActiveList(s)}
 
         selected={selected()}
-        setSelected={(s)=>setSelected(s)}
+        setSelected={(s:MediaListType)=>setSelected(s)}
       />
     }</Index>
 
     <Tracks activeList={activeList()} 
       selected={selected()} 
-      setSelected={(s)=> setSelected(s)} 
+      setSelected={(s:number)=> setSelected(s)} 
       currentList={currentList()}
     />
   </>)

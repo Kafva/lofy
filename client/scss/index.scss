@@ -1,16 +1,3 @@
-#_playlists,#_albums {
-  position: fixed;
-}
-#_playlists {
-  left: 30%;
-}
-#_albums {
-  left: 50%
-}
-#_yt-playlists {
-  left: 70%
-}
-
 .selected {
   text-decoration: underline; 
 }
@@ -22,3 +9,12 @@ div {
   position: absolute;
 }
 
+.amp {
+    content: url("amp.gif");
+    height: 20px;
+    width: 18px;
+}
+
+th {
+  text-align: left;
+}
