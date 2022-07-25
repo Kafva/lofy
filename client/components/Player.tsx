@@ -55,6 +55,29 @@ const changeVolume = (
   }
 }
 
+
+//const PauseToggle = (props: {
+//  track: Track,
+//  audio: HTMLAudioElement
+//}) => {
+//  return (<>
+//    <span role="button" class="nf nf-mdi-skip_previous"/>
+//    <span role="button"
+//      class={ props.audio.paused ? "nf nf-fa-play" : "nf nf-fa-pause" }
+//      onClick={ () => {
+//        //class="nf nf-fa-play"
+//        if (props.audio.paused) {
+//          props.audio.play()
+//        } else {
+//          props.audio.pause()
+//        }
+//      }}/>
+//    <span role="button" class="nf nf-mdi-skip_next"/>
+//  </>
+//
+//  )
+//}
+
 /**
  * Holds the actual <audio> element used to play a track
  * and all the buttons for controlling playback
