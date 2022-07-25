@@ -15,4 +15,10 @@ interface YtTrack extends Track {
 	ArtworkUrl: string
 }
 
+const EmptyTrack = (): Track =>  { 
+  return { Title: "", Artist: "", Album: "", Duration: 0 } as Track; 
+}
+
+
 export type { Track, LocalTrack, YtTrack }
+export { EmptyTrack }

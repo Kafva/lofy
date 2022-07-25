@@ -1,8 +1,10 @@
 import { createSignal, Index, createEffect } from 'solid-js';
 import List from './List';
 import Tracks from './Tracks';
+import Player from './Player';
 import { MediaListType, LIST_TYPES, MEDIA_LISTS } from '../config'
 import { FetchMediaList } from '../fetch';
+import { EmptyTrack } from '../types';
 
 const App = () => {
   // Flag to determine the active media list
@@ -37,6 +39,7 @@ const App = () => {
   // the lists are not going to change so it is therefore preferable
   // to use <Index> in this case.
   return (<>
+
     <Index each={LIST_TYPES}>{(listType) =>
       // We can pass the setter function to a child as in `props`
       <List 
@@ -58,6 +61,17 @@ const App = () => {
       playingIdx={playingIdx()} 
       setPlayingIdx={(s:number)=>setPlayingIdx(s)}
     />
+
+
+    <Player
+      track={ currentList()[playingIdx()] !== undefined ?
+        currentList()[playingIdx()] :
+        EmptyTrack()
+      }
+      playingIdx={playingIdx()} 
+      setPlayingIdx={(s:number)=>setPlayingIdx(s)}
+    />
+
   </>)
 };
 
