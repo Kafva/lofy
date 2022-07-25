@@ -33,12 +33,11 @@ const endpointFetch = async (
   mediaName: string, 
   typing: MediaListType): Promise<Track[]> => {
   let tracks = <Track[]>[]
-
   const cachedList = FETCH_CACHE[typing].get(mediaName)
 
   if (cachedList!==undefined && cachedList.length > 0) {
     // Return cached data if possible
-    Log(`Returning cached data for ${mediaName}`)
+    // Log(`Returning cached data for ${mediaName}`)
     tracks = cachedList 
   } else {
     try {
