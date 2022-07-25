@@ -20,6 +20,7 @@ const App = () => {
   const [playingIdx,setPlayingIdx] = createSignal(0)
 
   createEffect( () => {
+    // TODO: Paging with <Suspense> loading
     if (selected() >= 0 && playingIdx() >= 0) {
       // Skip calls to `FetchMediaList` if the `selected()` 
       // list or track is set to -1

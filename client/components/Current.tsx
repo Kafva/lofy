@@ -2,10 +2,7 @@ import { createResource, splitProps } from 'solid-js';
 import Config from '../config'
 
 const getYtUrl = async (videoId:string) =>
-  (await fetch(
-    `${Config.serverProto}://${Config.serverIp}:${Config.serverPort}`+
-    `/yturl?v=${videoId}`)
-  ).text()
+  (await fetch(`${Config.serverUrl}/yturl?v=${videoId}`)).text()
 
 
 const Current  = (props: {videoId: string}) => {

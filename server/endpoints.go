@@ -44,7 +44,8 @@ func GetYtUrl(w http.ResponseWriter, r *http.Request){
 // GET   /yt/<playlist id>
 func GetYtPlaylist(w http.ResponseWriter, r *http.Request) {
 	input_regex := regexp.MustCompile(ALLOWED_STRS)
-	if playlist_id := filepath.Base(r.URL.Path); input_regex.Match([]byte(playlist_id)) {
+  playlist_id := filepath.Base(r.URL.Path)
+	if input_regex.Match([]byte(playlist_id)) {
 
 		yt_tracks := fetch_yt_playlist(playlist_id)
 

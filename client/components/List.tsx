@@ -33,8 +33,8 @@ const List = (props: {
 
         props.setActiveList(props.listType) 
 
-        props.setSelected(0)
         props.setPlayingIdx(0)
+        props.setSelected(0)
       }}>
       {MEDIA_TITLES[props.listType]}
     </h3>

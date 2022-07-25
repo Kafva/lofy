@@ -1,16 +1,16 @@
 import { LocalTrack, YtTrack, Track } from './types';
-import Config, { Log, MediaListType, MEDIA_LISTS } from './config';
+import Config, { Err, Log, MediaListType, MEDIA_LISTS } from './config';
 
 const initFetchCache = (mediaList: MediaListType): Map<string,Track[]> => {
   let mediaListNames = [];
   if (mediaList == MediaListType.YouTube) {
     mediaListNames = 
       MEDIA_LISTS[mediaList].map( (el:HTMLLIElement) => 
-                                 el.getAttribute("data-id")!.toString())
+        el.getAttribute("data-id")?.toString())
   } else {
     mediaListNames = 
       MEDIA_LISTS[mediaList].map( (el:HTMLLIElement) => 
-                                 el.innerHTML?.toString() )
+        el.innerHTML?.toString() )
   }
 
   const nameMapping = new Map<string, Track[]>()
@@ -29,12 +29,10 @@ const FETCH_CACHE = {
 }
 
 const endpointFetch = async (
- endpoint: string, 
- mediaName: string, 
- typing: MediaListType): Promise<Track[]> => {
+  endpoint: string, 
+  mediaName: string, 
+  typing: MediaListType): Promise<Track[]> => {
   let tracks = <Track[]>[]
-  const baseUrl = 
-      `${Config.serverProto}://${Config.serverIp}:${Config.serverPort}`
 
   const cachedList = FETCH_CACHE[typing].get(mediaName)
 
@@ -46,18 +44,16 @@ const endpointFetch = async (
     try {
       Log(`Fetching data for ${mediaName}`)
       const data = await 
-        (await fetch(`${baseUrl}/${endpoint}/${mediaName}`)).json()
+      (await fetch(`${Config.serverUrl}/${endpoint}/${mediaName}`)).json()
       if ('tracks' in data) {
         // Save the fetched data into the cache
         tracks = data['tracks']
         FETCH_CACHE[typing].set(mediaName, tracks)
       } else {
-        console.error(
-          `Missing tracks in response: '${endpoint}/${mediaName}'\n`
-        )
+        Err(`Missing tracks in response: '${endpoint}/${mediaName}'\n`)
       }
     } catch (e: any) {
-      console.error(`Failed to fetch: '${endpoint}/${mediaName}'\n`, e)
+      Err(`Failed to fetch: '${endpoint}/${mediaName}'\n`, e)
     } 
   }
   return tracks
@@ -67,8 +63,8 @@ const endpointFetch = async (
  * Fetch metadata about the given media list
  */
 const FetchMediaList = async (
- mediaName: string, 
- typing: MediaListType): Promise<Track[]> => {
+  mediaName: string, 
+  typing: MediaListType): Promise<Track[]> => {
   switch (typing) {
   case MediaListType.LocalPlaylist:
     return endpointFetch("meta/playlist", mediaName, typing) as 

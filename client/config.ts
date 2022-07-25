@@ -1,9 +1,10 @@
 const DEBUG = true
 
 class Config {
-  static readonly serverProto = "http"
-  static readonly serverIp = "127.0.0.1";
-  static readonly serverPort = 20111;
+  static readonly serverUrl = "http://127.0.0.1:20111"
+
+  static readonly volumeStep = 0.05;
+  static readonly defaultVolume = 0.2;
 }
 
 enum MediaListType {
@@ -43,6 +44,10 @@ const Log = (...args: any) => {
   }
 }
 
-export {MEDIA_LISTS, LIST_TYPES, MEDIA_TITLES, MediaListType, Log}
+const Err = (...args: any) => {
+  console.log("%c ERROR ", 'background: #ed493e; color: #f5e4f3', ...args)
+}
+
+export {MEDIA_LISTS, LIST_TYPES, MEDIA_TITLES, MediaListType, Log, Err}
 export default Config;
 
