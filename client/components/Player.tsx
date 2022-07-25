@@ -46,6 +46,18 @@ const Player = (props: {
 
   const [volume,setVolume] = createSignal(Config.defaultVolume)
 
+  // <audio controls preload="auto" src={ audioUrl() || "" }/>
+  let audio: HTMLAudioElement;  //<audio controls preload="auto"/> as HTMLAudioElement;
+
+
+
+  onMount( () => {
+
+    getAudioSource(props.track).then( s => audio.src = s )
+
+  })
+
+  //const [audioUrl]         = createResource(props.track, getAudioSource)
   //createEffect( () => {
   //  const [audioUrl]         = createResource(props.track, getAudioSource)
   //})
@@ -93,7 +105,7 @@ const Player = (props: {
       </nav>
     </Portal>
 
-    <audio controls preload="auto" src="???"/>
+    <audio controls preload="auto" ref={audio}/>
     
   </>);
 };

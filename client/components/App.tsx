@@ -1,10 +1,11 @@
 import { createSignal, Index, createEffect } from 'solid-js';
+import { createStore } from "solid-js/store";
 import List from './List';
 import Tracks from './Tracks';
 import Player from './Player';
 import { MediaListType, LIST_TYPES, MEDIA_LISTS } from '../config'
 import { FetchMediaList } from '../fetch';
-import { EmptyTrack } from '../types';
+import { EmptyTrack, Track } from '../types';
 
 const App = () => {
   // Flag to determine the active media list
@@ -14,7 +15,7 @@ const App = () => {
   const [selected,setSelected] = createSignal(0)
 
   // Array with all of the tracks in the current list
-  const [currentList,setCurrentList] = createSignal([]) 
+  const [currentList,setCurrentList] = createStore([]) 
 
   // The currently playing track in the current list
   const [playingIdx,setPlayingIdx] = createSignal(0)
@@ -57,7 +58,7 @@ const App = () => {
 
     <Tracks 
       activeList={activeList()} 
-      currentList={currentList()}
+      currentList={currentList}
 
       playingIdx={playingIdx()} 
       setPlayingIdx={(s:number)=>setPlayingIdx(s)}
@@ -65,8 +66,8 @@ const App = () => {
 
 
     <Player
-      track={ currentList()[playingIdx()] !== undefined ?
-        currentList()[playingIdx()] :
+      track={ currentList[playingIdx()] !== undefined ?
+        currentList[playingIdx()] :
         EmptyTrack()
       }
       playingIdx={playingIdx()} 
