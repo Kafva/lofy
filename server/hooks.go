@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -33,7 +34,7 @@ func DisableDirListings(next http.Handler) http.Handler {
 func TemplateHook(next http.Handler) http.Handler {
   return http.HandlerFunc( func(w http.ResponseWriter, r *http.Request) {
     if filepath.Base(r.URL.Path) == "index.html" {
-			// We need to use the version of `index.html` under `dist` that 
+			// We need to use the version of `index.html` under `dist` that
 			// has paths resolved by Vite
 			var tmpl = template.Must(template.ParseFiles(WEBROOT_DIR+"/index.html"))
 
@@ -49,7 +50,37 @@ func TemplateHook(next http.Handler) http.Handler {
   })
 }
 
-// Return a list of all playlists defined in `YT_PLAYLIST_FILE` 
+// The endpoint accepts requests with an album id
+//		GET /audio/<album>/<album id>
+// the album_id is translated into a corresponding filename
+// and passed on to a `FileServer` handler for the response
+func TranslateIndexToFilename(next http.Handler) http.Handler {
+	return http.HandlerFunc( func(w http.ResponseWriter, r *http.Request) {
+		//== Parameter validation ==//
+		album, idx, _ :=
+			strings.Cut(strings.TrimPrefix(r.URL.Path, "/audio/"), "/")
+
+		album_regex 	   := regexp.MustCompile(ALBUM_NAME_REGEX)
+		album_index,err  := strconv.Atoi(idx)
+
+		if err != nil {
+			return;  // Non-numeric album id
+		}
+		if !album_regex.Match([]byte(album)) {
+			return; // Invalid album name
+		}
+
+		filename :=
+			album_id_to_filename(album_index, TranslateTilde(ALBUM_DIR+"/"+album))
+
+		// Update the request path and forward the request to the `FileServer`
+		r.URL.Path = album+"/"+filename
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		next.ServeHTTP(w, r)
+	})
+}
+
+// Return a list of all playlists defined in `YT_PLAYLIST_FILE`
 func get_yt_playlists() []YtPlaylist  {
 	playlists := make([]YtPlaylist,0,YT_MAX_PLAYLIST_CNT)
 	f, err := os.Open(TranslateTilde(YT_PLAYLIST_FILE))
@@ -59,7 +90,7 @@ func get_yt_playlists() []YtPlaylist  {
 
 		line:=1
 		for scanner.Scan() {
-			split := strings.Split(scanner.Text(), ";") 
+			split := strings.Split(scanner.Text(), ";")
 			if len(split)!=2 {
 				Die("Invalid format of '"+YT_PLAYLIST_FILE+"', line "+strconv.Itoa(line))
 			}
@@ -96,9 +127,9 @@ func get_local_playlists(path string) []string {
   playlist_names := make([]string, 0, MAX_PLAYLIST_CNT)
   if playlists, err := os.ReadDir(TranslateTilde(path)); err==nil {
     for _,playlist := range playlists {
-      if !playlist.IsDir() && 
+      if !playlist.IsDir() &&
 			 strings.HasSuffix(playlist.Name(),"."+PLAYLIST_EXT) {
-        playlist_names = append(playlist_names, 
+        playlist_names = append(playlist_names,
 					strings.TrimSuffix(playlist.Name(), "."+PLAYLIST_EXT),
 				)
       }

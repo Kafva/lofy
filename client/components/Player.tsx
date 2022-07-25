@@ -49,12 +49,9 @@ const Player = (props: {
   // <audio controls preload="auto" src={ audioUrl() || "" }/>
   let audio: HTMLAudioElement;  //<audio controls preload="auto"/> as HTMLAudioElement;
 
-
-
-  onMount( () => {
-
-    getAudioSource(props.track).then( s => audio.src = s )
-
+  // TODO: Maybe this runs to often?
+  createEffect( () => {
+    getAudioSource(props.track).then(s => audio.src = s)
   })
 
   //const [audioUrl]         = createResource(props.track, getAudioSource)

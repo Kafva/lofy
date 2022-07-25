@@ -19,7 +19,7 @@ func main(){
 
   audio_root := http.FileServer(http.Dir(TranslateTilde(ALBUM_DIR)))
   http.Handle("/audio/",
-    http.StripPrefix("/audio", DisableDirListings(audio_root),
+			TranslateIndexToFilename(DisableDirListings(audio_root),
   ))
 
   // Endpoints with a trailing slash accept subpaths
