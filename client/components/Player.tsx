@@ -1,17 +1,23 @@
-import { createEffect, createResource, createSignal, lazy, onMount, Setter } from 'solid-js';
+import { createEffect, createSignal, Setter } from 'solid-js';
 import { Portal } from 'solid-js/web';
-import Config, { Err } from '../config';
+import Config, { Err, Log } from '../config';
 import { Track, LocalTrack, YtTrack } from '../types';
 
+/**
+ * The source for the audio element can be determined for local resources
+ * using the `Track.AlbumFS` and `Track.AlbumId` attributes.
+ * For YouTube resources a request to the server 
+ * that determine the audio source is needed
+ */
 const getAudioSource = async (track: Track): Promise<string> => {
-  if ('AlbumFS' in track) { // Local files
-    const localTrack = track as LocalTrack
-    return (await fetch(
-      `${Config.serverUrl}/audio/${localTrack.AlbumFS}/${localTrack.AlbumId}`))
-      .text()
+  if ('AlbumFS' in track) { // Local files (no async required)
+    const l = track as LocalTrack
+    Log(`Setting audio source: ${l.Title}`)
+    return `${Config.serverUrl}/audio/${l.AlbumFS}/${l.AlbumId}`
   } else if ('TrackId' in track) { // YouTube
-    const ytTrack = track as YtTrack
-    return (await fetch(`${Config.serverUrl}/yturl/${ytTrack.TrackId}`)).text()
+    const y = track as YtTrack
+    Log(`Setting audio source: ${y.Title}`)
+    return (await fetch(`${Config.serverUrl}/yturl/${y.TrackId}`)).text()
   } else {
     Err(`No source available for current track: '${track.Title}'`)
     return ""
@@ -26,14 +32,6 @@ const changeVolume = (
   }
 }
 
-//const Audio = (track: Track) => {}
-//const Lazy = lazy(async () => {
-//
-//
-//  return Audio
-//})
-
-
 /**
  * Holds the actual <audio> element used to play a track
  * and all the buttons for controlling playback
@@ -43,29 +41,19 @@ const Player = (props: {
   playingIdx: number,
   setPlayingIdx: (arg0: number) => any
 }) => {
-
   const [volume,setVolume] = createSignal(Config.defaultVolume)
 
   // <audio controls preload="auto" src={ audioUrl() || "" }/>
   let audio: HTMLAudioElement;  //<audio controls preload="auto"/> as HTMLAudioElement;
 
-  // TODO: Maybe this runs to often?
+  // Update the audio source whenever the track changes
+  // `createEffect()` is triggered (to my understanding) whenever
+  // reactive components inside the function are modified, i.e. track in this case.
   createEffect( () => {
     getAudioSource(props.track).then(s => audio.src = s)
   })
 
-  //const [audioUrl]         = createResource(props.track, getAudioSource)
-  //createEffect( () => {
-  //  const [audioUrl]         = createResource(props.track, getAudioSource)
-  //})
-
   // TODO: Metadata player API
-
-  // The source for the audio element can be determined for local resources
-  // using the `Track.AlbumFS` and `Track.AlbumId` attributes.
-  //
-  // For YouTube resources a request to the server 
-  // that deteremine the audio source is needed
 
   // <Portal> components will be inserted as direct children of the <body>
   // rather than the #root element
@@ -103,7 +91,6 @@ const Player = (props: {
     </Portal>
 
     <audio controls preload="auto" ref={audio}/>
-    
   </>);
 };
 
