@@ -96,11 +96,13 @@ const Player = (props: {
           class={ audio.paused ? "nf nf-fa-play" : "nf nf-fa-pause" }
           onClick={ () => {
             //class="nf nf-fa-play"
-            //const audio = document.querySelector("audio") as HTMLAudioElement
+            const el = document.querySelector("audio") as HTMLAudioElement
             if (audio.paused) {
               audio.play()
+              el.setAttribute("class", "nf nf-fa-pause")
             } else {
               audio.pause()
+              el.setAttribute("class", "nf nf-fa-play")
             }
           }}/>
         <span role="button" class="nf nf-mdi-skip_next"/>
