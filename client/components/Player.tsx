@@ -1,4 +1,4 @@
-import { createSignal, Setter } from 'solid-js';
+import { createEffect, createResource, createSignal, lazy, onMount, Setter } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import Config, { Err } from '../config';
 import { Track, LocalTrack, YtTrack } from '../types';
@@ -6,13 +6,12 @@ import { Track, LocalTrack, YtTrack } from '../types';
 const getAudioSource = async (track: Track): Promise<string> => {
   if ('AlbumFS' in track) { // Local files
     const localTrack = track as LocalTrack
-    (await fetch(
+    return (await fetch(
       `${Config.serverUrl}/audio/${localTrack.AlbumFS}/${localTrack.AlbumId}`))
       .text()
-
-  //  } else if ('AudioUrl' in track) { // YouTube
-  //    (await fetch(`${Config.serverUrl}/yturl?v=${track.Album}`)).text()
-  //
+  } else if ('TrackId' in track) { // YouTube
+    const ytTrack = track as YtTrack
+    return (await fetch(`${Config.serverUrl}/yturl/${ytTrack.TrackId}`)).text()
   } else {
     Err(`No source available for current track: '${track.Title}'`)
     return ""
@@ -27,6 +26,14 @@ const changeVolume = (
   }
 }
 
+//const Audio = (track: Track) => {}
+//const Lazy = lazy(async () => {
+//
+//
+//  return Audio
+//})
+
+
 /**
  * Holds the actual <audio> element used to play a track
  * and all the buttons for controlling playback
@@ -39,6 +46,9 @@ const Player = (props: {
 
   const [volume,setVolume] = createSignal(Config.defaultVolume)
 
+  //createEffect( () => {
+  //  const [audioUrl]         = createResource(props.track, getAudioSource)
+  //})
 
   // TODO: Metadata player API
 

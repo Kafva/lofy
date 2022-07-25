@@ -19,15 +19,17 @@ import (
 // The video ID should be passed in `?v`
 // If no video was found or a server side error occurred
 // an empty response is returned.
+//  GET   /yturl/<video id>
 func GetYtUrl(w http.ResponseWriter, r *http.Request){
   w.Header().Set("Access-Control-Allow-Origin", "*")
   //== Input validation ==//
   input_regex := regexp.MustCompile(ALLOWED_STRS)
+  video_id := filepath.Base(r.URL.Path)
 
-  if video := r.URL.Query().Get("v"); input_regex.MatchString(video) {
-    Debug("Fetching YouTube URL for: "+video)
+  if input_regex.MatchString(video_id) {
+    Debug("Fetching YouTube URL for: "+video_id)
 		yt_track := NewYtTrack()
-		yt_track.FetchYtUrl(video)
+		yt_track.FetchYtUrl(video_id)
 
 		w.Header().Set("Content-Type", "text/plain")
     w.Write([]byte(yt_track.AudioUrl))
@@ -41,7 +43,7 @@ func GetYtUrl(w http.ResponseWriter, r *http.Request){
 // Fetch an array of the `YtTrack` objects for a given playlist
 // since yt-dlp does not return paged resutlts, we only need to perform one
 // request
-// GET   /yt/<playlist id>
+//  GET   /yt/<playlist id>
 func GetYtPlaylist(w http.ResponseWriter, r *http.Request) {
 	input_regex := regexp.MustCompile(ALLOWED_STRS)
   playlist_id := filepath.Base(r.URL.Path)
@@ -83,6 +85,7 @@ func fetch_yt_playlist(playlist_id string) []YtTrack {
 						Album: 		gjson.Get(out_str, idx+".playlist").String(),
 						Duration: int(gjson.Get(out_str, idx+".duration").Int()),
 					},
+					TrackId:    gjson.Get(out_str, idx+".id").String(),
 					ArtworkUrl: gjson.Get(out_str, idx+".thumbnails.2.url").String(),
 					AudioUrl: "",
 				})

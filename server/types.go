@@ -39,6 +39,8 @@ type LocalTrack struct {
 
 type YtTrack struct {
 	Track
+	// The video hash
+	TrackId string
 	// The data url which can be placed in the `src` of
 	// and <audio> element
 	AudioUrl string
@@ -76,6 +78,7 @@ func NewLocalTrack() LocalTrack {
 func NewYtTrack() YtTrack {
 	return YtTrack {
 		Track: NewTrack(),
+		TrackId: "",
 		AudioUrl: "",
 		ArtworkUrl: "",
 	}

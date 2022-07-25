@@ -28,6 +28,7 @@ const List = (props: {
         // Auto-select the first entry of a list when switching to it
         // To avoid an intermediary state where we fetch data for the 0th
         // entry of the current list we set the selection to -1 temporarily
+        // TODO: this does not reset the playlist index...
         props.setPlayingIdx(-1)
         props.setSelected(-1)
 

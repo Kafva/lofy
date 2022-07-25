@@ -11,6 +11,7 @@ interface LocalTrack extends Track {
 }
 
 interface YtTrack extends Track {
+  TrackId: string
 	AudioUrl: string
 	ArtworkUrl: string
 }
