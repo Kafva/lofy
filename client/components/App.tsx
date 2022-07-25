@@ -11,11 +11,16 @@ const App = () => {
   // Flag to determine the selected index in the current list
   const [selected,setSelected] = createSignal(0)
 
+  // Array with all of the tracks in the current list
   const [currentList,setCurrentList] = createSignal([]) 
 
+  // The currently playing track in the current list
+  const [playingIdx,setPlayingIdx] = createSignal(0)
+
   createEffect( () => {
-    if (selected() >= 0) {
-      // Skip calls to `FetchMediaList` if `selected` is set to -1
+    if (selected() >= 0 && playingIdx() >= 0) {
+      // Skip calls to `FetchMediaList` if the `selected()` 
+      // list or track is set to -1
       const el = MEDIA_LISTS[activeList()][selected()]
       const mediaName = activeList() == MediaListType.YouTube ? 
         el.getAttribute("data-id") :  el.innerHTML 
@@ -33,7 +38,7 @@ const App = () => {
   // to use <Index> in this case.
   return (<>
     <Index each={LIST_TYPES}>{(listType) =>
-      // We can pass the setter function to a child as a normal prop
+      // We can pass the setter function to a child as in `props`
       <List 
         listType={listType()}
 
@@ -42,13 +47,16 @@ const App = () => {
 
         selected={selected()}
         setSelected={(s:MediaListType)=>setSelected(s)}
+        setPlayingIdx={(s:number)=>setPlayingIdx(s)}
       />
     }</Index>
 
-    <Tracks activeList={activeList()} 
-      selected={selected()} 
-      setSelected={(s:number)=> setSelected(s)} 
+    <Tracks 
+      activeList={activeList()} 
       currentList={currentList()}
+
+      playingIdx={playingIdx()} 
+      setPlayingIdx={(s:number)=>setPlayingIdx(s)}
     />
   </>)
 };

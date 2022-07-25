@@ -39,7 +39,7 @@ const MEDIA_TITLES = Object.freeze({
 
 const Log = (...args: any) => {
   if (DEBUG) {
-    console.log(...args)
+    console.log("%c DEBUG ", 'background: #2b71e0; color: #f5e4f3', ...args)
   }
 }
 

@@ -1,4 +1,4 @@
-import { createSignal, Index } from 'solid-js';
+import { Index } from 'solid-js';
 import { MediaListType } from '../config';
 import { Track } from '../types';
 
@@ -20,25 +20,20 @@ const TrackItem = (props: {
 };
 
 
-const Player = (props: {
-}) => {
-
-
-};
-
 /**
 * The `Tracks` component will fetch Tracks from the server
 * based on a provided the currently selected item
 */
 const Tracks = (props: {
   activeList: MediaListType,
-  currentList: Track[]
+  currentList: Track[],
+
+  playingIdx: number,
+  setPlayingIdx: (arg0: number) => any
 }) => {
 
-  const [playingIdx,setPlayingIdx] = createSignal(0)
-
   return (<>
-    <p>{ "Current tracks: "+ props.activeList+" " }</p>
+    <p>{ "Currently playing: "+ props.activeList+" " }</p>
     <table>
       <thead>
         <th class="nf nf-fa-circle_o_notch"/>
@@ -51,8 +46,8 @@ const Tracks = (props: {
         <Index each={props.currentList}>{(item,i) =>
           <TrackItem track={item()} 
             trackIdx={i}
-            playingIdx={playingIdx()} 
-            setPlayingIdx={(s:number)=>setPlayingIdx(s)}
+            playingIdx={props.playingIdx} 
+            setPlayingIdx={props.setPlayingIdx}
           />
         }
         </Index>

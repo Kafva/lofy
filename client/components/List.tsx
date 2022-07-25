@@ -14,6 +14,9 @@ const List = (props: {
 
   selected: number,
   setSelected: (arg0: number) => any,
+
+  setPlayingIdx: (arg0: number) => any
+
 }) => {
   // Note that `item` needs to be called when using <Index> and `i` needs
   // to be called for <For> components.
@@ -25,9 +28,13 @@ const List = (props: {
         // Auto-select the first entry of a list when switching to it
         // To avoid an intermediary state where we fetch data for the 0th
         // entry of the current list we set the selection to -1 temporarily
+        props.setPlayingIdx(-1)
         props.setSelected(-1)
+
         props.setActiveList(props.listType) 
+
         props.setSelected(0)
+        props.setPlayingIdx(0)
       }}>
       {MEDIA_TITLES[props.listType]}
     </h3>
