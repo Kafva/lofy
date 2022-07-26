@@ -33,7 +33,6 @@ const Tracks = (props: {
 }) => {
 
   return (<>
-    <p>{ "Currently playing: "+ props.activeList+" " }</p>
     <table>
       <thead>
         <th class="nf nf-fa-circle_o_notch"/>

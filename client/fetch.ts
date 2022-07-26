@@ -32,22 +32,29 @@ const endpointFetch = async (
   endpoint: string, 
   mediaName: string, 
   typing: MediaListType): Promise<Track[]> => {
-  let tracks = <Track[]>[]
   const cachedList = FETCH_CACHE[typing].get(mediaName)
 
   if (cachedList!==undefined && cachedList.length > 0) {
     // Return cached data if possible
     // Log(`Returning cached data for ${mediaName}`)
-    tracks = cachedList 
+    return cachedList 
   } else {
     try {
       Log(`Fetching data for ${mediaName}`)
       const data = await 
       (await fetch(`${Config.serverUrl}/${endpoint}/${mediaName}`)).json()
       if ('tracks' in data) {
+        const tracks = data['tracks']
+
+        if (endpoint.startsWith("meta")) {
+          // Sort the tracks based on the album id
+          tracks.sort((a:Track,b:Track) => 
+            (a as LocalTrack).AlbumId - (b as LocalTrack).AlbumId
+          )
+        }
         // Save the fetched data into the cache
-        tracks = data['tracks']
         FETCH_CACHE[typing].set(mediaName, tracks)
+        return tracks
       } else {
         Err(`Missing tracks in response: '${endpoint}/${mediaName}'\n`)
       }
@@ -55,7 +62,7 @@ const endpointFetch = async (
       Err(`Failed to fetch: '${endpoint}/${mediaName}'\n`, e)
     } 
   }
-  return tracks
+  return <Track[]>[]
 }
 
 /**
