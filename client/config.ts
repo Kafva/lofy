@@ -4,7 +4,7 @@ class Config {
   static readonly serverUrl = "http://127.0.0.1:20111"
 
   static readonly volumeStep = 0.05;
-  static readonly defaultVolume = 0.2;
+  static readonly defaultVolume = 1.0;
 
   static readonly seekStepSec = 5;
 

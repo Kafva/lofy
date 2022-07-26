@@ -16,8 +16,6 @@ const setNavigatorMetadata = (track: Track, imageSrc: string) => {
       src: imageSrc,
       sizes: "0x0",
       type: "image/png"
-      //sizes: `${props.track.cover.width || 0}x${props.track.cover.height || 0}`,
-      //type: `image/${props.track.cover.type || 'png'}`
     }]
   });
 }
@@ -51,9 +49,10 @@ const changeVolume = (
   newVolume: number,
   audio: HTMLAudioElement,
   setVolume: (arg0: number) => Setter<number>) => {
-  if (0 <= newVolume && newVolume <= 1) {
-    setVolume(newVolume)
-    audio.volume = newVolume
+  const rounded = Math.round(newVolume*100)/100
+  if (0.0 <= rounded && rounded <= 1.0) {
+    setVolume(rounded)
+    audio.volume = rounded
   }
 }
 
@@ -68,7 +67,6 @@ const queryClick = (selector: string) =>
  *  https://github.com/solidjs-community/solid-primitives/tree/main/packages/keyboard
  */
 const shortcutHandler = (e:KeyboardEvent) => {
-  Log(e);
   if (e.shiftKey) { // <Shift> bindings
     switch (e.key) {
     case Config.volumeUpKey:
@@ -117,20 +115,11 @@ const Player = (props: {
   playingIdx: number,
   setPlayingIdx: (arg0: number) => any
 }) => {
-  // Alternati
   let audio: HTMLAudioElement;
 
   const [volume,setVolume] = createSignal(Config.defaultVolume)
-  const [isPlaying,setIsPlaying] = createSignal(false)
+  const [isPlaying,setIsPlaying] = createSignal(true)
   const [currentTime,setCurrentTime] = createSignal(0)
-
-  // Update the `currentTime` every second based on the current time
-  // of the <audio> element
-  const trackProgression = setInterval(() => {
-    if (audio !== undefined && audio.currentTime <= props.track.Duration) {
-      setCurrentTime(audio.currentTime + 1), 1000
-    }
-  });
 
   // Update the audio source whenever the track changes
   // `createEffect()` is triggered (to my understanding) whenever
@@ -152,13 +141,29 @@ const Player = (props: {
     // Since we never unload the Player, the clean up function never runs
     Log("Running <Player> clean up")
     window.removeEventListener.bind(window, "keydown", shortcutHandler)
-    clearInterval(trackProgression)
   });
 
   // <Portal> components will be inserted as direct children of the <body>
   // rather than the #root element
   return (<>
-    <audio controls autoplay preload="auto" ref={audio}/>
+    <audio hidden autoplay preload="auto" ref={audio}
+      onTimeUpdate= {() => {
+        // Update the `currentTime` every second based on the current time
+        // of the <audio> element
+        if (audio.currentTime <= props.track.Duration) {
+          setCurrentTime(audio.currentTime + 1)
+        }
+      }}
+      onEnded={ () => {
+        if (props.playingIdx+1 >= props.trackCount) {
+          props.setPlayingIdx(0) // Wrap around for last track
+        } else {
+          props.setPlayingIdx(props.playingIdx+1)
+        }
+        setCurrentTime(0)
+        setIsPlaying(true)
+      }}
+    />
 
     <Portal>
       <nav>
@@ -179,8 +184,9 @@ const Player = (props: {
           class="nf nf-mdi-skip_previous"
           onClick={ () => {
             if (props.playingIdx-1 >= 0) {
-              props.setPlayingIdx(props.playingIdx+1)
+              props.setPlayingIdx(props.playingIdx-1)
               setCurrentTime(0)
+              setIsPlaying(true)
             }
           }}
         />
@@ -204,6 +210,7 @@ const Player = (props: {
               props.setPlayingIdx(props.playingIdx+1)
             }
             setCurrentTime(0)
+            setIsPlaying(true)
           }}
         />
 

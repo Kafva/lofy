@@ -191,13 +191,40 @@ func GetLocalMetadata(w http.ResponseWriter, r *http.Request){
 	tracks_channel := make(chan LocalTrack, len(track_paths))
 	tracks         := make([]LocalTrack, len(track_paths), len(track_paths))
 
-	// To ensure that we send a canonical album ID, sort the track paths
-	sort.Strings(track_paths)
+  switch endpoint {
+    case "playlist":
+      // To give each Track a correct AlbumId in a playlist we need to
+      // determine the album index of each file within an album
+      //
+      // We want the order of the playlist to be maintained
+      ordered :=  make([]string, len(track_paths), len(track_paths))
+      for i,track := range track_paths {
+        ordered[i] = track
+      }
+      sort.Strings(track_paths)
 
-	for i,p := range track_paths {
-		go get_file_metadata(p, i, tracks_channel)
-	}
+      album_id_map := make(map[string]int)
 
+      current_album := "" 
+      for i,track_path := range track_paths {
+        // Extract the album id upon the first encounter of a new album.
+        if current_album != filepath.Dir(track_path) {
+          current_album = filepath.Dir(track_path)
+          album_ids_from_album(current_album, track_paths[i:], album_id_map)
+        }
+      }
+
+      for _,path := range ordered {
+        go get_file_metadata(path,  album_id_map[path], tracks_channel)
+      }
+    case "album":
+      // To ensure that we send a canonical album ID, sort the track paths
+      sort.Strings(track_paths)
+
+      for i,p := range track_paths {
+        go get_file_metadata(p, i, tracks_channel)
+      }
+  }
 	// Consume the data on the channel
 	for i:=0; i< len(track_paths); i++ {
 		tracks[i] = <- tracks_channel
@@ -207,6 +234,29 @@ func GetLocalMetadata(w http.ResponseWriter, r *http.Request){
 		"tracks": tracks, "last_page": last_page,
 	}
 	json.NewEncoder(w).Encode(res)
+}
+
+// Given an album directory and a list of tracks, add the corresponding AlbumId
+// for each track that belongs to the `album_dir` into the `album_id_map`
+// with the track path as the key.
+func album_ids_from_album(album_dir string, paths []string, album_id_map map[string]int) {
+	if entries, err := os.ReadDir(album_dir); err==nil {
+		files := FsFilter(entries, false)
+    // Sort by filename
+    sort.Slice(files, func(i,j int) bool {
+        return files[i].Name() < files[j].Name()
+    })
+    for _,path := range paths {
+      // Stop once a path outside the `album_dir` is encountered
+      if !strings.HasPrefix(path, album_dir) { break; }
+
+      for album_idx,file := range files {
+          if file.Name() == filepath.Base(path) {
+            album_id_map[path] = album_idx
+          } 
+      }
+    }
+	}
 }
 
 // Determine if the file has a stream with an image (cover art)

@@ -4,6 +4,10 @@
 
 $primary-color: #bb92ac;
 
+h3 {
+  padding-top: 15px; 
+}
+
 div {
   color: $primary-color;
   position: absolute;
@@ -30,7 +34,10 @@ nav {
    height: fit-content;
    min-width: 50%;
    z-index: 10;
-    
+   top: 0;
+   left: 0;
+
+   background-color: #2f343f;
 }
 
 // Organize nav items in a horizontal list
