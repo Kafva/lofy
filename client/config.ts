@@ -4,7 +4,7 @@ class Config {
   static readonly serverUrl = "http://127.0.0.1:20111"
 
   static readonly volumeStep = 0.05;
-  static readonly defaultVolume = 1.0;
+  static readonly defaultVolume = 0.0;
 
   static readonly seekStepSec = 5;
 
@@ -58,11 +58,13 @@ const Log = (...args: any) => {
     console.log("%c DEBUG ", 'background: #2b71e0; color: #f5e4f3', ...args)
   }
 }
-
 const Err = (...args: any) => {
   console.log("%c ERROR ", 'background: #ed493e; color: #f5e4f3', ...args)
 }
+const Warn = (...args: any) => {
+  console.log("%c WARN ", 'background: #dbba00; color: #ffffff', ...args)
+}
 
-export {MEDIA_LISTS, LIST_TYPES, MEDIA_TITLES, MediaListType, Log, Err}
+export {MEDIA_LISTS, LIST_TYPES, MEDIA_TITLES, MediaListType, Log, Err, Warn}
 export default Config;
 

@@ -12,7 +12,7 @@ const App = () => {
   const [activeList,setActiveList] = createSignal(MediaListType.LocalPlaylist)
 
   // Flag to determine the selected index in the current list
-  const [selected,setSelected] = createSignal(0)
+  const [listIndex,setListIndex] = createSignal(0)
 
   // Array with all of the tracks in the current list
   const [currentList,setCurrentList] = createStore([]) 
@@ -20,18 +20,21 @@ const App = () => {
   // The currently playing track in the current list
   const [playingIdx,setPlayingIdx] = createSignal(0)
 
+  // Fetch metadata about a list whenever the listIndex() or activeList() changes
   createEffect( () => {
-    // TODO: Paging with <Suspense> loading
-    if (selected() >= 0 && playingIdx() >= 0) {
-      // Skip calls to `FetchMediaList` if the `selected()` 
-      // list or track is set to -1
-      const el = MEDIA_LISTS[activeList()][selected()]
+    if (listIndex() >= 0 ) {
+      const el = MEDIA_LISTS[activeList()][listIndex()]
       const mediaName = activeList() == MediaListType.YouTube ? 
         el.getAttribute("data-id") :  el.innerHTML 
     
       if (mediaName !== null && mediaName != "") {
         FetchMediaList(mediaName, activeList())
-          .then((t:Track[]) => setCurrentList(t))
+          .then((t:Track[]) => { 
+            setCurrentList(t) 
+            // Auto-select the first entry in the media list
+            // once content has finished loading
+            setPlayingIdx(0)
+          })
       }
     }
   })
@@ -50,8 +53,8 @@ const App = () => {
         activeList={activeList()}
         setActiveList={(s:MediaListType)=> setActiveList(s)}
 
-        selected={selected()}
-        setSelected={(s:MediaListType)=>setSelected(s)}
+        listIndex={listIndex()}
+        setListIndex={(s:MediaListType)=>setListIndex(s)}
         setPlayingIdx={(s:number)=>setPlayingIdx(s)}
       />
     }</Index>

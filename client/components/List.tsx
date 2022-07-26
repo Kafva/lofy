@@ -13,7 +13,7 @@ const List = (props: {
   setActiveList: (arg0: MediaListType) => any,
 
   selected: number,
-  setSelected: (arg0: number) => any,
+  setListIndex: (arg0: number) => any,
 
   setPlayingIdx: (arg0: number) => any
 
@@ -25,17 +25,16 @@ const List = (props: {
 
     <h3 role="menuitem"
       onClick={() => { 
-        // Auto-select the first entry of a list when switching to it
-        // To avoid an intermediary state where we fetch data for the 0th
-        // entry of the current list we set the selection to -1 temporarily
-        // TODO: this does not reset the playlist index...
+        // Changing the active list will trigger re-renders for both the <Tracks>
+        // and <Player>. We set the playingIdx and listIndex to invalid values
+        // before switching to avoid intermediary states where another song begins playing.
+        // The current approach is not perfect, each switch still has intermediary states
+        // but by waiting to call `setPlayingIdx(0)` this is not noticeable for the user.
         props.setPlayingIdx(-1)
-        props.setSelected(-1)
-
+        props.setListIndex(-1)
         props.setActiveList(props.listType) 
 
-        props.setPlayingIdx(0)
-        props.setSelected(0)
+        props.setListIndex(0)
       }}>
       {MEDIA_TITLES[props.listType]}
     </h3>
@@ -44,7 +43,7 @@ const List = (props: {
       <ul>
         <Index each={MEDIA_LISTS[props.listType]}>{ (item,i) =>
           <li role="menuitem"
-            onClick={ () => props.setSelected(i) }
+            onClick={ () => props.setListIndex(i) }
             data-id={item().getAttribute('data-id')}
             class={ props.selected == i ? "selected" : "" }>
             {item().innerHTML}

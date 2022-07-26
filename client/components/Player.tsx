@@ -1,11 +1,16 @@
 import { createEffect, createSignal, onCleanup, onMount, Setter } from 'solid-js';
 import { Portal } from 'solid-js/web';
-import Config, { Err, Log } from '../config';
+import Config, { Warn, Log } from '../config';
 import { Track, LocalTrack, YtTrack } from '../types';
+
+const queryClick = (selector: string) =>
+  (document.querySelector(selector) as HTMLSpanElement).click()
 
 /**
 * The `navigator` API generally works even if the `sizes` and `type`
 * are set to default values.
+* !! NOTE: This API is prone to break if another application that uses !!
+* !! the media key API (e.g. Spotify) is open                          !!
 */
 const setNavigatorMetadata = (track: Track, imageSrc: string) => {
   navigator.mediaSession.metadata = new MediaMetadata({
@@ -21,11 +26,11 @@ const setNavigatorMetadata = (track: Track, imageSrc: string) => {
 }
 
 /**
- * The source for the audio element can be determined for local resources
- * using the `Track.AlbumFS` and `Track.AlbumId` attributes.
- * For YouTube resources a request to the server
- * that determine the audio source is needed
- */
+* The source for the audio element can be determined for local resources
+* using the `Track.AlbumFS` and `Track.AlbumId` attributes.
+* For YouTube resources a request to the server
+* that determine the audio source is needed
+*/
 const getAudioSource = async (track: Track): Promise<string> => {
   if ('AlbumFS' in track) { // Local files (no async required)
     const l = track as LocalTrack
@@ -40,7 +45,7 @@ const getAudioSource = async (track: Track): Promise<string> => {
 
     return (await fetch(`${Config.serverUrl}/yturl/${y.TrackId}`)).text()
   } else {
-    Err(`No source available for current track: '${track.Title}'`)
+    Warn(`No source available for current track: '${track.Title}'`)
     return ""
   }
 }
@@ -56,16 +61,13 @@ const changeVolume = (
   }
 }
 
-const queryClick = (selector: string) =>
-  (document.querySelector(selector) as HTMLSpanElement).click()
-
 /**
- * To preserve reactivity we can NOT change the <audio> element directly,
- * we need to do all changes through the reactive API, this can be accomplished
- * through virtual keypresses that utilise the functionality in each `onClick`
- * Alternative helper library:
- *  https://github.com/solidjs-community/solid-primitives/tree/main/packages/keyboard
- */
+* To preserve reactivity we can NOT change the <audio> element directly,
+* we need to do all changes through the reactive API, this can be accomplished
+* through virtual keypresses that utilise the functionality in each `onClick`
+* Alternative helper library:
+*  https://github.com/solidjs-community/solid-primitives/tree/main/packages/keyboard
+*/
 const shortcutHandler = (e:KeyboardEvent) => {
   if (e.shiftKey) { // <Shift> bindings
     switch (e.key) {
@@ -104,11 +106,31 @@ const shortcutHandler = (e:KeyboardEvent) => {
 }
 
 /**
- * Holds the actual <audio> element used to play a track
- * and all the buttons for controlling playback
- * Alternative helper library:
- *  https://github.com/solidjs-community/solid-primitives/tree/main/packages/audio
- */
+* Hook up the media keys to interact with the UI through virtual click events
+*/
+const setupMediaHandlers = () => {
+  if ('mediaSession' in navigator) {
+    navigator.mediaSession.setActionHandler('play', () => { 
+      queryClick("span.nf-fa-pause,span.nf-fa-play")
+    });
+    navigator.mediaSession.setActionHandler('pause', () => { 
+      queryClick("span.nf-fa-pause,span.nf-fa-play")
+    });
+    navigator.mediaSession.setActionHandler('previoustrack', () => { 
+      queryClick("span.nf-mdi-skip_previous")
+    });
+    navigator.mediaSession.setActionHandler('nexttrack', () => { 
+      queryClick("span.nf-mdi-skip_next")
+    });
+  }
+}
+
+/**
+* Holds the actual <audio> element used to play a track
+* and all the buttons for controlling playback
+* Alternative helper library:
+*  https://github.com/solidjs-community/solid-primitives/tree/main/packages/audio
+*/
 const Player = (props: {
   track: Track,
   trackCount: number,
@@ -126,15 +148,18 @@ const Player = (props: {
   // reactive components inside the function are
   // modified, i.e. `track` in this case.
   createEffect( () => {
-    getAudioSource(props.track).then(s => audio.src = s)
+    getAudioSource(props.track).then(s => { 
+      audio.src = s 
+    })
   })
 
-  // Setup a global keyboard event listener
-  window.addEventListener("keydown", shortcutHandler);
-
-  // Initalise the <audio> with the desired default volume
   onMount( () => {
+    // Initalise the <audio> with the desired default volume
     audio.volume = volume()
+
+    // Setup a global keyboard event listener
+    window.addEventListener("keydown", shortcutHandler);
+    setupMediaHandlers()
   })
 
   onCleanup( () => {
