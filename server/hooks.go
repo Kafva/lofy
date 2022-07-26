@@ -88,9 +88,13 @@ func get_yt_playlists() []YtPlaylist  {
 		defer f.Close()
 		scanner := bufio.NewScanner(f)
 
-		line:=1
+		line:=0
 		for scanner.Scan() {
-			split := strings.Split(scanner.Text(), ";")
+			line++
+			text := scanner.Text()
+			if len(text) == 0 { continue } // Allow empty lines
+
+			split := strings.Split(text, ";")
 			if len(split)!=2 {
 				Die("Invalid format of '"+YT_PLAYLIST_FILE+"', line "+strconv.Itoa(line))
 			}
@@ -98,7 +102,6 @@ func get_yt_playlists() []YtPlaylist  {
 				DisplayName: strings.TrimSpace(split[0]),
 				Id: strings.TrimSpace(split[1]),
 			})
-			line++
 		}
 	} else {
 		Die("Failed to locate '" + YT_PLAYLIST_FILE+"'")
