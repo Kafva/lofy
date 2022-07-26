@@ -5,6 +5,21 @@ class Config {
 
   static readonly volumeStep = 0.05;
   static readonly defaultVolume = 0.2;
+
+  static readonly seekStepSec = 5;
+
+  // Keyboard shortcuts
+  static readonly pausePlayKey = ' ';
+
+  // With <Shift> modifier 
+  static readonly previousTrackKey = 'ArrowLeft';
+  static readonly nextTrackKey = 'ArrowRight';
+  static readonly volumeDownKey = 'ArrowDown';
+  static readonly volumeUpKey = 'ArrowUp';
+  static readonly seekBackKey = 'H';
+  static readonly seekForwardKey = 'L';
+  static readonly shuffleKey = 'S';
+  static readonly coverKey = 'F';
 }
 
 enum MediaListType {

@@ -70,6 +70,7 @@ const App = () => {
         currentList[playingIdx()] :
         EmptyTrack()
       }
+      trackCount={currentList.length}
       playingIdx={playingIdx()} 
       setPlayingIdx={(s:number)=>setPlayingIdx(s)}
     />
