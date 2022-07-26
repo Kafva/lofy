@@ -43,7 +43,7 @@ const ADDR = "127.0.0.1"
 //		the `<video id>` paramater to `/yturl`
 //		the subcommand parameter to `/meta`
 //		the `<playlist id>` parameter for `/meta`
-const ALLOWED_STRS = "^(?i)[-_0-9A-Z]{1,40}$";
+const ALLOWED_STRS = "^(?i)[-_0-9A-Z]{1,50}$";
 
 // Allowed characters for album names to:
 //		the `<name>` parameter of `/meta`

@@ -51,7 +51,7 @@ func GetYtPlaylist(w http.ResponseWriter, r *http.Request) {
 
 		yt_tracks := fetch_yt_playlist(playlist_id)
 
-    w.Header().Set("Access-Control-Allow-Origin", "*") 
+    w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Content-Type", "application/json")
 
 		res := map[string]interface{} { "tracks": yt_tracks }
@@ -91,6 +91,8 @@ func fetch_yt_playlist(playlist_id string) []YtTrack {
 				})
 			}
 			return yt_tracks
+		} else {
+				Warn("Failed to fetch metadata for YouTube playlist: ", playlist_id)
 		}
 		return []YtTrack{}
 }
@@ -149,7 +151,7 @@ func GetLocalMetadata(w http.ResponseWriter, r *http.Request){
 
 				for scanner.Scan() {
 					line := strings.TrimSpace(scanner.Text())
-					if !strings.HasPrefix("#", line) {
+					if !strings.HasPrefix("#", line) && len(line)!=0 {
 						// Skip '#' lines in a playlist
 						track_paths = append(track_paths, line)
 					}
@@ -196,16 +198,12 @@ func GetLocalMetadata(w http.ResponseWriter, r *http.Request){
       // To give each Track a correct AlbumId in a playlist we need to
       // determine the album index of each file within an album
       //
-      // We want the order of the playlist to be maintained
-      ordered :=  make([]string, len(track_paths), len(track_paths))
-      for i,track := range track_paths {
-        ordered[i] = track
-      }
+      // We want the order of the playlist to be maintained (FIXME)
       sort.Strings(track_paths)
 
       album_id_map := make(map[string]int)
 
-      current_album := "" 
+      current_album := ""
       for i,track_path := range track_paths {
         // Extract the album id upon the first encounter of a new album.
         if current_album != filepath.Dir(track_path) {
@@ -214,7 +212,7 @@ func GetLocalMetadata(w http.ResponseWriter, r *http.Request){
         }
       }
 
-      for _,path := range ordered {
+      for _,path := range track_paths {
         go get_file_metadata(path,  album_id_map[path], tracks_channel)
       }
     case "album":
@@ -253,7 +251,7 @@ func album_ids_from_album(album_dir string, paths []string, album_id_map map[str
       for album_idx,file := range files {
           if file.Name() == filepath.Base(path) {
             album_id_map[path] = album_idx
-          } 
+          }
       }
     }
 	}
@@ -296,7 +294,10 @@ func get_file_metadata(path string, id int, c chan LocalTrack) {
 			AlbumId: id,
     }
   } else {
-    c <- NewLocalTrack()
+		Err("Failed to read metadata for '"+ path +"': ", err)
+		track := NewLocalTrack()
+		track.Title = "ERROR reading: " + filepath.Base(path)
+    c <- track
   }
 }
 
