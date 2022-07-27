@@ -28,13 +28,28 @@ const App = () => {
         el.getAttribute("data-id") :  el.innerHTML 
     
       if (mediaName !== null && mediaName != "") {
-        FetchMediaList(mediaName, activeList())
-          .then((t:Track[]) => { 
-            setCurrentList(t) 
-            // Auto-select the first entry in the media list
-            // once content has finished loading
-            setPlayingIdx(0)
-          })
+        (async() => {
+          // Clear the current list before fetching new data
+          setCurrentList([])
+
+          let tracks: Track[] = []
+          let page = 1
+          let last_page = false
+
+          while (!last_page) {
+            // Incrementally fetch media until the last page of data is recieved
+            [tracks, last_page] = await FetchMediaList(mediaName, page, activeList())
+
+            setCurrentList([...currentList,...tracks]) 
+
+            if (page == 1) {
+              // Auto-select the first entry in the media list
+              // once the first page has loaded 
+              setPlayingIdx(0)
+            }
+            page++
+          }
+        })();
       }
     }
   })

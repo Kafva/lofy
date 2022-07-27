@@ -4,7 +4,7 @@ import { MEDIA_TITLES, MEDIA_LISTS, MediaListType } from '../config'
 /**
 * The media lists need reactivity so that we can keep
 * track of which playlist and which item in a playlist is currently
-* selected and update the UI accordingly
+* listIndex and update the UI accordingly
 */
 const List = (props: {
   listType: MediaListType,
@@ -12,7 +12,7 @@ const List = (props: {
   activeList: MediaListType,
   setActiveList: (arg0: MediaListType) => any,
 
-  selected: number,
+  listIndex: number,
   setListIndex: (arg0: number) => any,
 
   setPlayingIdx: (arg0: number) => any
@@ -22,7 +22,6 @@ const List = (props: {
   // to be called for <For> components.
   // We use `role` to make elements clickable with Vimium
   return (<>
-
     <h3 role="menuitem"
       onClick={() => { 
         // Changing the active list will trigger re-renders for both the <Tracks>
@@ -45,7 +44,7 @@ const List = (props: {
           <li role="menuitem"
             onClick={ () => props.setListIndex(i) }
             data-id={item().getAttribute('data-id')}
-            class={ props.selected == i ? "selected" : "" }>
+            class={ props.listIndex == i ? "selected" : "" }>
             {item().innerHTML}
           </li>
         }

@@ -36,13 +36,13 @@ func GetYtUrl(w http.ResponseWriter, r *http.Request){
 
   } else {
     Warn("Invalid YouTube video ID requested by " + r.RemoteAddr )
-    w.Write([]byte(""))
   }
 }
 
 // Fetch an array of the `YtTrack` objects for a given playlist
-// since yt-dlp does not return paged resutlts, we only need to perform one
-// request
+// since yt-dlp does not return paged results, we only need to perform one
+// request. We still return a `last_page` field to make client side parsing
+// consistent.
 //  GET   /yt/<playlist id>
 func GetYtPlaylist(w http.ResponseWriter, r *http.Request) {
 	input_regex := regexp.MustCompile(ALLOWED_STRS)
@@ -54,7 +54,7 @@ func GetYtPlaylist(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Content-Type", "application/json")
 
-		res := map[string]interface{} { "tracks": yt_tracks }
+    res := map[string]interface{} { "tracks": yt_tracks, "last_page": true }
 		json.NewEncoder(w).Encode(res)
 	}
 }
@@ -129,12 +129,14 @@ func GetLocalMetadata(w http.ResponseWriter, r *http.Request){
 
   page := 1
   if page_param := r.URL.Query().Get("page"); page_param != "" {
-    if page_as_int, err := strconv.Atoi(page_param); err == nil {
-      page = page_as_int
+    if req_page, err := strconv.Atoi(page_param); err == nil && req_page>0 {
+      page = req_page
     } else {
-      return; // Non-numeric input
+      return; // Negative,zero or non-numeric input 
     }
   }
+
+	Debug(r.RemoteAddr + " requested page " + strconv.Itoa(page) +" of "+ name)
 
   w.Header().Set("Access-Control-Allow-Origin", "*")
   w.Header().Set("Content-Type", "application/json")
@@ -195,10 +197,15 @@ func GetLocalMetadata(w http.ResponseWriter, r *http.Request){
 
   switch endpoint {
     case "playlist":
-      // To give each Track a correct AlbumId in a playlist we need to
+      // To give each Track a correct `AlbumId` in a playlist we need to
       // determine the album index of each file within an album
       //
-      // We want the order of the playlist to be maintained (FIXME)
+      // Note that the order of tracks in a playlist file will NOT be preserved
+      // on the client. The page division will always be the same but the order
+      // of tracks within a page is not enforced, to do this would require e.g.
+      // a `PlaylistId` field (which would make client side caching more
+      // compilicated since the same track could have different `PlaylistId`
+      // values)
       sort.Strings(track_paths)
 
       album_id_map := make(map[string]int)

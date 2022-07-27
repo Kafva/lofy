@@ -148,9 +148,11 @@ const Player = (props: {
   // reactive components inside the function are
   // modified, i.e. `track` in this case.
   createEffect( () => {
-    getAudioSource(props.track).then(s => { 
-      audio.src = s 
-    })
+    if (props.track !== undefined && props.track.Title != "") {
+      getAudioSource(props.track).then(s => { 
+        audio.src = s 
+      })
+    }
   })
 
   onMount( () => {
