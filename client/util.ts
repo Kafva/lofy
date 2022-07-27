@@ -1,7 +1,6 @@
 import { DEBUG, MEDIA_LISTS } from "./config"
 import { PlaylistEntry, MediaListType } from './types';
 
-
 const DisplayTime = (seconds: number): string => {
   const min =  Math.floor(seconds/60).toString().padStart(2,"0")
   const sec =  Math.floor(seconds%60).toString().padStart(2,"0")

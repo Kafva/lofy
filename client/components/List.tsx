@@ -1,5 +1,6 @@
 import { batch, Index, Show } from 'solid-js';
-import { MEDIA_TITLES, MEDIA_LISTS, MediaListType } from '../config'
+import { MEDIA_TITLES, MEDIA_LISTS } from '../config'
+import { MediaListType } from '../types';
 
 /**
 * The media lists need reactivity so that we can keep
@@ -47,6 +48,15 @@ const List = (props: {
             data-id={item().getAttribute('data-id')}
             class={ props.listIndex == i ? "selected" : "" }>
             {item().innerHTML}
+            <Show when={props.listType == MediaListType.YouTube}>
+              <a 
+                class="nf nf-mdi-link"
+                target="_blank"
+                href={
+                  `https://youtube.com/watch?list=${item().getAttribute('data-id')}`
+                }
+              />
+            </Show>
           </li>
         }
         </Index>

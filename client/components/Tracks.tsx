@@ -1,5 +1,5 @@
-import { Index } from 'solid-js';
-import { Track, MediaListType } from '../types';
+import { Index, Show } from 'solid-js';
+import { Track, MediaListType, YtTrack } from '../types';
 import { DisplayTime } from '../util';
 
 const TrackItem = (props: {
@@ -16,6 +16,17 @@ const TrackItem = (props: {
       <td>{props.track.Album}</td>
       <td>{props.track.Artist}</td>
       <td>{DisplayTime(props.track.Duration)}</td>
+      <td>
+        <Show when={"TrackId" in props.track}>
+          <a 
+            class="nf nf-mdi-link"
+            target="_blank"
+            href={
+              `https://youtube.com/watch?v=${(props.track as YtTrack).TrackId}`
+            }
+          />
+        </Show>
+      </td>
     </tr>);
 };
 
@@ -40,6 +51,7 @@ const Tracks = (props: {
         <th class="nf nf-mdi-library_music"/>
         <th class="nf nf-oct-person"/>
         <th class="nf nf-mdi-timelapse"/>
+        <th/>
       </thead>
       <tbody>
         <Index each={props.currentList}>{(item,i) =>
