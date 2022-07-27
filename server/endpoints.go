@@ -97,8 +97,7 @@ func fetch_yt_playlist(playlist_id string) []YtTrack {
 		return []YtTrack{}
 }
 
-// Fetch metadata about a track
-// For local files:
+// Fetch metadata about tracks in a playlist or album
 //    /meta/playlist/<name>
 //    /meta/album/<name>
 // Returns an empty array on failure
@@ -120,10 +119,10 @@ func GetLocalMetadata(w http.ResponseWriter, r *http.Request){
   endpoint, name, _ :=
     strings.Cut(strings.TrimPrefix(r.URL.Path, "/meta/"), "/")
 
-  endpoint_regex := regexp.MustCompile(ALLOWED_STRS)
-	name_regex 	   := regexp.MustCompile(ALBUM_NAME_REGEX)
+  endpoint_rgx := regexp.MustCompile(ALLOWED_STRS)
+	name_rgx 	   := regexp.MustCompile(ALBUM_NAME_REGEX)
 
-	if !endpoint_regex.Match([]byte(endpoint)) || !name_regex.Match([]byte(name)) {
+	if !endpoint_rgx.Match([]byte(endpoint)) || !name_rgx.Match([]byte(name)) {
 		return; // Invalid subcommand or resource name
 	}
 
@@ -132,7 +131,7 @@ func GetLocalMetadata(w http.ResponseWriter, r *http.Request){
     if req_page, err := strconv.Atoi(page_param); err == nil && req_page>0 {
       page = req_page
     } else {
-      return; // Negative,zero or non-numeric input 
+      return; // Negative,zero or non-numeric input
     }
   }
 
@@ -146,19 +145,8 @@ func GetLocalMetadata(w http.ResponseWriter, r *http.Request){
 	// Populate the `track_paths` slice with data based on the given subcommand
   switch endpoint {
     case "playlist":
-			f, err := os.Open(TranslateTilde(PLAYLIST_DIR)+"/"+name+"."+PLAYLIST_EXT)
-			if err == nil {
-				defer f.Close()
-				scanner := bufio.NewScanner(f)
-
-				for scanner.Scan() {
-					line := strings.TrimSpace(scanner.Text())
-					if !strings.HasPrefix("#", line) && len(line)!=0 {
-						// Skip '#' lines in a playlist
-						track_paths = append(track_paths, line)
-					}
-				}
-			} else {
+			playlist_path := TranslateTilde(PLAYLIST_DIR)+"/"+name+"."+PLAYLIST_EXT
+			if ! get_track_paths_from_playlist(playlist_path, &track_paths) {
 				Warn("Non-existent playlist requested by " + r.RemoteAddr)
 				return
 			}
@@ -199,25 +187,9 @@ func GetLocalMetadata(w http.ResponseWriter, r *http.Request){
     case "playlist":
       // To give each Track a correct `AlbumId` in a playlist we need to
       // determine the album index of each file within an album
-      //
-      // Note that the order of tracks in a playlist file will NOT be preserved
-      // on the client. The page division will always be the same but the order
-      // of tracks within a page is not enforced, to do this would require e.g.
-      // a `PlaylistId` field (which would make client side caching more
-      // compilicated since the same track could have different `PlaylistId`
-      // values)
-      sort.Strings(track_paths)
-
-      album_id_map := make(map[string]int)
-
-      current_album := ""
-      for i,track_path := range track_paths {
-        // Extract the album id upon the first encounter of a new album.
-        if current_album != filepath.Dir(track_path) {
-          current_album = filepath.Dir(track_path)
-          album_ids_from_album(current_album, track_paths[i:], album_id_map)
-        }
-      }
+			// The order of a playlist is known through hidden data served
+			// directly in `index.html`.
+      album_id_map := get_album_id_map(track_paths)
 
       for _,path := range track_paths {
         go get_file_metadata(path,  album_id_map[path], tracks_channel)
@@ -239,6 +211,45 @@ func GetLocalMetadata(w http.ResponseWriter, r *http.Request){
 		"tracks": tracks, "last_page": last_page,
 	}
 	json.NewEncoder(w).Encode(res)
+}
+
+
+func get_track_paths_from_playlist(path string, track_paths *[]string) bool {
+	f, err := os.Open(path)
+	if err == nil {
+		defer f.Close()
+		scanner := bufio.NewScanner(f)
+
+		for scanner.Scan() {
+			line := strings.TrimSpace(scanner.Text())
+			if !strings.HasPrefix("#", line) && len(line)!=0 {
+				// Skip empty and '#' lines in a playlist
+				*track_paths = append(*track_paths, line)
+			}
+		}
+		return true
+	} else {
+		return false
+	}
+}
+
+// Returns a map on the form
+//		{ Filepath: AlbumId, ... }
+// for each track in the provided `track_paths`
+// NOTE: The passed `track_paths` become sorted by this call!
+func get_album_id_map(track_paths []string) map[string]int {
+	album_id_map := make(map[string]int)
+
+	sort.Strings(track_paths)
+	current_album := ""
+	for i,track_path := range track_paths {
+		// Extract the album id upon the first encounter of a new album.
+		if current_album != filepath.Dir(track_path) {
+			current_album = filepath.Dir(track_path)
+			album_ids_from_album(current_album, track_paths[i:], album_id_map)
+		}
+	}
+	return album_id_map
 }
 
 // Given an album directory and a list of tracks, add the corresponding AlbumId

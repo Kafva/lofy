@@ -124,20 +124,45 @@ func get_albums(path string) []string {
   return album_names
 }
 
-// Returns a sorted list of all non-hidden .m3u files beneath the provided path
-// with the .m3u suffix removed.
-func get_local_playlists(path string) []string {
-  playlist_names := make([]string, 0, MAX_PLAYLIST_CNT)
-  if playlists, err := os.ReadDir(TranslateTilde(path)); err==nil {
+// Return a `LocalPlaylist` object for each .m3u file under `PLAYLIST_DIR`
+func get_local_playlists(path string) []LocalPlaylist {
+  local_playlists := make([]LocalPlaylist, 0, MAX_PLAYLIST_CNT)
+	ordered_paths := make([]string, MAX_TRACKS, MAX_TRACKS)
+	playlist_dir := TranslateTilde(path)
+
+  if playlists, err := os.ReadDir(playlist_dir); err==nil {
     for _,playlist := range playlists {
       if !playlist.IsDir() &&
 			 strings.HasSuffix(playlist.Name(),"."+PLAYLIST_EXT) {
-        playlist_names = append(playlist_names,
-					strings.TrimSuffix(playlist.Name(), "."+PLAYLIST_EXT),
-				)
+				playlist_path := playlist_dir+"/"+playlist.Name()
+				track_paths := make([]string, 0, MAX_TRACKS)
+
+				if ! get_track_paths_from_playlist(playlist_path, &track_paths) {
+					Die("Failed to open '"+playlist_path+"'")
+				}
+
+				// Save an ordered list of the tracks in the playlist
+				for i,track_path:= range track_paths {
+					ordered_paths[i] = track_path
+				}
+				album_id_map := get_album_id_map(track_paths)
+
+				local_playlist := LocalPlaylist {
+					Name: strings.TrimSuffix(playlist.Name(), "."+PLAYLIST_EXT),
+					Sources: []string{},
+				}
+
+				// Set the <AlbumFS:AlbumId> source for each entry in the ordered list
+				for i := range track_paths {
+					album_name := filepath.Base(filepath.Dir(ordered_paths[i]))
+					local_playlist.Sources = append(local_playlist.Sources,
+						 album_name+":"+strconv.Itoa(album_id_map[ordered_paths[i]]),
+					)
+				}
+
+				local_playlists = append(local_playlists, local_playlist)
       }
     }
   }
-  sort.Strings(playlist_names)
-  return playlist_names
+  return local_playlists
 }

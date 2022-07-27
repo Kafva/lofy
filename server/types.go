@@ -10,9 +10,24 @@ type YtPlaylist struct {
 	DisplayName string
 	Id string
 }
+
+// To maintain the .m3u order of files in the playlist on the client
+// we will embed hidden lists in the base `index.html` with a
+// mapping on the form
+//	<Name>: [
+//		0: "AlbumFS:AlbumId",
+//		1: "AlbumFS:AlbumId",
+//		2: "AlbumFS:AlbumId",
+//			...
+// 	]
+type LocalPlaylist struct {
+	Name string
+	Sources []string
+}
+
 type TemplateData struct {
 	Albums 			 []string
-	Playlists 	 []string
+	Playlists 	 []LocalPlaylist
 	YtPlaylists  []YtPlaylist
 }
 
@@ -49,13 +64,13 @@ type YtTrack struct {
 
 func (y *YtTrack) FetchYtUrl(video_id string) {
     cmd     := exec.Command(
-      YTDL_BIN, "-j", "--format", "bestaudio", 
+      YTDL_BIN, "-j", "--format", "bestaudio",
       "--extract-audio", "--skip-download",
       "https://www.youtube.com/watch?v="+video_id,
     )
     out,_   := cmd.Output()
 
-		y.AudioUrl = gjson.Get(string(out), "url").String() 
+		y.AudioUrl = gjson.Get(string(out), "url").String()
 }
 
 func NewTrack() Track {

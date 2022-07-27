@@ -14,7 +14,7 @@
 
     <ul id="_playlists" hidden>
       {{ range .Playlists }}
-        <li>{{.}}</li>
+        <li>{{.Name}}</li>
       {{ end }}
     </ul>
     <ul id="_albums" hidden>
@@ -25,6 +25,15 @@
     <ul id="_yt-playlists" hidden>
       {{ range .YtPlaylists }}
       <li data-id={{.Id}}>{{.DisplayName}}</li>
+      {{ end }}
+    </ul>
+    <ul id="_m3u-order" hidden>
+      {{ range .Playlists }}
+      <ul data-name={{.Name}}>
+        {{ range .Sources }}
+        <li>{{.}}</li>
+        {{ end }}
+      </ul>
       {{ end }}
     </ul>
   </body>

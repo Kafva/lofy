@@ -59,7 +59,6 @@ const App = () => {
   // the lists are not going to change so it is therefore preferable
   // to use <Index> in this case.
   return (<>
-
     <Index each={LIST_TYPES}>{(listType) =>
       // We can pass the setter function to a child as in `props`
       <List 
@@ -92,7 +91,6 @@ const App = () => {
       playingIdx={playingIdx()} 
       setPlayingIdx={(s:number)=>setPlayingIdx(s)}
     />
-
   </>)
 };
 
