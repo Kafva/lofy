@@ -84,6 +84,20 @@ const MEDIA_TITLES = Object.freeze({
   [MediaListType.YouTube]:      "YouTube"
 })
 
+/**
+* A stack of indices representing previously played tracks
+* in the current list by index
+* Pushed to during: 
+*  <audio> 'onended' event
+*  'nexttrack' event
+* Popped from during:
+*  'previoustrack' event
+* Reset when a new list is picked in <App>
+* Having this as a global is kind of not good...
+*/
+const TRACK_HISTORY: number[] = []
+
+
 const Log = (...args: any) => {
   if (DEBUG) {
     console.log("%c DEBUG ", 'background: #2b71e0; color: #f5e4f3', ...args)
@@ -97,7 +111,7 @@ const Warn = (...args: any) => {
 }
 
 export {
-  MEDIA_LISTS, LIST_TYPES, MEDIA_TITLES, PLAYLIST_ORDER,
+  MEDIA_LISTS, LIST_TYPES, MEDIA_TITLES, PLAYLIST_ORDER, TRACK_HISTORY,
   MediaListType, Log, Err, Warn
 }
 export default Config;

@@ -1,6 +1,6 @@
-import { createEffect, createSignal, onMount, Setter, untrack } from 'solid-js';
+import { createEffect, createSignal, onMount, Setter } from 'solid-js';
 import { Portal } from 'solid-js/web';
-import Config, { Warn, Log } from '../config';
+import Config, { Warn, Log, TRACK_HISTORY } from '../config';
 import { Track, LocalTrack, YtTrack } from '../types';
 
 /**
@@ -68,23 +68,20 @@ const setNextTrack = (
   setPlayingIdx: (arg0: number) => any,
   playingIdx: number, 
 
-  setTrackHistory: (arg0: number[]) => any,
-  trackHistory: number[],
-
   shuffle: boolean,
 ) => {
   let newIndex: number
   if (shuffle && trackCount>1) {
     // If all songs in the playlist have been played,
     // Clear the history
-    if (trackCount == trackHistory.length) {
-      setTrackHistory([])
+    if (trackCount == TRACK_HISTORY.length) {
+      while(TRACK_HISTORY.length>0) { TRACK_HISTORY.pop(); }
     }
     do  {
       newIndex = Math.floor(trackCount*Math.random())
       // Pick a new index if there is an overlap with the current track or
       // the history.
-    } while (newIndex == playingIdx || trackHistory.indexOf(newIndex) != -1)
+    } while (newIndex == playingIdx || TRACK_HISTORY.indexOf(newIndex) != -1)
     Log("Setting random index: ", newIndex)
   } else {
     newIndex = playingIdx+1 >= trackCount ? 0 : playingIdx+1
@@ -104,10 +101,6 @@ const Player = (props: {
 
   setPlayingIdx: (arg0: number) => any
   playingIdx: number,
-
-  setTrackHistory: (arg0: number[]) => any,
-  trackHistory: number[],
-
 }) => {
   let audio: HTMLAudioElement;
 
@@ -146,15 +139,11 @@ const Player = (props: {
         }
       }}
       onEnded={ () => {
-
-        untrack( () => {
-          props.setTrackHistory([...props.trackHistory, props.playingIdx])
-          Log("HISTORY", props.trackHistory)
-        })
+        TRACK_HISTORY.push(props.playingIdx)
+        Log("TRACK_HISTORY", TRACK_HISTORY)
 
         setNextTrack(props.trackCount, 
-          props.setPlayingIdx, props.playingIdx,
-          props.setTrackHistory, props.trackHistory, shuffle()
+          props.setPlayingIdx, props.playingIdx, shuffle()
         )
         setCurrentTime(0)
         setIsPlaying(true)
@@ -179,11 +168,8 @@ const Player = (props: {
         <span role="button"
           class="nf nf-mdi-skip_previous"
           onClick={ () => {
-            const prevIndex = props.trackHistory[-1]
-            untrack( () => {
-              props.setTrackHistory( props.trackHistory.splice(-1)  )
-              Log("HISTORY", props.trackHistory)
-            })
+            const prevIndex = TRACK_HISTORY.pop();
+            Log("TRACK_HISTORY", TRACK_HISTORY)
 
             if (prevIndex != null) {
               props.setPlayingIdx(prevIndex)
@@ -206,14 +192,11 @@ const Player = (props: {
         <span role="button"
           class="nf nf-mdi-skip_next"
           onClick={ () => {
-            untrack( () => {
-              props.setTrackHistory([...props.trackHistory, props.playingIdx])
-              Log("HISTORY", props.trackHistory)
-            })
+            TRACK_HISTORY.push(props.playingIdx)
+            Log("TRACK_HISTORY", TRACK_HISTORY)
 
             setNextTrack(props.trackCount, 
-              props.setPlayingIdx, props.playingIdx,
-              props.setTrackHistory, props.trackHistory, shuffle()
+              props.setPlayingIdx, props.playingIdx, shuffle()
             )
             setCurrentTime(0)
             setIsPlaying(true)

@@ -27,12 +27,13 @@ const List = (props: {
         // To avoid intermediary states we batch the updates to: 
         //  The selected medialist, 
         //  The selected playlist/album 
-        //  the selected track
         // batch() will combine several signal changes into one re-render.
+        // The selected track is only set to valid value _after_
+        // the new playlist has been loaded in <App>
         batch( () => {
           props.setActiveList(props.listType) 
           props.setListIndex(0)
-          props.setPlayingIdx(0)
+          props.setPlayingIdx(-1)
         })
       }}>
       {MEDIA_TITLES[props.listType]}

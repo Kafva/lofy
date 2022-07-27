@@ -1,9 +1,9 @@
-import { createSignal, Index, createEffect, batch } from 'solid-js';
+import { createSignal, Index, createEffect } from 'solid-js';
 import { createStore } from "solid-js/store";
 import List from './List';
 import Tracks from './Tracks';
 import Player from './Player';
-import { MediaListType, LIST_TYPES, MEDIA_LISTS, PLAYLIST_ORDER } from '../config'
+import { MediaListType, LIST_TYPES, MEDIA_LISTS, PLAYLIST_ORDER, TRACK_HISTORY } from '../config'
 import { FetchMediaList } from '../fetch';
 import { EmptyTrack, Track, LocalTrack, PlaylistEntry } from '../types';
 
@@ -36,19 +36,6 @@ const App = () => {
   // The currently playing track in the current list
   const [playingIdx,setPlayingIdx] = createSignal(0)
 
-  /**
-  * A stack of indices representing previously played tracks
-  * in the current list by index
-  * Pushed to during: 
-  *  <audio> 'onended' event
-  *  'nexttrack' event
-  * Popped from during:
-  *  'previoustrack' event
-  * Reset when a new list is picked
-  */
-  // USE WITH untrack() iffff it does not get updated
-  const [trackHistory,setTrackHistory] = createSignal([]);
-
   // Fetch metadata about a list whenever the listIndex() or activeList() changes
   createEffect( () => {
     if (listIndex() >= 0 ) {
@@ -59,10 +46,8 @@ const App = () => {
       if (mediaName !== null && mediaName != "") {
         (async() => {
           // Clear the current list and history before fetching new data
-          batch( () => {
-            setCurrentList([])
-            setTrackHistory([])
-          })
+          setCurrentList([])
+          while(TRACK_HISTORY.length>0){ TRACK_HISTORY.pop(); }
 
           let tracks: Track[] = []
           let page = 1
@@ -81,11 +66,11 @@ const App = () => {
 
             setCurrentList(updated_list)
 
-            //if (page == 1) {
-            //  // Auto-select the first entry in the media list
-            //  // once the first page has loaded
-            //  setPlayingIdx(0)
-            //}
+            if (page == 1) {
+              // Auto-select the first entry in the media list
+              // once the first page has loaded
+              setPlayingIdx(0)
+            }
             page++
           }
         })();
@@ -120,9 +105,7 @@ const App = () => {
       setPlayingIdx={(s:number)=>setPlayingIdx(s)}
     />
 
-
     <Player
-
       track={ currentList[playingIdx()] !== undefined ?
         currentList[playingIdx()] :
         EmptyTrack()
@@ -131,9 +114,6 @@ const App = () => {
 
       setPlayingIdx={(s:number)=>setPlayingIdx(s)}
       playingIdx={playingIdx()}
-
-      setTrackHistory={setTrackHistory}
-      trackHistory={trackHistory()}
     />
   </>)
 };
