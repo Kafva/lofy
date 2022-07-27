@@ -1,39 +1,58 @@
-.selected {
-  text-decoration: underline; 
+//== Color scheme ==
+$primary_bg: #23283d;
+$primary_accent: #6e85d3;
+$black_bg: #101320;
+$grey_bg: #1e2233;
+$fg_white: #f5e4f3; 
+$fg_grey: #8e9297;
+
+body {
+  font-family: "Menlo", "Arial";
+  background-color: $primary_bg;
+  color: $fg_white;
+  margin: 0; padding: 0; border: 0; outline: 0;
+
+  // Indicate clickable elements
+  [role='menuitem'],[role='button'] {
+    cursor: pointer;
+  }
 }
 
+div#root {
+  // Disable defaults for <a>
+  a { 
+    color: inherit; 
+    text-decoration: none; 
+    padding-left: 1em;
+  }
+  //== Side bar ==//
+  div#sidebar {
+    background-color: $black_bg;
+    width: 10%;
+    h3 {
+      padding-top: 15px; 
+    }
+    // Used for both <h3> and <li>
+    .selected {
+      color: $primary_accent;
+      font-weight: bold;
+    }
+  }
+  //== Track list ==//
+  table {
+    position: relative;
+    left: 50%;
 
-img#cover {
-  position: relative;
-  left: 50%;
-  top: 5%;
-  opacity: 0.9;
-  z-index: 5;
-  width: 300px;
-  height: 300px;
+    th {
+      text-align: left;
+    }
+    td.amp {
+        content: url("amp.gif");
+        height: 20px;
+        width: 18px;
+    }
+  }
 }
-
-$primary-color: #bb92ac;
-
-h3 {
-  padding-top: 15px; 
-}
-
-div {
-  color: $primary-color;
-  position: absolute;
-}
-
-.amp {
-    content: url("amp.gif");
-    height: 20px;
-    width: 18px;
-}
-
-th {
-  text-align: left;
-}
-
 
 nav {
    position: fixed;
@@ -48,17 +67,29 @@ nav {
    top: 0;
    left: 0;
 
-   background-color: #2f343f;
+   background-color: $grey_bg;
+
+   // Organize nav items in a horizontal list
+   span {
+     display: inline-block;
+     width: fit-content;
+     margin: 5px;
+   }
+
+   // Seperators
+   span.nf-indentation-line {
+       margin: 10px;
+   }
 }
 
-// Organize nav items in a horizontal list
-nav > span {
-    display: inline-block;
-    width: fit-content;
-    margin: 5px;
-}
 
-.seperator {
-    margin: 10px;
+img#cover {
+  position: relative;
+  left: 50%;
+  top: 5%;
+  opacity: 0.9;
+  z-index: 5;
+  width: 300px;
+  height: 300px;
 }
 

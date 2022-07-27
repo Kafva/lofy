@@ -1,5 +1,5 @@
 import { batch, Index, Show } from 'solid-js';
-import { MEDIA_TITLES, MEDIA_LISTS } from '../config'
+import Config, { MEDIA_TITLES, MEDIA_LISTS } from '../config'
 import { MediaListType } from '../types';
 
 const get_yt_link = (item: HTMLLIElement): string => {
@@ -29,6 +29,7 @@ const List = (props: {
   // We use `role` to make elements clickable with Vimium
   return (<>
     <h3 role="menuitem"
+      class={props.activeList == props.listType ? "selected" : ""}
       onClick={() => { 
         // To avoid intermediary states we batch the updates to: 
         //  The selected medialist, 
@@ -41,6 +42,9 @@ const List = (props: {
           props.setListIndex(0)
           props.setPlayingIdx(-1)
         })
+
+        localStorage.setItem(Config.activeListKey, props.activeList.toFixed(0))
+        localStorage.setItem(Config.listIndexKey,  props.listIndex.toFixed(0))
       }}>
       {MEDIA_TITLES[props.listType]}
     </h3>
@@ -49,7 +53,10 @@ const List = (props: {
       <ul>
         <Index each={MEDIA_LISTS[props.listType]}>{ (item,i) =>
           <li role="menuitem"
-            onClick={ () => props.setListIndex(i) }
+            onClick={ () => { 
+              props.setListIndex(i) 
+              localStorage.setItem(Config.listIndexKey, i.toString())
+            }}
             data-id={item().getAttribute('data-id')}
             class={ props.listIndex == i ? "selected" : "" }>
             {item().innerHTML}

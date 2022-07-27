@@ -4,7 +4,6 @@ import Config, { TRACK_HISTORY } from '../config';
 import { Track, LocalTrack, YtTrack } from '../types';
 import { Log, Err, DisplayTime } from '../util';
 
-
 /**
 * The `navigator` API generally works even if the `sizes` and `type`
 * are set to default values.
@@ -122,7 +121,7 @@ const Player = (props: {
   const [isPlaying,setIsPlaying] = createSignal(true)
   const [currentTime,setCurrentTime] = createSignal(0)
 
-  const [shuffle,setShuffle] = createSignal(false)
+  const [shuffle,setShuffle] = createSignal(Config.shuffleDefaultOn)
 
   // Update the audio source whenever the track changes
   // `createEffect()` is triggered whenever
@@ -185,7 +184,7 @@ const Player = (props: {
           onClick={ () => setShuffle(!shuffle()) }
         />
 
-        <span class="seperator nf nf-indentation-line"/>
+        <span class="nf nf-indentation-line"/>
 
         <span role="button"
           class="nf nf-mdi-skip_previous"
@@ -241,7 +240,7 @@ const Player = (props: {
           }}
         />
 
-        <span class="seperator nf nf-indentation-line"/>
+        <span class="nf nf-indentation-line"/>
 
         <span>{props.track.Title}</span>
 
@@ -264,7 +263,7 @@ const Player = (props: {
             }
           }}
         />
-        <span class="seperator nf nf-indentation-line"/>
+        <span class="nf nf-indentation-line"/>
 
         <span  role="button" class="nf nf-mdi-volume_plus" onClick={() =>
           changeVolume(volume()+Config.volumeStep, audio, setVolume)

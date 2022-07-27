@@ -8,6 +8,7 @@ const DEBUG = true
 class Config {
   static readonly serverUrl = "http://127.0.0.1:20111"
 
+  static readonly shuffleDefaultOn = true;
   static readonly volumeStep = 0.05;
   static readonly defaultVolume = 0.0;
   static readonly seekStepSec = 5;
@@ -28,6 +29,10 @@ class Config {
   static readonly seekForwardKey = 'L';
   static readonly shuffleKey = 'S';
   static readonly coverKey = 'F';
+
+  // Internals
+  static readonly activeListKey = "activeList"
+  static readonly listIndexKey  = "listIndex"
 }
 
 /**

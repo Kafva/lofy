@@ -3,7 +3,7 @@ import { createStore } from "solid-js/store";
 import List from './List';
 import Tracks from './Tracks';
 import Player from './Player';
-import { LIST_TYPES, MEDIA_LISTS, PLAYLIST_ORDER, TRACK_HISTORY } from '../config'
+import Config, { LIST_TYPES, MEDIA_LISTS, PLAYLIST_ORDER, TRACK_HISTORY } from '../config'
 import { FetchMediaList } from '../fetch';
 import { MediaListType, EmptyTrack, Track, LocalTrack, PlaylistEntry } from '../types';
 
@@ -24,11 +24,19 @@ const sortPlaylist = (unsorted: LocalTrack[], playlist_name: string) => {
 }
 
 const App = () => {
+  // Restore values from a previous session if possible
+  const prevActiveList = parseInt(
+    localStorage.getItem(Config.activeListKey)|| "0"
+  ) as MediaListType
+  const prevListIndex  = parseInt(
+    localStorage.getItem(Config.listIndexKey) || "0"
+  )
+
   // Flag to determine the active media list
-  const [activeList,setActiveList] = createSignal(MediaListType.LocalPlaylist)
+  const [activeList,setActiveList] = createSignal(prevActiveList)
 
   // Flag to determine the selected index in the current list
-  const [listIndex,setListIndex] = createSignal(0)
+  const [listIndex,setListIndex] = createSignal(prevListIndex)
 
   // Array with all of the tracks in the current list
   const [currentList,setCurrentList] = createStore([])
@@ -91,19 +99,21 @@ const App = () => {
   // the lists are not going to change so it is therefore preferable
   // to use <Index> in this case.
   return (<>
-    <Index each={LIST_TYPES}>{(listType) =>
+    <div id="sidebar">
+      <Index each={LIST_TYPES}>{(listType) =>
       // We can pass the setter function to a child as in `props`
-      <List
-        listType={listType()}
+        <List
+          listType={listType()}
         
-        activeList={activeList()}
-        setActiveList={(s:MediaListType)=> setActiveList(s)}
+          activeList={activeList()}
+          setActiveList={(s:MediaListType)=> setActiveList(s)}
 
-        listIndex={listIndex()}
-        setListIndex={(s:MediaListType)=>setListIndex(s)}
-        setPlayingIdx={(s:number)=>setPlayingIdx(s)}
-      />
-    }</Index>
+          listIndex={listIndex()}
+          setListIndex={(s:MediaListType)=>setListIndex(s)}
+          setPlayingIdx={(s:number)=>setPlayingIdx(s)}
+        />
+      }</Index>
+    </div>
 
     <Tracks
       activeList={activeList()}

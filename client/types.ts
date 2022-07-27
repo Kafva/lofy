@@ -1,5 +1,5 @@
 enum MediaListType {
-  LocalPlaylist, LocalAlbum, YouTube
+  LocalPlaylist = 0, LocalAlbum = 1, YouTube = 2
 }
 
 interface PlaylistEntry {
