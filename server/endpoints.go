@@ -43,13 +43,15 @@ func GetYtUrl(w http.ResponseWriter, r *http.Request){
 // since yt-dlp does not return paged results, we only need to perform one
 // request. We still return a `last_page` field to make client side parsing
 // consistent.
-//  GET   /yt/<playlist id>
+//  GET   /yt/<playlist id>?single=true
 func GetYtPlaylist(w http.ResponseWriter, r *http.Request) {
 	input_regex := regexp.MustCompile(ALLOWED_STRS)
   playlist_id := filepath.Base(r.URL.Path)
+
 	if input_regex.Match([]byte(playlist_id)) {
 
-		yt_tracks := fetch_yt_playlist(playlist_id)
+    single    := r.URL.Query().Get("single") == "true"
+		yt_tracks := fetch_yt_playlist(playlist_id, single)
 
     w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Content-Type", "application/json")
@@ -59,14 +61,19 @@ func GetYtPlaylist(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// https://www.youtube.com/watch?list=PLeO-rHNGADqzCkDOyEUZbJMnuu5s9yIGh
-// Fetches a list of all YtTrack objects for a playlist
+// Fetches a list of all YtTrack objects for a playlist (or a single track)
 // The `AudioUrl` field will be empty and needs to be requested separately
-func fetch_yt_playlist(playlist_id string) []YtTrack {
+func fetch_yt_playlist(yt_id string, single_track bool) []YtTrack {
+    yt_param := "list"
+    thumbnail_field := ".thumbnails.2.url"
+    if single_track {
+      yt_param = "v"
+      thumbnail_field = ".thumbnail"
+    }
     cmd     := exec.Command(
       YTDL_BIN, "-j", "--format", "bestaudio",
       "--flat-playlist", "--skip-download",
-      "https://www.youtube.com/watch?list="+playlist_id,
+      "https://www.youtube.com/watch?"+yt_param+"="+yt_id,
     )
     out,err   := cmd.Output()
 		if err == nil {
@@ -86,13 +93,13 @@ func fetch_yt_playlist(playlist_id string) []YtTrack {
 						Duration: int(gjson.Get(out_str, idx+".duration").Int()),
 					},
 					TrackId:    gjson.Get(out_str, idx+".id").String(),
-					ArtworkUrl: gjson.Get(out_str, idx+".thumbnails.2.url").String(),
+					ArtworkUrl: gjson.Get(out_str, idx+thumbnail_field).String(),
 					AudioUrl: "",
 				})
 			}
 			return yt_tracks
 		} else {
-				Warn("Failed to fetch metadata for YouTube playlist: ", playlist_id)
+				Warn("Failed to fetch YouTube metadata: ", yt_id)
 		}
 		return []YtTrack{}
 }

@@ -11,6 +11,10 @@ class Config {
   static readonly volumeStep = 0.05;
   static readonly defaultVolume = 0.0;
   static readonly seekStepSec = 5;
+  
+  // Only applicable for YouTube videos >= 30 min
+  static readonly sameTrackSkipMin = 30;
+  static readonly sameTrackSeekStepMin = 3;
 
   // Keyboard shortcuts
   static readonly pausePlayKey = ' ';

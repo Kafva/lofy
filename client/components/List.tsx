@@ -2,6 +2,11 @@ import { batch, Index, Show } from 'solid-js';
 import { MEDIA_TITLES, MEDIA_LISTS } from '../config'
 import { MediaListType } from '../types';
 
+const get_yt_link = (item: HTMLLIElement): string => {
+  const yt_param = item.getAttribute('data-single') == "true" ? "v" : "list"
+  return `https://youtube.com/watch?${yt_param}=${item.getAttribute('data-id')}`
+}
+
 /**
 * The media lists need reactivity so that we can keep
 * track of which playlist and which item in a playlist is currently
@@ -52,9 +57,7 @@ const List = (props: {
               <a 
                 class="nf nf-mdi-link"
                 target="_blank"
-                href={
-                  `https://youtube.com/watch?list=${item().getAttribute('data-id')}`
-                }
+                href={ get_yt_link(item()) }
               />
             </Show>
           </li>

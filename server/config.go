@@ -39,6 +39,8 @@ const ITEMS_PER_REQ = 20;
 const PORT = 20111
 const ADDR = "127.0.0.1"
 
+const SINGLE_YT_TRACK = "SINGLE"
+
 // Allowed characters for:
 //		the `<video id>` paramater to `/yturl`
 //		the subcommand parameter to `/meta`

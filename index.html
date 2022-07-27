@@ -24,7 +24,7 @@
     </ul>
     <ul id="_yt-playlists" hidden>
       {{ range .YtPlaylists }}
-      <li data-id={{.Id}}>{{.DisplayName}}</li>
+      <li data-id={{.Id}} data-single={{.SingleTrack}}>{{.DisplayName}}</li>
       {{ end }}
     </ul>
     <ul id="_m3u-order" hidden>

@@ -6,9 +6,12 @@ import (
 	gjson "github.com/tidwall/gjson"
 )
 
+// A single long YouTube video can be set as a playlist
+// using the `SingleTrack` field.
 type YtPlaylist struct {
 	DisplayName string
 	Id string
+	SingleTrack bool
 }
 
 // To maintain the .m3u order of files in the playlist on the client

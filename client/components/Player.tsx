@@ -190,13 +190,21 @@ const Player = (props: {
         <span role="button"
           class="nf nf-mdi-skip_previous"
           onClick={ () => {
-            const prevIndex = TRACK_HISTORY.pop();
-            Log("TRACK_HISTORY", TRACK_HISTORY)
+            // Seek skipping for long tracks
+            if (audio.duration >= 60*Config.sameTrackSkipMin) {
+              const newPos = audio.currentTime - 60*Config.sameTrackSeekStepMin
+              if (newPos > 0){
+                audio.currentTime = newPos
+              }
+            } else {
+              const prevIndex = TRACK_HISTORY.pop();
+              Log("TRACK_HISTORY", TRACK_HISTORY)
 
-            if (prevIndex != null) {
-              props.setPlayingIdx(prevIndex)
-              setCurrentTime(0)
-              setIsPlaying(true)
+              if (prevIndex != null) {
+                props.setPlayingIdx(prevIndex)
+                setCurrentTime(0)
+                setIsPlaying(true)
+              }
             }
           }}
         />
@@ -214,11 +222,22 @@ const Player = (props: {
         <span role="button"
           class="nf nf-mdi-skip_next"
           onClick={ () => {
-            setNextTrack(props.trackCount, 
-              props.setPlayingIdx, props.playingIdx, shuffle()
-            )
-            setCurrentTime(0)
-            setIsPlaying(true)
+            // For long tracks, e.g.
+            //  https://www.youtube.com/watch?v=_-8yfNLG5e8
+            // We skip ahead `Config.seekStepMin` minutes instead
+            // of moving to the next track
+            if (audio.duration >= 60*Config.sameTrackSkipMin) {
+              const newPos = audio.currentTime + 60*Config.sameTrackSeekStepMin
+              if (newPos <= audio.duration){
+                audio.currentTime = newPos
+              }
+            } else {
+              setNextTrack(props.trackCount, 
+                props.setPlayingIdx, props.playingIdx, shuffle()
+              )
+              setCurrentTime(0)
+              setIsPlaying(true)
+            }
           }}
         />
 

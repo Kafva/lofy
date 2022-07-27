@@ -49,13 +49,21 @@ const App = () => {
           setCurrentList([])
           while(TRACK_HISTORY.length>0){ TRACK_HISTORY.pop(); }
 
+          // Set the `?single=boolean` parameter 
+          let single = false
+          if  (activeList() == MediaListType.YouTube) {
+            single = document.querySelector(`#_yt-playlists > li[data-id='${mediaName}']`)
+              ?.getAttribute("data-single") == "true"
+          }
+
           let tracks: Track[] = []
           let page = 1
           let last_page = false
 
           while (!last_page) {
             // Incrementally fetch media until the last page of data is recieved
-            [tracks, last_page] = await FetchMediaList(mediaName, page, activeList())
+            [tracks, last_page] = 
+              await FetchMediaList(mediaName, page, single, activeList())
 
             // Sort the list in accordance with `PLAYLIST_ORDER` if applicable
             const updated_list = [...currentList,...tracks]

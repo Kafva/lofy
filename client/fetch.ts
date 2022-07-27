@@ -34,6 +34,7 @@ const endpointFetch = async (
   endpoint: string, 
   mediaName: string, 
   page: number,
+  single: boolean,
   typing: MediaListType): Promise<[Track[],boolean]> => {
   const cachedList = FETCH_CACHE[typing].get(mediaName)
 
@@ -44,10 +45,12 @@ const endpointFetch = async (
   } else {
     try {
       Log(`Fetching page ${page} for ${mediaName}`)
+      let params = endpoint == "yt" ? `single=${single}` : `page=${page}`
+
       const data = await 
       (await fetch(
-        `${Config.serverUrl}/${endpoint}/${mediaName}?page=${page}`)
-      ).json()
+        `${Config.serverUrl}/${endpoint}/${mediaName}?${params}`
+      )).json()
       if ('tracks' in data && 'last_page' in data) {
         const tracks = data['tracks']
         if (endpoint.startsWith("meta")) {
@@ -80,16 +83,17 @@ const endpointFetch = async (
 const FetchMediaList = async (
   mediaName: string, 
   page: number,
+  single: boolean,
   typing: MediaListType): Promise<[Track[],boolean]> => {
   switch (typing) {
   case MediaListType.LocalPlaylist:
-    return endpointFetch("meta/playlist", mediaName, page, typing) as 
+    return endpointFetch("meta/playlist", mediaName, page, single, typing) as 
       Promise<[LocalTrack[],boolean]>
   case MediaListType.LocalAlbum:
-    return endpointFetch("meta/album", mediaName, page, typing) as 
+    return endpointFetch("meta/album", mediaName, page, single, typing) as 
       Promise<[LocalTrack[],boolean]>
   case MediaListType.YouTube:
-    return endpointFetch("yt", mediaName, page, typing) as 
+    return endpointFetch("yt", mediaName, page, single, typing) as 
       Promise<[YtTrack[],boolean]>
   }
 }
