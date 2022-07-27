@@ -3,7 +3,7 @@ import { createStore } from "solid-js/store";
 import List from './List';
 import Tracks from './Tracks';
 import Player from './Player';
-import { MediaListType, LIST_TYPES, MEDIA_LISTS } from '../config'
+import { MediaListType, LIST_TYPES, MEDIA_LISTS, PLAYLIST_ORDER } from '../config'
 import { FetchMediaList } from '../fetch';
 import { EmptyTrack, Track } from '../types';
 
@@ -39,6 +39,8 @@ const App = () => {
           while (!last_page) {
             // Incrementally fetch media until the last page of data is recieved
             [tracks, last_page] = await FetchMediaList(mediaName, page, activeList())
+
+            // Sort the list in accordance with `PLAYLIST_ORDER` if applicable
 
             setCurrentList([...currentList,...tracks]) 
 

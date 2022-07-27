@@ -1,3 +1,8 @@
+interface PlaylistEntry {
+  AlbumFS: string
+  AlbumId: number
+}
+
 interface Track {
   Title: string
   Artist: string
@@ -21,5 +26,5 @@ const EmptyTrack = (): Track =>  {
 }
 
 
-export type { Track, LocalTrack, YtTrack }
+export type { PlaylistEntry, Track, LocalTrack, YtTrack }
 export { EmptyTrack }

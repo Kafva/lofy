@@ -1,3 +1,5 @@
+import { PlaylistEntry } from './types';
+
 const DEBUG = true
 
 class Config {
@@ -11,7 +13,7 @@ class Config {
   // Keyboard shortcuts
   static readonly pausePlayKey = ' ';
 
-  // With <Shift> modifier 
+  // With <Shift> modifier
   static readonly previousTrackKey = 'ArrowLeft';
   static readonly nextTrackKey = 'ArrowRight';
   static readonly volumeDownKey = 'ArrowDown';
@@ -38,14 +40,43 @@ const LIST_TYPES = Object.freeze([
 * already exist in the DOM when we recieve `index.html` from the server.
 * We extract these values into ararys ONCE and not for every `render()`
 */
-const exctractFromTemplate = (selector: string): HTMLLIElement[] =>
+const extractListsFromTemplate = (selector: string): HTMLLIElement[] =>
   Array.from(document.querySelectorAll(`#${selector} > li`))
 
 const MEDIA_LISTS = Object.freeze({
-  [MediaListType.LocalPlaylist]: exctractFromTemplate("_playlists"),
-  [MediaListType.LocalAlbum]:    exctractFromTemplate("_albums"),
-  [MediaListType.YouTube]:       exctractFromTemplate("_yt-playlists"),
+  [MediaListType.LocalPlaylist]: extractListsFromTemplate("_playlists"),
+  [MediaListType.LocalAlbum]:    extractListsFromTemplate("_albums"),
+  [MediaListType.YouTube]:       extractListsFromTemplate("_yt-playlists"),
 })
+
+const extractPlaylistOrderFromTemplate = (): Map<string,PlaylistEntry[]> => {
+  const order = new Map<string,PlaylistEntry[]>()
+
+  MEDIA_LISTS[MediaListType.LocalPlaylist].map(p=>p.innerHTML)
+    .forEach( (pls:string) => {
+      // The order of items in the `items` array corresponds to the
+      // order of the m3u playlist
+      const items = document.querySelectorAll(`ul[data-name='${pls}'] > li`)
+
+      order.set(pls, <PlaylistEntry[]>[])
+
+      for (const li of items) {
+        const split = li.innerHTML.split(":")
+        order.get(pls)!.push({
+          AlbumFS: split[0] as string,
+          AlbumId: parseInt(split[1] as string)
+        } as PlaylistEntry)
+      }
+    })
+  return order
+}
+
+/**
+* Contains a mapping on the form { playlist_name: [ PlaylistEntry ] }
+* Each `PlaylistEntry` array is sorted in the same order as the m3u
+* file on disk.
+*/
+const PLAYLIST_ORDER = extractPlaylistOrderFromTemplate()
 
 const MEDIA_TITLES = Object.freeze({
   [MediaListType.LocalPlaylist]:"Playlists",
@@ -65,6 +96,9 @@ const Warn = (...args: any) => {
   console.log("%c WARN ", 'background: #dbba00; color: #ffffff', ...args)
 }
 
-export {MEDIA_LISTS, LIST_TYPES, MEDIA_TITLES, MediaListType, Log, Err, Warn}
+export {
+  MEDIA_LISTS, LIST_TYPES, MEDIA_TITLES, PLAYLIST_ORDER,
+  MediaListType, Log, Err, Warn
+}
 export default Config;
 

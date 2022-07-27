@@ -255,7 +255,8 @@ func get_album_id_map(track_paths []string) map[string]int {
 // Given an album directory and a list of tracks, add the corresponding AlbumId
 // for each track that belongs to the `album_dir` into the `album_id_map`
 // with the track path as the key.
-func album_ids_from_album(album_dir string, paths []string, album_id_map map[string]int) {
+func album_ids_from_album(
+ album_dir string, paths []string, album_id_map map[string]int) {
 	if entries, err := os.ReadDir(album_dir); err==nil {
 		files := FsFilter(entries, false)
     // Sort by filename
