@@ -1,4 +1,4 @@
-import { createEffect, createSignal, onMount, Setter } from 'solid-js';
+import { createEffect, createSignal, onMount, Setter, Show } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import Config, { Warn, Log, TRACK_HISTORY } from '../config';
 import { Track, LocalTrack, YtTrack } from '../types';
@@ -27,18 +27,27 @@ const setNavigatorMetadata = (track: Track, imageSrc: string) => {
 * using the `Track.AlbumFS` and `Track.AlbumId` attributes.
 * For YouTube resources a request to the server
 * that determine the audio source is needed
+*
+* The #cover <img> is also updated with the location of the cover
+* art during this call.
 */
 const getAudioSource = async (track: Track): Promise<string> => {
+  const cover = document.getElementById("cover") as HTMLImageElement
+
   if ('AlbumFS' in track) { // Local files (no async required)
     const l = track as LocalTrack
     Log(`Setting audio source: ${l.Title}`)
-    setNavigatorMetadata(track, `/art/${l.AlbumFS}/${l.AlbumId}`)
+
+    const imgSrc = `/art/${l.AlbumFS}/${l.AlbumId}`
+    setNavigatorMetadata(track, imgSrc)
+    cover.src = imgSrc
 
     return `${Config.serverUrl}/audio/${l.AlbumFS}/${l.AlbumId}`
   } else if ('TrackId' in track) { // YouTube
     const y = track as YtTrack
     Log(`Setting audio source: ${y.Title}`)
     setNavigatorMetadata(track, y.ArtworkUrl)
+    cover.src = y.ArtworkUrl
 
     return (await fetch(`${Config.serverUrl}/yturl/${y.TrackId}`)).text()
   } else {
@@ -71,6 +80,10 @@ const setNextTrack = (
   shuffle: boolean,
 ) => {
   let newIndex: number
+
+  TRACK_HISTORY.push(playingIdx)
+  Log("TRACK_HISTORY", TRACK_HISTORY)
+
   if (shuffle && trackCount>1) {
     // If all songs in the playlist have been played,
     // Clear the history
@@ -82,7 +95,6 @@ const setNextTrack = (
       // Pick a new index if there is an overlap with the current track or
       // the history.
     } while (newIndex == playingIdx || TRACK_HISTORY.indexOf(newIndex) != -1)
-    Log("Setting random index: ", newIndex)
   } else {
     newIndex = playingIdx+1 >= trackCount ? 0 : playingIdx+1
   }
@@ -110,6 +122,8 @@ const Player = (props: {
 
   const [shuffle,setShuffle] = createSignal(false)
 
+  const [showCover,setShowCover] = createSignal(false)
+
   // Update the audio source whenever the track changes
   // `createEffect()` is triggered whenever
   // reactive components inside the function are
@@ -129,7 +143,15 @@ const Player = (props: {
 
   // <Portal> components will be inserted as direct children of the <body>
   // rather than the #root element
+  //
+  // The #cover needs to exist even when it is not shown so that we can 
+  // update the `src` field from `getAudioSource()`
+  // <Show when={showCover()} fallback={ <img hidden id="cover"/> }>
   return (<>
+    <Portal>
+      <img hidden id="cover"/>
+    </Portal>
+
     <audio hidden autoplay preload="auto" ref={audio}
       onTimeUpdate= {() => {
         // Update the `currentTime` every second based on the current time
@@ -139,9 +161,6 @@ const Player = (props: {
         }
       }}
       onEnded={ () => {
-        TRACK_HISTORY.push(props.playingIdx)
-        Log("TRACK_HISTORY", TRACK_HISTORY)
-
         setNextTrack(props.trackCount, 
           props.setPlayingIdx, props.playingIdx, shuffle()
         )
@@ -153,7 +172,10 @@ const Player = (props: {
       <nav>
         <span role="button" class="nf nf-mdi-music_box"
           onClick={ () => {
-            Log("TODO")
+            const cover = document.getElementById("cover") as HTMLImageElement
+            if (cover !== undefined) {
+              cover.hidden = !cover.hidden
+            }
           }}
         />
         <span role="button" 
@@ -192,9 +214,6 @@ const Player = (props: {
         <span role="button"
           class="nf nf-mdi-skip_next"
           onClick={ () => {
-            TRACK_HISTORY.push(props.playingIdx)
-            Log("TRACK_HISTORY", TRACK_HISTORY)
-
             setNextTrack(props.trackCount, 
               props.setPlayingIdx, props.playingIdx, shuffle()
             )

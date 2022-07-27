@@ -2,6 +2,15 @@
   text-decoration: underline; 
 }
 
+
+img#cover {
+  position: absolute;
+  left: 50%;
+  top: 5%;
+  opacity: 0.9;
+  z-index: 5;
+}
+
 $primary-color: #bb92ac;
 
 h3 {
