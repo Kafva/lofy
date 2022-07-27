@@ -1,4 +1,4 @@
-import { createSignal, Index, createEffect } from 'solid-js';
+import { createSignal, Index, createEffect, batch } from 'solid-js';
 import { createStore } from "solid-js/store";
 import List from './List';
 import Tracks from './Tracks';
@@ -36,6 +36,19 @@ const App = () => {
   // The currently playing track in the current list
   const [playingIdx,setPlayingIdx] = createSignal(0)
 
+  /**
+  * A stack of indices representing previously played tracks
+  * in the current list by index
+  * Pushed to during: 
+  *  <audio> 'onended' event
+  *  'nexttrack' event
+  * Popped from during:
+  *  'previoustrack' event
+  * Reset when a new list is picked
+  */
+  // USE WITH untrack() iffff it does not get updated
+  const [trackHistory,setTrackHistory] = createSignal([]);
+
   // Fetch metadata about a list whenever the listIndex() or activeList() changes
   createEffect( () => {
     if (listIndex() >= 0 ) {
@@ -45,8 +58,11 @@ const App = () => {
 
       if (mediaName !== null && mediaName != "") {
         (async() => {
-          // Clear the current list before fetching new data
-          setCurrentList([])
+          // Clear the current list and history before fetching new data
+          batch( () => {
+            setCurrentList([])
+            setTrackHistory([])
+          })
 
           let tracks: Track[] = []
           let page = 1
@@ -65,11 +81,11 @@ const App = () => {
 
             setCurrentList(updated_list)
 
-            if (page == 1) {
-              // Auto-select the first entry in the media list
-              // once the first page has loaded
-              setPlayingIdx(0)
-            }
+            //if (page == 1) {
+            //  // Auto-select the first entry in the media list
+            //  // once the first page has loaded
+            //  setPlayingIdx(0)
+            //}
             page++
           }
         })();
@@ -86,7 +102,7 @@ const App = () => {
       // We can pass the setter function to a child as in `props`
       <List
         listType={listType()}
-
+        
         activeList={activeList()}
         setActiveList={(s:MediaListType)=> setActiveList(s)}
 
@@ -106,13 +122,18 @@ const App = () => {
 
 
     <Player
+
       track={ currentList[playingIdx()] !== undefined ?
         currentList[playingIdx()] :
         EmptyTrack()
       }
       trackCount={currentList.length}
-      playingIdx={playingIdx()}
+
       setPlayingIdx={(s:number)=>setPlayingIdx(s)}
+      playingIdx={playingIdx()}
+
+      setTrackHistory={setTrackHistory}
+      trackHistory={trackHistory()}
     />
   </>)
 };

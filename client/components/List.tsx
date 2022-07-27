@@ -1,4 +1,4 @@
-import { Index, Show } from 'solid-js';
+import { batch, Index, Show } from 'solid-js';
 import { MEDIA_TITLES, MEDIA_LISTS, MediaListType } from '../config'
 
 /**
@@ -24,16 +24,16 @@ const List = (props: {
   return (<>
     <h3 role="menuitem"
       onClick={() => { 
-        // Changing the active list will trigger re-renders for both the <Tracks>
-        // and <Player>. We set the playingIdx and listIndex to invalid values
-        // before switching to avoid intermediary states where another song begins playing.
-        // The current approach is not perfect, each switch still has intermediary states
-        // but by waiting to call `setPlayingIdx(0)` this is not noticeable for the user.
-        props.setPlayingIdx(-1)
-        props.setListIndex(-1)
-        props.setActiveList(props.listType) 
-
-        props.setListIndex(0)
+        // To avoid intermediary states we batch the updates to: 
+        //  The selected medialist, 
+        //  The selected playlist/album 
+        //  the selected track
+        // batch() will combine several signal changes into one re-render.
+        batch( () => {
+          props.setActiveList(props.listType) 
+          props.setListIndex(0)
+          props.setPlayingIdx(0)
+        })
       }}>
       {MEDIA_TITLES[props.listType]}
     </h3>

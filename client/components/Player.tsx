@@ -1,10 +1,7 @@
-import { createEffect, createSignal, onCleanup, onMount, Setter } from 'solid-js';
+import { createEffect, createSignal, onMount, Setter, untrack } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import Config, { Warn, Log } from '../config';
 import { Track, LocalTrack, YtTrack } from '../types';
-
-const queryClick = (selector: string) =>
-  (document.querySelector(selector) as HTMLSpanElement).click()
 
 /**
 * The `navigator` API generally works even if the `sizes` and `type`
@@ -62,67 +59,37 @@ const changeVolume = (
 }
 
 /**
-* To preserve reactivity we can NOT change the <audio> element directly,
-* we need to do all changes through the reactive API, this can be accomplished
-* through virtual keypresses that utilise the functionality in each `onClick`
-* Alternative helper library:
-*  https://github.com/solidjs-community/solid-primitives/tree/main/packages/keyboard
+* Pick a random index  if shuffle() is set, otherwise
+* increment `playingIdx` by one (wrapping around for last track).
 */
-const shortcutHandler = (e:KeyboardEvent) => {
-  if (e.shiftKey) { // <Shift> bindings
-    switch (e.key) {
-    case Config.volumeUpKey:
-      queryClick("span.nf-mdi-volume_plus")
-      break;
-    case Config.volumeDownKey:
-      queryClick("span.nf-mdi-volume_minus")
-      break;
-    case Config.previousTrackKey:
-      queryClick("span.nf-mdi-skip_previous")
-      break;
-    case Config.nextTrackKey:
-      queryClick("span.nf-mdi-skip_next")
-      break;
-    case Config.seekBackKey:
-      queryClick("span.nf-fa-backward")
-      break;
-    case Config.seekForwardKey:
-      queryClick("span.nf-fa-forward")
-      break;
-    case Config.shuffleKey:
-      queryClick("span.nf-mdi-shuffle_variant")
-      break;
-    case Config.coverKey:
-      queryClick("span.nf-mdi-music_box")
-      break;
-    }
-  } else { // Unprefixed bindings
-    switch (e.key) {
-    case Config.pausePlayKey:
-      queryClick("span.nf-fa-pause,span.nf-fa-play")
-      break;
-    }
-  }
-}
+const setNextTrack = (
+  trackCount: number,
 
-/**
-* Hook up the media keys to interact with the UI through virtual click events
-*/
-const setupMediaHandlers = () => {
-  if ('mediaSession' in navigator) {
-    navigator.mediaSession.setActionHandler('play', () => { 
-      queryClick("span.nf-fa-pause,span.nf-fa-play")
-    });
-    navigator.mediaSession.setActionHandler('pause', () => { 
-      queryClick("span.nf-fa-pause,span.nf-fa-play")
-    });
-    navigator.mediaSession.setActionHandler('previoustrack', () => { 
-      queryClick("span.nf-mdi-skip_previous")
-    });
-    navigator.mediaSession.setActionHandler('nexttrack', () => { 
-      queryClick("span.nf-mdi-skip_next")
-    });
+  setPlayingIdx: (arg0: number) => any,
+  playingIdx: number, 
+
+  setTrackHistory: (arg0: number[]) => any,
+  trackHistory: number[],
+
+  shuffle: boolean,
+) => {
+  let newIndex: number
+  if (shuffle && trackCount>1) {
+    // If all songs in the playlist have been played,
+    // Clear the history
+    if (trackCount == trackHistory.length) {
+      setTrackHistory([])
+    }
+    do  {
+      newIndex = Math.floor(trackCount*Math.random())
+      // Pick a new index if there is an overlap with the current track or
+      // the history.
+    } while (newIndex == playingIdx || trackHistory.indexOf(newIndex) != -1)
+    Log("Setting random index: ", newIndex)
+  } else {
+    newIndex = playingIdx+1 >= trackCount ? 0 : playingIdx+1
   }
+  setPlayingIdx(newIndex) 
 }
 
 /**
@@ -134,8 +101,13 @@ const setupMediaHandlers = () => {
 const Player = (props: {
   track: Track,
   trackCount: number,
-  playingIdx: number,
+
   setPlayingIdx: (arg0: number) => any
+  playingIdx: number,
+
+  setTrackHistory: (arg0: number[]) => any,
+  trackHistory: number[],
+
 }) => {
   let audio: HTMLAudioElement;
 
@@ -143,8 +115,10 @@ const Player = (props: {
   const [isPlaying,setIsPlaying] = createSignal(true)
   const [currentTime,setCurrentTime] = createSignal(0)
 
+  const [shuffle,setShuffle] = createSignal(false)
+
   // Update the audio source whenever the track changes
-  // `createEffect()` is triggered (to my understanding) whenever
+  // `createEffect()` is triggered whenever
   // reactive components inside the function are
   // modified, i.e. `track` in this case.
   createEffect( () => {
@@ -158,17 +132,7 @@ const Player = (props: {
   onMount( () => {
     // Initalise the <audio> with the desired default volume
     audio.volume = volume()
-
-    // Setup a global keyboard event listener
-    window.addEventListener("keydown", shortcutHandler);
-    setupMediaHandlers()
   })
-
-  onCleanup( () => {
-    // Since we never unload the Player, the clean up function never runs
-    Log("Running <Player> clean up")
-    window.removeEventListener.bind(window, "keydown", shortcutHandler)
-  });
 
   // <Portal> components will be inserted as direct children of the <body>
   // rather than the #root element
@@ -182,16 +146,20 @@ const Player = (props: {
         }
       }}
       onEnded={ () => {
-        if (props.playingIdx+1 >= props.trackCount) {
-          props.setPlayingIdx(0) // Wrap around for last track
-        } else {
-          props.setPlayingIdx(props.playingIdx+1)
-        }
+
+        untrack( () => {
+          props.setTrackHistory([...props.trackHistory, props.playingIdx])
+          Log("HISTORY", props.trackHistory)
+        })
+
+        setNextTrack(props.trackCount, 
+          props.setPlayingIdx, props.playingIdx,
+          props.setTrackHistory, props.trackHistory, shuffle()
+        )
         setCurrentTime(0)
         setIsPlaying(true)
       }}
     />
-
     <Portal>
       <nav>
         <span role="button" class="nf nf-mdi-music_box"
@@ -199,10 +167,11 @@ const Player = (props: {
             Log("TODO")
           }}
         />
-        <span role="button" class="nf nf-mdi-shuffle_variant"
-          onClick={ () => {
-            Log("TODO")
-          }}
+        <span role="button" 
+          class={shuffle() ? "nf nf-mdi-shuffle_variant" : 
+            "nf nf-mdi-shuffle_disabled"
+          } 
+          onClick={ () => setShuffle(!shuffle()) }
         />
 
         <span class="seperator nf nf-indentation-line"/>
@@ -210,8 +179,14 @@ const Player = (props: {
         <span role="button"
           class="nf nf-mdi-skip_previous"
           onClick={ () => {
-            if (props.playingIdx-1 >= 0) {
-              props.setPlayingIdx(props.playingIdx-1)
+            const prevIndex = props.trackHistory[-1]
+            untrack( () => {
+              props.setTrackHistory( props.trackHistory.splice(-1)  )
+              Log("HISTORY", props.trackHistory)
+            })
+
+            if (prevIndex != null) {
+              props.setPlayingIdx(prevIndex)
               setCurrentTime(0)
               setIsPlaying(true)
             }
@@ -231,11 +206,15 @@ const Player = (props: {
         <span role="button"
           class="nf nf-mdi-skip_next"
           onClick={ () => {
-            if (props.playingIdx+1 >= props.trackCount) {
-              props.setPlayingIdx(0) // Wrap around for last track
-            } else {
-              props.setPlayingIdx(props.playingIdx+1)
-            }
+            untrack( () => {
+              props.setTrackHistory([...props.trackHistory, props.playingIdx])
+              Log("HISTORY", props.trackHistory)
+            })
+
+            setNextTrack(props.trackCount, 
+              props.setPlayingIdx, props.playingIdx,
+              props.setTrackHistory, props.trackHistory, shuffle()
+            )
             setCurrentTime(0)
             setIsPlaying(true)
           }}

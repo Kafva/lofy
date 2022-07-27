@@ -2,9 +2,10 @@
 import { render } from 'solid-js/web';
 import './scss/index.scss';
 import App from './components/App';
-import { Log, PLAYLIST_ORDER } from './config';
+import { SetupMediaHandlers, HandleKeyboardEvent } from './controls';
 
-
-Log("Loaded playlist order: ", PLAYLIST_ORDER)
+// Setup global listeners for keyboard and media key events
+window.addEventListener("keydown", HandleKeyboardEvent);
+SetupMediaHandlers()
 
 render(() => <App />, document.getElementById('root') as HTMLElement);

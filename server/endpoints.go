@@ -135,8 +135,6 @@ func GetLocalMetadata(w http.ResponseWriter, r *http.Request){
     }
   }
 
-	Debug(r.RemoteAddr + " requested page " + strconv.Itoa(page) +" of "+ name)
-
   w.Header().Set("Access-Control-Allow-Origin", "*")
   w.Header().Set("Content-Type", "application/json")
 
