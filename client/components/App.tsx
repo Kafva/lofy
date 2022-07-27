@@ -5,7 +5,23 @@ import Tracks from './Tracks';
 import Player from './Player';
 import { MediaListType, LIST_TYPES, MEDIA_LISTS, PLAYLIST_ORDER } from '../config'
 import { FetchMediaList } from '../fetch';
-import { EmptyTrack, Track } from '../types';
+import { EmptyTrack, Track, LocalTrack, PlaylistEntry } from '../types';
+
+/**
+* Sort an array of `LocalTrack` objects such that they are in the
+* order indicated by a `PlaylistEntry` array from `PLAYLIST_ORDER`
+*/
+const sortPlaylist = (unsorted: LocalTrack[], playlist_name: string) => {
+  unsorted.sort( (a:LocalTrack,b:LocalTrack) => {
+    const pl_index_a = PLAYLIST_ORDER.get(playlist_name)!.findIndex(
+      (e:PlaylistEntry) => e.AlbumFS==a.AlbumFS && e.AlbumId == a.AlbumId
+    )
+    const pl_index_b = PLAYLIST_ORDER.get(playlist_name)!.findIndex((e:PlaylistEntry) =>
+      e.AlbumFS==b.AlbumFS && e.AlbumId == b.AlbumId
+    )
+    return pl_index_a - pl_index_b
+  })
+}
 
 const App = () => {
   // Flag to determine the active media list
@@ -15,7 +31,7 @@ const App = () => {
   const [listIndex,setListIndex] = createSignal(0)
 
   // Array with all of the tracks in the current list
-  const [currentList,setCurrentList] = createStore([]) 
+  const [currentList,setCurrentList] = createStore([])
 
   // The currently playing track in the current list
   const [playingIdx,setPlayingIdx] = createSignal(0)
@@ -24,9 +40,9 @@ const App = () => {
   createEffect( () => {
     if (listIndex() >= 0 ) {
       const el = MEDIA_LISTS[activeList()][listIndex()]
-      const mediaName = activeList() == MediaListType.YouTube ? 
-        el.getAttribute("data-id") :  el.innerHTML 
-    
+      const mediaName = activeList() == MediaListType.YouTube ?
+        el.getAttribute("data-id") :  el.innerHTML
+
       if (mediaName !== null && mediaName != "") {
         (async() => {
           // Clear the current list before fetching new data
@@ -41,12 +57,17 @@ const App = () => {
             [tracks, last_page] = await FetchMediaList(mediaName, page, activeList())
 
             // Sort the list in accordance with `PLAYLIST_ORDER` if applicable
+            const updated_list = [...currentList,...tracks]
 
-            setCurrentList([...currentList,...tracks]) 
+            if (activeList() == MediaListType.LocalPlaylist){
+              sortPlaylist(updated_list as LocalTrack[], mediaName)
+            }
+
+            setCurrentList(updated_list)
 
             if (page == 1) {
               // Auto-select the first entry in the media list
-              // once the first page has loaded 
+              // once the first page has loaded
               setPlayingIdx(0)
             }
             page++
@@ -63,7 +84,7 @@ const App = () => {
   return (<>
     <Index each={LIST_TYPES}>{(listType) =>
       // We can pass the setter function to a child as in `props`
-      <List 
+      <List
         listType={listType()}
 
         activeList={activeList()}
@@ -75,11 +96,11 @@ const App = () => {
       />
     }</Index>
 
-    <Tracks 
-      activeList={activeList()} 
+    <Tracks
+      activeList={activeList()}
       currentList={currentList}
 
-      playingIdx={playingIdx()} 
+      playingIdx={playingIdx()}
       setPlayingIdx={(s:number)=>setPlayingIdx(s)}
     />
 
@@ -90,7 +111,7 @@ const App = () => {
         EmptyTrack()
       }
       trackCount={currentList.length}
-      playingIdx={playingIdx()} 
+      playingIdx={playingIdx()}
       setPlayingIdx={(s:number)=>setPlayingIdx(s)}
     />
   </>)
