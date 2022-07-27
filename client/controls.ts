@@ -35,7 +35,7 @@ const HandleKeyboardEvent = (e:KeyboardEvent) => {
       queryClick("span.nf-mdi-shuffle_variant,span.nf-mdi-shuffle_disabled")
       break;
     case Config.coverKey:
-      queryClick("span.nf-mdi-music_box")
+      queryClick("span.nf-mdi-creation")
       break;
     }
   } else { // Unprefixed bindings

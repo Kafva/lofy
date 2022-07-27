@@ -1,7 +1,9 @@
-import { createEffect, createSignal, onMount, Setter, Show } from 'solid-js';
+import { createEffect, createSignal, onMount, Setter } from 'solid-js';
 import { Portal } from 'solid-js/web';
-import Config, { Warn, Log, TRACK_HISTORY } from '../config';
+import Config, { TRACK_HISTORY } from '../config';
 import { Track, LocalTrack, YtTrack } from '../types';
+import { Log, Err, DisplayTime } from '../util';
+
 
 /**
 * The `navigator` API generally works even if the `sizes` and `type`
@@ -51,7 +53,7 @@ const getAudioSource = async (track: Track): Promise<string> => {
 
     return (await fetch(`${Config.serverUrl}/yturl/${y.TrackId}`)).text()
   } else {
-    Warn(`No source available for current track: '${track.Title}'`)
+    Err(`No source available for current track: '${track.Title}'`)
     return ""
   }
 }
@@ -122,8 +124,6 @@ const Player = (props: {
 
   const [shuffle,setShuffle] = createSignal(false)
 
-  const [showCover,setShowCover] = createSignal(false)
-
   // Update the audio source whenever the track changes
   // `createEffect()` is triggered whenever
   // reactive components inside the function are
@@ -170,7 +170,7 @@ const Player = (props: {
     />
     <Portal>
       <nav>
-        <span role="button" class="nf nf-mdi-music_box"
+        <span role="button" class="nf nf-mdi-creation"
           onClick={ () => {
             const cover = document.getElementById("cover") as HTMLImageElement
             if (cover !== undefined) {
@@ -234,7 +234,9 @@ const Player = (props: {
             }
           }}
         />
-        <span>{`${Math.floor(currentTime())} / ${props.track.Duration}`}</span>
+        <span>{
+          `${DisplayTime(currentTime())} / ${DisplayTime(props.track.Duration)}`
+        }</span>
         <span  role="button"
           class="nf nf-fa-forward" onClick={ () => {
             const newPos = audio.currentTime + Config.seekStepSec

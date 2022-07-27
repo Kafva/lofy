@@ -3,9 +3,9 @@ import { createStore } from "solid-js/store";
 import List from './List';
 import Tracks from './Tracks';
 import Player from './Player';
-import { MediaListType, LIST_TYPES, MEDIA_LISTS, PLAYLIST_ORDER, TRACK_HISTORY } from '../config'
+import { LIST_TYPES, MEDIA_LISTS, PLAYLIST_ORDER, TRACK_HISTORY } from '../config'
 import { FetchMediaList } from '../fetch';
-import { EmptyTrack, Track, LocalTrack, PlaylistEntry } from '../types';
+import { MediaListType, EmptyTrack, Track, LocalTrack, PlaylistEntry } from '../types';
 
 /**
 * Sort an array of `LocalTrack` objects such that they are in the

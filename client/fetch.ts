@@ -1,5 +1,7 @@
-import { LocalTrack, YtTrack, Track } from './types';
-import Config, { Err, Log, MediaListType, MEDIA_LISTS } from './config';
+import { MediaListType, LocalTrack, YtTrack, Track } from './types';
+import Config, { MEDIA_LISTS } from './config';
+import { Err, Log } from './util';
+
 
 const initFetchCache = (mediaList: MediaListType): Map<string,[Track[],boolean]> => {
   let mediaListNames = [];

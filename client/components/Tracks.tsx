@@ -1,6 +1,6 @@
 import { Index } from 'solid-js';
-import { MediaListType } from '../config';
-import { Track } from '../types';
+import { Track, MediaListType } from '../types';
+import { DisplayTime } from '../util';
 
 const TrackItem = (props: {
   track: Track,
@@ -15,7 +15,7 @@ const TrackItem = (props: {
       <td>{props.track.Title}</td>
       <td>{props.track.Album}</td>
       <td>{props.track.Artist}</td>
-      <td>{props.track.Duration}</td>
+      <td>{DisplayTime(props.track.Duration)}</td>
     </tr>);
 };
 

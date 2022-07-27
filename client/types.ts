@@ -1,3 +1,7 @@
+enum MediaListType {
+  LocalPlaylist, LocalAlbum, YouTube
+}
+
 interface PlaylistEntry {
   AlbumFS: string
   AlbumId: number
@@ -25,6 +29,5 @@ const EmptyTrack = (): Track =>  {
   return { Title: "", Artist: "", Album: "", Duration: 0 } as Track; 
 }
 
-
 export type { PlaylistEntry, Track, LocalTrack, YtTrack }
-export { EmptyTrack }
+export { EmptyTrack, MediaListType }
