@@ -5,8 +5,13 @@
 @use "sidebar";
 @use "tracks";
 
+@font-face {
+    font-family: "JetBrains";
+    src: url('JetBrains\ Mono\ Regular\ Nerd\ Font\ Complete.ttf'); 
+}
+
 body {
-  font-family: "Arial";
+  font-family: "JetBrains", "Arial";
   background-color: vars.$body_bg;
   color: vars.$fg_white;
   margin: 0; padding: 0; border: 0; outline: 0;
