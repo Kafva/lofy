@@ -10,17 +10,17 @@ const TrackItem = (props: {
   isPlaying: boolean
 }) => {
   return (
-    <tr role="menuitem" 
-      classList={{selected:  props.trackIdx == props.playingIdx }}
-      onClick={ () => props.setPlayingIdx(props.trackIdx) }>
-      <td classList={{
-        amp: props.trackIdx == props.playingIdx && props.isPlaying
-      }}/>
-      <td>{props.track.Title}</td>
+    <tr classList={{selected:  props.trackIdx == props.playingIdx }}>
+      <td role="menuitem" onClick={ () => props.setPlayingIdx(props.trackIdx) }>
+        <span classList={{
+          amp: props.trackIdx == props.playingIdx && props.isPlaying
+        }}/>
+        {props.track.Title}
+      </td>
       <td>{props.track.Album}</td>
       <td>{props.track.Artist}</td>
-      <td>{DisplayTime(props.track.Duration)}</td>
       <td>
+        {DisplayTime(props.track.Duration)}
         <Show when={"TrackId" in props.track}>
           <a 
             class="nf nf-mdi-link"
@@ -50,12 +50,10 @@ const Tracks = (props: {
   return (<>
     <table>
       <thead>
-        <th/>
         <th class="nf nf-mdi-music"/>
         <th class="nf nf-mdi-library_music"/>
         <th class="nf nf-oct-person"/>
         <th class="nf nf-mdi-timelapse"/>
-        <th/>
       </thead>
       <tbody>
         <Index each={props.currentList}>{(item,i) =>

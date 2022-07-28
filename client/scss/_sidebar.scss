@@ -1,15 +1,17 @@
 @use "vars";
 @use "funcs";
 
-$item_padding: 0 40px 10px 20px;
+$item_padding: 0 40px 5px 20px;
 
 div#sidebar {
   z-index: vars.$sidebar_z;
 
-  position: absolute;
+  position: fixed;
+  overflow-y: scroll;
   left: 0;
   top: 1%;
   width: vars.$sidebar_width;
+  height: calc(100% - 40px);
   padding: 2% 15px 20px 0;
 
   //display: inline-block;
@@ -22,7 +24,7 @@ div#sidebar {
 
   h3 {
     padding: $item_padding;
-    padding-top: 15px;
+    padding-top: 5px;
     border-bottom: 1px solid rgba(vars.$accent, 0.5);
   }
   ul {
@@ -32,7 +34,14 @@ div#sidebar {
     padding: $item_padding;
 
     li {
-      @include funcs.clickable-item(vars.$accent);
+      //== Highlighting ==//
+      margin-bottom: 5px;
+      padding: 3px;
+      border-bottom: vars.$default_bottom_border;
+
+      &:hover {
+        @include funcs.hl_bottom_border(vars.$accent, vars.$hl_bg);
+      }
 
       // Spacing of name and link (only applicable for YT)
       display: grid;

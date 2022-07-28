@@ -13,8 +13,15 @@ $sidebar_bg: #212330;
 $fg_white:   #f5e4f3; 
 $fg_grey:    #8e9297;
 
+
+$hl_bg:                 #45454b;
+$default_underline:     #414040;
+$default_bottom_border: 1px solid rgba($default_underline, 0.5);
+
+
 //== Side bar ==//
-$sidebar_width: 15em;
+//$sidebar_width: 15em; // TODO wide
+$sidebar_width: 10em;
 
 //== Progress bar ==//
 $progress_bar_height: 6px;

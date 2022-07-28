@@ -36,14 +36,28 @@ div#root > table {
   // Prevent cells from folding
   white-space: nowrap;
 
-  // Something fcks the height for local tracks
-  tbody > tr {
-    @include funcs.clickable-item(vars.$accent);
+  // Highlight each individual <td> when a <tr> is hovered
+  // applying the :hover() effect directly on the <tr> is not
+  // preferable since it extends beyond the actual text
+  tbody > tr:hover {
+    td:nth-child(1) { // Title
+      @include funcs.hl_bottom_border(vars.$accent, vars.$hl_bg);
+    }
+    td:nth-child(2) { // Album
+      @include funcs.hl_bottom_border(vars.$accent, vars.$hl_bg);
+    }
+    td:nth-child(3) { // Artist
+      @include funcs.hl_bottom_border(vars.$accent, vars.$hl_bg);
+    }
+    td:nth-child(4) { // Duration
+      @include funcs.hl_bottom_border(vars.$accent, vars.$hl_bg);
+    }
   }
   // Currently playing indicator
-  td.amp {
+  span.amp {
       content: url("amp.gif");
-      width: $amp_width
+      width: $amp_width;
+      margin-right: 1em;
   }
   th,td {
     animation: fade-in 1.0s;
@@ -53,24 +67,23 @@ div#root > table {
     padding: 2px 10px 0 0;
 
     // Each column needs a min-width for proper alignment
-    &:nth-child(1) { // Amp icon
-      //@include funcs.limit-width($amp_width, $amp_width);
-      @include funcs.limit-width($amp_width, $amp_width);
-    }
-    &:nth-child(2) { // Title
+    &:nth-child(1) { // Title
       @include funcs.limit-width(14%, 18em);
+      border-bottom: vars.$default_bottom_border
     }
-    &:nth-child(3) { // Album
+    &:nth-child(2) { // Album
       @include funcs.limit-width(14%, 18em);
+      border-bottom: vars.$default_bottom_border
     }
-    &:nth-child(4) { // Artist
+    &:nth-child(3) { // Artist
       @include funcs.limit-width(14%, 18em);
+      border-bottom: vars.$default_bottom_border
     }
-    &:nth-child(5) { // Duration
-      @include funcs.limit-width(4.5em);
-    }
-    &:nth-child(6) { // Link
-      @include funcs.limit-width(1.5em, 1.5em);
+    &:nth-child(4) { // Duration
+      @include funcs.limit-width(6em);
+      border-bottom: vars.$default_bottom_border;
+      // YouTube link
+      & > a { margin-left: 1.5em; }
     }
   }
 }
