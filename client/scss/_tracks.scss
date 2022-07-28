@@ -9,17 +9,28 @@ $amp_width: 18px;
 }
 
 div#root > table {
-  padding: vars.$root_items_padding_top 0 0 5%;
+  margin: 7% 0 0 5%;
   text-align: left;
   grid-row: 1;
   grid-column: 2;
 
+  border-collapse: collapse;
+
   // Prevent cells from folding
   white-space: nowrap;
 
+  // Something fcks the height for local tracks
+  tr {
+    @include funcs.clickable-item(vars.$accent);
+  }
+  // Currently playing indicator
+  td.amp {
+      content: url("amp.gif");
+      width: $amp_width
+  }
   th,td {
     animation: fade-in 1.0s;
-    height: 20px;
+    height: fit-content;
     text-align: left;
     margin: 0 0 0 0;
     padding: 2px 10px 0 0;
@@ -43,11 +54,6 @@ div#root > table {
     &:nth-child(6) { // Link
       @include funcs.limit-width(1.5em);
     }
-  }
-  // Currently playing indicator
-  td.amp {
-      content: url("amp.gif");
-      width: $amp_width
   }
 }
 

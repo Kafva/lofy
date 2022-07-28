@@ -27,3 +27,15 @@
   overflow: hidden;
 }
 
+@mixin clickable-item($hover-border) {
+  margin-bottom: 5px;
+  padding: 3px;
+  border-bottom: 1px solid rgba(#414040, 0.5);
+
+  &:hover {
+    border: 1px solid $hover-border;
+    background-color: rgba(#45454b, 0.5);
+    opacity: 0.5;
+  }
+
+}

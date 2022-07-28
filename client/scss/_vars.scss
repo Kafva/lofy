@@ -12,18 +12,10 @@ $fg_grey:    #8e9297;
 
 //== #root container ==//
 // The top padding for the sidebar and tracks table
-$root_items_padding_top: 40px;
 $root_grid_gap: 25px;
 
 //== Side bar ==//
-//@include funcs.mobile {
-//  $sidebar_width: 15em;
-//}
-//@include funcs.widescreen {
-//  $sidebar_width: 15em;
-//}
 $sidebar_width: 15em;
-
 
 //== Progress bar ==//
 $progress_bar_height: 6px;

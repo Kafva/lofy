@@ -4,7 +4,7 @@
 $item_padding: 0 40px 10px 20px;
 
 div#sidebar {
-  padding-top: vars.$root_items_padding_top;
+  padding-top: 10%;
   padding-bottom: 50px;
   height: 100%;
 
@@ -14,11 +14,10 @@ div#sidebar {
   grid-column: 1;
   border-radius: 0% 0% 0% 0%;
 
-  
-
   h3 {
     padding: $item_padding;
     padding-top: 15px;
+    border-bottom: 1px solid rgba(vars.$accent, 0.5);
   }
   ul {
     list-style-type: none;
@@ -29,11 +28,11 @@ div#sidebar {
       // Border styling
       margin-bottom: 5px;
       padding: 3px;
-      border-bottom: 1px solid rgba(65, 64, 64, 0.5);
+      border-bottom: 1px solid rgba(#414040, 0.5);
 
       &:hover {
         border: 1px solid vars.$accent;
-        background-color: rgba(69, 69, 75, 0.5);
+        background-color: rgba(#45454b, 0.5);
         opacity: 0.5;
       }
 
