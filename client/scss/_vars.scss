@@ -1,5 +1,8 @@
 @use "funcs";
 
+// Font size for tracks and playlists
+$font-size: 14px;
+
 //== Color scheme ==
 $accent:     #6e85d3;
 
@@ -9,10 +12,6 @@ $sidebar_bg: #212330;
 
 $fg_white:   #f5e4f3; 
 $fg_grey:    #8e9297;
-
-//== #root container ==//
-// The top padding for the sidebar and tracks table
-$root_grid_gap: 25px;
 
 //== Side bar ==//
 $sidebar_width: 15em;
@@ -26,5 +25,7 @@ $progress_bar_default: #6a7294;
 $cover_z: 11;
 $nav_progress_z: 10;
 $nav_z: 9;
+$sidebar_z: 8;
+$table_z: 7;
 
 
