@@ -11,11 +11,11 @@ const TrackItem = (props: {
 }) => {
   return (
     <tr role="menuitem" 
-      class={props.trackIdx == props.playingIdx ? "selected" : ""}
+      classList={{selected:  props.trackIdx == props.playingIdx }}
       onClick={ () => props.setPlayingIdx(props.trackIdx) }>
-      <td class={
-        props.trackIdx == props.playingIdx && props.isPlaying ? "amp" : ""
-      }/>
+      <td classList={{
+        amp: props.trackIdx == props.playingIdx && props.isPlaying
+      }}/>
       <td>{props.track.Title}</td>
       <td>{props.track.Album}</td>
       <td>{props.track.Artist}</td>
@@ -47,11 +47,10 @@ const Tracks = (props: {
   setPlayingIdx: (arg0: number) => any,
   isPlaying: boolean
 }) => {
-
   return (<>
     <table>
       <thead>
-        <th class="nf nf-fa-circle_o_notch"/>
+        <th/>
         <th class="nf nf-mdi-music"/>
         <th class="nf nf-mdi-library_music"/>
         <th class="nf nf-oct-person"/>

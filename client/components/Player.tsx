@@ -301,7 +301,7 @@ const Player = (props: {
         </div>
         <div/>
         <div style={{
-          "width": `${Math.floor(100*(currentTime()/props.track.Duration)+5)}%`
+          "width": `${Math.floor(105*(currentTime()/props.track.Duration))}%`
         }}/>
       </nav>
     </Portal>

@@ -1,0 +1,29 @@
+
+// Shorthand mixins to target mobile/widescreen
+// Does not work for variable defs
+@mixin mobile {
+  @media only screen 
+    and (min-device-width: 320px) 
+    and (max-device-width: 480px)
+    and (-webkit-min-device-pixel-ratio: 2) {
+    @content;
+  }
+}
+@mixin widescreen {
+  @media (min-width: 1000px) {
+    @content;
+  }
+}
+
+// Limit text overflow and the width of an element
+@mixin limit-width($max-width, $min-width: $max-width, $display: inline-block) {
+  display: $display;
+  max-width: $max-width;
+  min-width: $min-width;
+  width: $max-width;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
