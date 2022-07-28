@@ -20,7 +20,7 @@ div#root > table {
   white-space: nowrap;
 
   // Something fcks the height for local tracks
-  tr {
+  tbody > tr {
     @include funcs.clickable-item(vars.$accent);
   }
   // Currently playing indicator

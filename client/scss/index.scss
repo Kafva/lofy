@@ -36,6 +36,9 @@ body {
   div#root {
     display: grid;
     grid-gap: vars.$root_grid_gap;
+
+    // One row that fill the entire x-axis
+    grid-template-rows: 100%;
     grid-template-columns: vars.$sidebar_width 60%;
 
     width: 100%;
