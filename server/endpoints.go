@@ -218,7 +218,6 @@ func GetLocalMetadata(w http.ResponseWriter, r *http.Request){
 	json.NewEncoder(w).Encode(res)
 }
 
-
 func get_track_paths_from_playlist(path string, track_paths *[]string) bool {
 	f, err := os.Open(path)
 	if err == nil {

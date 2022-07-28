@@ -13,7 +13,13 @@ func Test_get_albums(t *testing.T){
 }
 func Test_get_local_playlists(t *testing.T){
   playlist_names := get_local_playlists("../.tests/1")
-  if !reflect.DeepEqual(playlist_names, []string{"a","b"}) {
+
+	expected := []LocalPlaylist{  
+		{Name:"a", Sources: []string{}},
+		{Name:"b", Sources: []string{}},
+	}
+
+  if !reflect.DeepEqual(playlist_names, expected) {
     t.Errorf("get_local_playlists() failed")
   }
 }

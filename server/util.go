@@ -43,11 +43,11 @@ func logPrefix(color string, label string) {
   }
 }
 
-// Filters a slice of `fs.DirEntry` entries
+// Returns all non-hidden files or directories in the provided array
 func FsFilter(entries []fs.DirEntry, isDir bool) []fs.DirEntry {
   filtered := make([]fs.DirEntry, 0, len(entries))
   for _,entry := range entries {
-    if entry.IsDir() == isDir {
+    if entry.IsDir() == isDir && entry.Name()[0] != '.' {
       filtered = append(filtered, entry)
     }
   }

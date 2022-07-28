@@ -2,7 +2,7 @@ import { createEffect, createSignal, onMount, Setter } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import Config, { TRACK_HISTORY } from '../config';
 import { Track, LocalTrack, YtTrack } from '../types';
-import { Log, Err, DisplayTime } from '../util';
+import { Log, DisplayTime } from '../util';
 
 /**
 * The `navigator` API generally works even if the `sizes` and `type`
@@ -21,40 +21,6 @@ const setNavigatorMetadata = (track: Track, imageSrc: string) => {
       type: "image/png"
     }]
   });
-}
-
-/**
-* The source for the audio element can be determined for local resources
-* using the `Track.AlbumFS` and `Track.AlbumId` attributes.
-* For YouTube resources a request to the server
-* that determine the audio source is needed
-*
-* The #cover <img> is also updated with the location of the cover
-* art during this call.
-*/
-const getAudioSource = async (track: Track): Promise<string> => {
-  const cover = document.getElementById("cover") as HTMLImageElement
-
-  if ('AlbumFS' in track) { // Local files (no async required)
-    const l = track as LocalTrack
-    Log(`Setting audio source: ${l.Title}`)
-
-    const imgSrc = `/art/${l.AlbumFS}/${l.AlbumId}`
-    setNavigatorMetadata(track, imgSrc)
-    cover.src = imgSrc
-
-    return `${Config.serverUrl}/audio/${l.AlbumFS}/${l.AlbumId}`
-  } else if ('TrackId' in track) { // YouTube
-    const y = track as YtTrack
-    Log(`Setting audio source: ${y.Title}`)
-    setNavigatorMetadata(track, y.ArtworkUrl)
-    cover.src = y.ArtworkUrl
-
-    return (await fetch(`${Config.serverUrl}/yturl/${y.TrackId}`)).text()
-  } else {
-    Err(`No source available for current track: '${track.Title}'`)
-    return ""
-  }
 }
 
 const changeVolume = (
@@ -114,14 +80,17 @@ const Player = (props: {
 
   setPlayingIdx: (arg0: number) => any
   playingIdx: number,
+
+  setIsPlaying: (arg0: boolean) => any,
+  isPlaying: boolean
 }) => {
   let audio: HTMLAudioElement;
 
   const [volume,setVolume] = createSignal(Config.defaultVolume)
-  const [isPlaying,setIsPlaying] = createSignal(true)
   const [currentTime,setCurrentTime] = createSignal(0)
 
   const [shuffle,setShuffle] = createSignal(Config.shuffleDefaultOn)
+  const [coverSource,setCoverSource] = createSignal("")
 
   // Update the audio source whenever the track changes
   // `createEffect()` is triggered whenever
@@ -129,9 +98,29 @@ const Player = (props: {
   // modified, i.e. `track` in this case.
   createEffect( () => {
     if (props.track !== undefined && props.track.Title != "") {
-      getAudioSource(props.track).then(s => { 
-        audio.src = s 
-      })
+      Log(`Setting audio source: ${props.track.Title}`)
+      /**
+      * The source for the audio element can be determined for local resources
+      * using the `Track.AlbumFS` and `Track.AlbumId` attributes.
+      * For YouTube resources a request to the server
+      * that determine the audio source is needed
+      */
+      if ('AlbumFS' in props.track) { // Local files (no async required)
+        const l = props.track as LocalTrack
+        audio.src = `${Config.serverUrl}/audio/${l.AlbumFS}/${l.AlbumId}`
+        setCoverSource(`/art/${l.AlbumFS}/${l.AlbumId}`)
+        setNavigatorMetadata(props.track, coverSource())
+
+      } else if ('TrackId' in props.track) { // YouTube
+        const y = props.track as YtTrack
+        fetch(`${Config.serverUrl}/yturl/${y.TrackId}`)
+          .then( (r:Response) => r.text() )
+          .then( (src:string) => {
+            audio.src = src
+            setCoverSource(y.ArtworkUrl)
+            setNavigatorMetadata(props.track, coverSource())
+          })
+      }
     }
   })
 
@@ -145,10 +134,18 @@ const Player = (props: {
   //
   // The #cover needs to exist even when it is not shown so that we can 
   // update the `src` field from `getAudioSource()`
-  // <Show when={showCover()} fallback={ <img hidden id="cover"/> }>
   return (<>
     <Portal>
-      <img hidden id="cover"/>
+      <div hidden id="cover"> 
+        <div style={{
+          "background-image": `url(${coverSource()})`
+        }}/>
+        <div>
+          <img src={coverSource()}/>
+          <p>{props.track.Title}</p>
+          <p>{props.track.Artist}</p>
+        </div>
+      </div>
     </Portal>
 
     <audio hidden autoplay preload="auto" ref={audio}
@@ -156,7 +153,7 @@ const Player = (props: {
         // Update the `currentTime` every second based on the current time
         // of the <audio> element
         if (audio.currentTime <= props.track.Duration) {
-          setCurrentTime(audio.currentTime + 1)
+          setCurrentTime(audio.currentTime)
         }
       }}
       onEnded={ () => {
@@ -164,114 +161,120 @@ const Player = (props: {
           props.setPlayingIdx, props.playingIdx, shuffle()
         )
         setCurrentTime(0)
-        setIsPlaying(true)
+        props.setIsPlaying(true)
       }}
     />
     <Portal>
       <nav>
-        <span role="button" class="nf nf-mdi-creation"
-          onClick={ () => {
-            const cover = document.getElementById("cover") as HTMLImageElement
-            if (cover !== undefined) {
-              cover.hidden = !cover.hidden
-            }
-          }}
-        />
-        <span role="button" 
-          class={shuffle() ? "nf nf-mdi-shuffle_variant" : 
-            "nf nf-mdi-shuffle_disabled"
-          } 
-          onClick={ () => setShuffle(!shuffle()) }
-        />
+        <div>
+          <span role="button" class="nf nf-mdi-creation"
+            onClick={ () => {
+              const cover = document.getElementById("cover") as HTMLImageElement
+              if (cover !== undefined) {
+                cover.hidden = !cover.hidden
+              }
+            }}
+          />
+          <span role="button" 
+            class={shuffle() ? "nf nf-mdi-shuffle_variant" : 
+              "nf nf-mdi-shuffle_disabled"
+            } 
+            onClick={ () => setShuffle(!shuffle()) }
+          />
 
-        <span class="nf nf-indentation-line"/>
+          <span class="nf nf-indentation-line"/>
 
-        <span role="button"
-          class="nf nf-mdi-skip_previous"
-          onClick={ () => {
+          <span role="button"
+            class="nf nf-mdi-skip_previous"
+            onClick={ () => {
             // Seek skipping for long tracks
-            if (audio.duration >= 60*Config.sameTrackSkipMin) {
-              const newPos = audio.currentTime - 60*Config.sameTrackSeekStepMin
-              if (newPos > 0){
-                audio.currentTime = newPos
-              }
-            } else {
-              const prevIndex = TRACK_HISTORY.pop();
-              Log("TRACK_HISTORY", TRACK_HISTORY)
+              if (audio.duration >= 60*Config.sameTrackSkipMin) {
+                const newPos = audio.currentTime - 60*Config.sameTrackSeekStepMin
+                if (newPos > 0){
+                  audio.currentTime = newPos
+                }
+              } else {
+                const prevIndex = TRACK_HISTORY.pop();
+                Log("TRACK_HISTORY", TRACK_HISTORY)
 
-              if (prevIndex != null) {
-                props.setPlayingIdx(prevIndex)
-                setCurrentTime(0)
-                setIsPlaying(true)
+                if (prevIndex != null) {
+                  props.setPlayingIdx(prevIndex)
+                  setCurrentTime(0)
+                  props.setIsPlaying(true)
+                }
               }
-            }
-          }}
-        />
-        <span role="button"
-          class={ isPlaying() ? "nf nf-fa-pause" : "nf nf-fa-play" }
-          onClick={ () => {
-            if (audio.paused) {
-              audio.play()
-            } else {
-              audio.pause()
-            }
-            setIsPlaying(!audio.paused)
-          }}
-        />
-        <span role="button"
-          class="nf nf-mdi-skip_next"
-          onClick={ () => {
+            }}
+          />
+          <span role="button"
+            class={ props.isPlaying ? "nf nf-fa-pause" : "nf nf-fa-play" }
+            onClick={ () => {
+              if (audio.paused) {
+                audio.play()
+              } else {
+                audio.pause()
+              }
+              props.setIsPlaying(!audio.paused)
+            }}
+          />
+          <span role="button"
+            class="nf nf-mdi-skip_next"
+            onClick={ () => {
             // For long tracks, e.g.
             //  https://www.youtube.com/watch?v=_-8yfNLG5e8
             // We skip ahead `Config.seekStepMin` minutes instead
             // of moving to the next track
-            if (audio.duration >= 60*Config.sameTrackSkipMin) {
-              const newPos = audio.currentTime + 60*Config.sameTrackSeekStepMin
+              if (audio.duration >= 60*Config.sameTrackSkipMin) {
+                const newPos = audio.currentTime + 60*Config.sameTrackSeekStepMin
+                if (newPos <= audio.duration){
+                  audio.currentTime = newPos
+                }
+              } else {
+                setNextTrack(props.trackCount, 
+                  props.setPlayingIdx, props.playingIdx, shuffle()
+                )
+                setCurrentTime(0)
+                props.setIsPlaying(true)
+              }
+            }}
+          />
+
+          <span class="nf nf-indentation-line"/>
+
+          <span>{props.track.Title}</span>
+
+          <span  role="button"
+            class="nf nf-fa-backward" onClick={ () => {
+              const newPos = audio.currentTime - Config.seekStepSec
+              if (newPos >= 0){
+                audio.currentTime = newPos
+              }
+            }}
+          />
+          <span>{
+            `${DisplayTime(currentTime())} / ${DisplayTime(props.track.Duration)}`
+          }</span>
+          <span  role="button"
+            class="nf nf-fa-forward" onClick={ () => {
+              const newPos = audio.currentTime + Config.seekStepSec
               if (newPos <= audio.duration){
                 audio.currentTime = newPos
               }
-            } else {
-              setNextTrack(props.trackCount, 
-                props.setPlayingIdx, props.playingIdx, shuffle()
-              )
-              setCurrentTime(0)
-              setIsPlaying(true)
-            }
-          }}
-        />
+            }}
+          />
+          <span class="nf nf-indentation-line"/>
 
-        <span class="nf nf-indentation-line"/>
-
-        <span>{props.track.Title}</span>
-
-        <span  role="button"
-          class="nf nf-fa-backward" onClick={ () => {
-            const newPos = audio.currentTime - Config.seekStepSec
-            if (newPos >= 0){
-              audio.currentTime = newPos
-            }
-          }}
-        />
-        <span>{
-          `${DisplayTime(currentTime())} / ${DisplayTime(props.track.Duration)}`
-        }</span>
-        <span  role="button"
-          class="nf nf-fa-forward" onClick={ () => {
-            const newPos = audio.currentTime + Config.seekStepSec
-            if (newPos <= audio.duration){
-              audio.currentTime = newPos
-            }
-          }}
-        />
-        <span class="nf nf-indentation-line"/>
-
-        <span  role="button" class="nf nf-mdi-volume_plus" onClick={() =>
-          changeVolume(volume()+Config.volumeStep, audio, setVolume)
-        }/>
-        <span>{ Math.round(volume()*100) + " %" }</span>
-        <span  role="button" class="nf nf-mdi-volume_minus" onClick={() =>
-          changeVolume(volume()-Config.volumeStep, audio, setVolume)
-        }/>
+          <span  role="button" class="nf nf-mdi-volume_plus" onClick={() =>
+            changeVolume(volume()+Config.volumeStep, audio, setVolume)
+          }/>
+          <span>{ Math.round(volume()*100) + " %" }</span>
+          <span  role="button" class="nf nf-mdi-volume_minus" onClick={() =>
+            changeVolume(volume()-Config.volumeStep, audio, setVolume)
+          }/>
+        </div>
+        <div/>
+        <div style={{
+          "width": `${Math.floor(100*(currentTime()/props.track.Duration)+5)}%`
+        }}/>
       </nav>
     </Portal>
   </>);

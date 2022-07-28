@@ -44,6 +44,9 @@ const App = () => {
   // The currently playing track in the current list
   const [playingIdx,setPlayingIdx] = createSignal(0)
 
+  // True if playback is not paused
+  const [isPlaying,setIsPlaying] = createSignal(true)
+
   // Fetch metadata about a list whenever the listIndex() or activeList() changes
   createEffect( () => {
     if (listIndex() >= 0 ) {
@@ -121,6 +124,7 @@ const App = () => {
 
       playingIdx={playingIdx()}
       setPlayingIdx={(s:number)=>setPlayingIdx(s)}
+      isPlaying={isPlaying()}
     />
 
     <Player
@@ -132,6 +136,9 @@ const App = () => {
 
       setPlayingIdx={(s:number)=>setPlayingIdx(s)}
       playingIdx={playingIdx()}
+
+      setIsPlaying={(s:boolean)=>setIsPlaying(s)}
+      isPlaying={isPlaying()}
     />
   </>)
 };

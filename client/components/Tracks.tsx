@@ -6,12 +6,16 @@ const TrackItem = (props: {
   track: Track,
   trackIdx: number,
   playingIdx: number,
-  setPlayingIdx: (arg0: number) => any
+  setPlayingIdx: (arg0: number) => any,
+  isPlaying: boolean
 }) => {
   return (
     <tr role="menuitem" 
+      class={props.trackIdx == props.playingIdx ? "selected" : ""}
       onClick={ () => props.setPlayingIdx(props.trackIdx) }>
-      <td class={props.trackIdx == props.playingIdx ? "amp" : ""}/>
+      <td class={
+        props.trackIdx == props.playingIdx && props.isPlaying ? "amp" : ""
+      }/>
       <td>{props.track.Title}</td>
       <td>{props.track.Album}</td>
       <td>{props.track.Artist}</td>
@@ -40,7 +44,8 @@ const Tracks = (props: {
   currentList: Track[],
 
   playingIdx: number,
-  setPlayingIdx: (arg0: number) => any
+  setPlayingIdx: (arg0: number) => any,
+  isPlaying: boolean
 }) => {
 
   return (<>
@@ -59,6 +64,7 @@ const Tracks = (props: {
             trackIdx={i}
             playingIdx={props.playingIdx} 
             setPlayingIdx={props.setPlayingIdx}
+            isPlaying={props.isPlaying}
           />
         }
         </Index>

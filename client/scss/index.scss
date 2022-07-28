@@ -1,20 +1,37 @@
 //== Color scheme ==
-$primary_bg: #23283d;
-$primary_accent: #6e85d3;
-$black_bg: #101320;
-$grey_bg: #1e2233;
-$fg_white: #f5e4f3; 
-$fg_grey: #8e9297;
+$accent:     #6e85d3;
+
+$body_bg:    #23283d;
+$nav_bg:     #1e2233;
+$sidebar_bg: #212330;
+
+$fg_white:   #f5e4f3; 
+$fg_grey:    #8e9297;
+
+//== Progress bar ==//
+$progress_bar_height: 6px;
+$progress_bar_gradient: linear-gradient(90deg, #de95c3 93%, transparent 100%);
+$progress_bar_default: #6a7294;
+
+//== Z-indices ==//
+$cover_z: 11;
+$nav_progress_z: 10;
+$nav_z: 9;
 
 body {
   font-family: "Menlo", "Arial";
-  background-color: $primary_bg;
+  background-color: $body_bg;
   color: $fg_white;
   margin: 0; padding: 0; border: 0; outline: 0;
 
   // Indicate clickable elements
   [role='menuitem'],[role='button'] {
     cursor: pointer;
+  }
+  // Used for <h3>, <li> and <tr>
+  .selected {
+    color: $accent;
+    font-weight: bold;
   }
 }
 
@@ -27,15 +44,11 @@ div#root {
   }
   //== Side bar ==//
   div#sidebar {
-    background-color: $black_bg;
+    padding-top: 40px;
+    background-color: $sidebar_bg;
     width: 10%;
     h3 {
       padding-top: 15px; 
-    }
-    // Used for both <h3> and <li>
-    .selected {
-      color: $primary_accent;
-      font-weight: bold;
     }
   }
   //== Track list ==//
@@ -46,6 +59,7 @@ div#root {
     th {
       text-align: left;
     }
+    // Currently playing indicator
     td.amp {
         content: url("amp.gif");
         height: 20px;
@@ -55,41 +69,110 @@ div#root {
 }
 
 nav {
+   z-index: $nav_z;
+   background-color: $nav_bg;
    position: fixed;
-   
-   // The bar only contains text elements
+   top: 0;
+   left: 0;
    text-align: center;
    
    width: 100%;
-   height: fit-content;
    min-width: 50%;
-   z-index: 10;
-   top: 0;
-   left: 0;
 
-   background-color: $grey_bg;
+   display: grid;
 
-   // Organize nav items in a horizontal list
-   span {
-     display: inline-block;
-     width: fit-content;
-     margin: 5px;
+   // Top container with controls
+   div:nth-child(1) {
+     grid-row: 1;
+     grid-column: 1;
+     height: fit-content;
+     span {
+       display: inline-block;
+       width: fit-content;
+       margin: 5px;
+     }
+     span.nf-indentation-line {
+         margin: 10px;
+     }
+   } 
+
+   %progress-bar {
+    grid-row: 2;
+    grid-column: 1;
+    height: $progress_bar_height;
+    background-color: $progress_bar_default;
+    width: 100%;
    }
 
-   // Seperators
-   span.nf-indentation-line {
-       margin: 10px;
+   // Underlying placeholder for progress bar
+   div:nth-child(2) {
+     @extend %progress-bar;
+   } 
+
+   // The actual progress bar
+   div:nth-child(3) {
+    @extend %progress-bar;
+
+    z-index: $nav_progress_z;
+    background-image: $progress_bar_gradient;
+
+    // For the gradient to reach the end of the screen
+    // we need a width slightly above 100%
+    width: 0%;
+
+    // Changes to the width are applied linearly over 3 seconds
+    // without any delay
+    transition: width 2s linear 0s;
    }
+
 }
 
+%cover-pos {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0; padding: 0; border: 0; outline: 0;
+}
 
-img#cover {
-  position: relative;
-  left: 50%;
-  top: 5%;
-  opacity: 0.9;
-  z-index: 5;
-  width: 300px;
-  height: 300px;
+div#cover {
+  z-index: $cover_z;
+  background-color: $body_bg;
+  @extend %cover-pos;
+
+  // Blurred background
+  div:nth-child(1) {
+    @extend %cover-pos;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    filter: blur(8px);
+
+    // Lower the brightness to ensure that white text is readable
+    filter: brightness(70%);
+  }
+  // Cover image and title
+  div:nth-child(2) {
+    position: fixed;
+
+    // Center the container
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    text-align: center;
+
+    background-color: transparent;
+
+    img {
+      border-radius: 5%;
+    }
+    p {
+      font-size: 28px;
+      font-weight: bold;
+    }
+  }
+
 }
 
