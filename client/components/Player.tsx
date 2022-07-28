@@ -1,8 +1,16 @@
-import { createEffect, createSignal, onMount, Setter } from 'solid-js';
+import { createEffect, createResource, createSignal, onMount, Setter } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import Config, { TRACK_HISTORY } from '../config';
 import { Track, LocalTrack, YtTrack } from '../types';
 import { Log, DisplayTime } from '../util';
+
+const getAudio = (): HTMLAudioElement => { 
+  const audio = document.querySelector("audio")
+  if (audio == undefined) {
+    throw "Missing <audio> element"
+  }
+  return audio
+}
 
 /**
 * The `navigator` API generally works even if the `sizes` and `type`
@@ -68,6 +76,13 @@ const setNextTrack = (
   setPlayingIdx(newIndex) 
 }
 
+const getYtSrc = async (trackId:string): Promise<string>  => {
+  if (trackId !== undefined && trackId!=""){
+    return (await fetch(`${Config.serverUrl}/yturl/${trackId}`)).text()
+  }
+  return ""
+}
+
 /**
 * Holds the actual <audio> element used to play a track
 * and all the buttons for controlling playback
@@ -92,6 +107,15 @@ const Player = (props: {
   const [shuffle,setShuffle] = createSignal(Config.shuffleDefaultOn)
   const [coverSource,setCoverSource] = createSignal("")
 
+  // The YouTube Id for the current track (empty for non-yt tracks)
+  const [ytId,setYtId] = createSignal("")
+
+  // `createResource()` allows us to connect a signal with an async task
+  // whenever the `ytId` singal changes, the `getYtSrc` function will re-run.
+  // The resolved data is stored in `audioSrc`
+  // `mutate()` allows us to set `audioSrc` directly without using `getYtSrc`.
+  const [audioSrc,{mutate}] = createResource(ytId, getYtSrc)
+
   // Update the audio source whenever the track changes
   // `createEffect()` is triggered whenever
   // reactive components inside the function are
@@ -107,25 +131,28 @@ const Player = (props: {
       */
       if ('AlbumFS' in props.track) { // Local files (no async required)
         const l = props.track as LocalTrack
-        audio.src = `${Config.serverUrl}/audio/${l.AlbumFS}/${l.AlbumId}`
+        // Clear the YtId and change the value of `audioSrc`
+        // directly without an async call using `mutate`
+        setYtId("")
+        mutate(`${Config.serverUrl}/audio/${l.AlbumFS}/${l.AlbumId}`)
+
         setCoverSource(`/art/${l.AlbumFS}/${l.AlbumId}`)
         setNavigatorMetadata(props.track, coverSource())
 
       } else if ('TrackId' in props.track) { // YouTube
         const y = props.track as YtTrack
-        fetch(`${Config.serverUrl}/yturl/${y.TrackId}`)
-          .then( (r:Response) => r.text() )
-          .then( (src:string) => {
-            audio.src = src
-            setCoverSource(y.ArtworkUrl)
-            setNavigatorMetadata(props.track, coverSource())
-          })
+        // Update the `ytId`, triggering a new call to `getYtSrc`
+        setYtId(y.TrackId)
+
+        setCoverSource(y.ArtworkUrl)
+        setNavigatorMetadata(props.track, coverSource())
       }
     }
   })
 
   onMount( () => {
     // Initalise the <audio> with the desired default volume
+    audio = getAudio()
     audio.volume = volume()
   })
 
@@ -148,7 +175,8 @@ const Player = (props: {
       </div>
     </Portal>
 
-    <audio hidden autoplay preload="auto" ref={audio}
+    <audio hidden autoplay preload="auto"
+      src={ audioSrc() || "" }
       onTimeUpdate= {() => {
         // Update the `currentTime` every second based on the current time
         // of the <audio> element
@@ -182,13 +210,13 @@ const Player = (props: {
             onClick={ () => setShuffle(!shuffle()) }
           />
 
-          <span class="nf nf-indentation-line"/>
+          <span class="seperator"/>
 
           <span role="button"
             class="nf nf-mdi-skip_previous"
             onClick={ () => {
             // Seek skipping for long tracks
-              if (audio.duration >= 60*Config.sameTrackSkipMin) {
+              if (props.track.Duration >= 60*Config.sameTrackSkipMin) {
                 const newPos = audio.currentTime - 60*Config.sameTrackSeekStepMin
                 if (newPos > 0){
                   audio.currentTime = newPos
@@ -219,11 +247,11 @@ const Player = (props: {
           <span role="button"
             class="nf nf-mdi-skip_next"
             onClick={ () => {
-            // For long tracks, e.g.
-            //  https://www.youtube.com/watch?v=_-8yfNLG5e8
-            // We skip ahead `Config.seekStepMin` minutes instead
-            // of moving to the next track
-              if (audio.duration >= 60*Config.sameTrackSkipMin) {
+              // For long tracks, e.g.
+              //  https://www.youtube.com/watch?v=_-8yfNLG5e8
+              // We skip ahead `Config.seekStepMin` minutes instead
+              // of moving to the next track
+              if (props.track.Duration >= 60*Config.sameTrackSkipMin) {
                 const newPos = audio.currentTime + 60*Config.sameTrackSeekStepMin
                 if (newPos <= audio.duration){
                   audio.currentTime = newPos
@@ -238,7 +266,7 @@ const Player = (props: {
             }}
           />
 
-          <span class="nf nf-indentation-line"/>
+          <span class="seperator"/>
 
           <span>{props.track.Title}</span>
 
@@ -261,7 +289,7 @@ const Player = (props: {
               }
             }}
           />
-          <span class="nf nf-indentation-line"/>
+          <span class="seperator"/>
 
           <span  role="button" class="nf nf-mdi-volume_plus" onClick={() =>
             changeVolume(volume()+Config.volumeStep, audio, setVolume)
