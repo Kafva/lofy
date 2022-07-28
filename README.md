@@ -2,13 +2,11 @@
 
 ## Installation
 ```bash
-# Build dependencies
-npm i -g vite
-
 # Build the frontend
-yarn && vite build
+npm i -g vite pnpm
+pnpm install && vite build
 
-# Run a basic HTTP server
+# Build the server
 go build && ./lofy
 
 # Development

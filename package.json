@@ -1,7 +1,7 @@
 {
   "name": "lofy",
   "version": "0.1.0",
-  "description": "",
+  "description": "Web player for local files and YouTube playlists (client)",
   "scripts": {
     "build": "vite build"
   },
