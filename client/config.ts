@@ -57,7 +57,7 @@ const LIST_TYPES = Object.freeze([
 
 
 /**
-* Note: each of the <ul> lists that we want to render
+* Note: each of the <ol> lists that we want to render
 * already exist in the DOM when we recieve `index.html` from the server.
 * We extract these values into ararys ONCE and not for every `render()`
 */

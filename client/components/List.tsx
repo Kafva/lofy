@@ -57,9 +57,7 @@ const List = (props: {
               props.setListIndex(i) 
               localStorage.setItem(Config.listIndexKey, i.toString())
             }}
-            data-id={item().getAttribute('data-id')}
-            class={ props.listIndex == i ? "selected" : "" }>
-            {item().innerHTML}
+            data-id={item().getAttribute('data-id')}>
             <Show when={props.listType == MediaListType.YouTube}>
               <a 
                 class="nf nf-mdi-link"
@@ -67,6 +65,7 @@ const List = (props: {
                 href={ get_yt_link(item()) }
               />
             </Show>
+            <span class={ props.listIndex == i ? "selected" : "" }>{item().innerHTML}</span>
           </li>
         }
         </Index>
