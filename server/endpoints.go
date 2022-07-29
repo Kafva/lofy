@@ -65,10 +65,10 @@ func GetYtPlaylist(w http.ResponseWriter, r *http.Request) {
 // The `AudioUrl` field will be empty and needs to be requested separately
 func fetch_yt_playlist(yt_id string, single_track bool) []YtTrack {
     yt_param := "list"
-    thumbnail_field := ".thumbnails.2.url"
+		var thumbnail = ""
     if single_track {
       yt_param = "v"
-      thumbnail_field = ".thumbnail"
+			thumbnail = "https://i.ytimg.com/vi/"+yt_id+"/"+YT_THUMBNAIL_FILENAME
     }
     cmd     := exec.Command(
       YTDL_BIN, "-j", "--format", "bestaudio",
@@ -85,6 +85,12 @@ func fetch_yt_playlist(yt_id string, single_track bool) []YtTrack {
 
 			for i:=0; i < int(length); i++ {
 				idx := strconv.Itoa(i)
+
+				track_id := gjson.Get(out_str, idx+".id").String()
+				if !single_track {
+					thumbnail = "https://i.ytimg.com/vi/"+track_id+"/"+YT_THUMBNAIL_FILENAME
+				}
+
 				yt_tracks = append(yt_tracks, YtTrack{
 					Track: Track {
 						Title: 		gjson.Get(out_str, idx+".title").String(),
@@ -92,8 +98,8 @@ func fetch_yt_playlist(yt_id string, single_track bool) []YtTrack {
 						Album: 		gjson.Get(out_str, idx+".playlist").String(),
 						Duration: int(gjson.Get(out_str, idx+".duration").Int()),
 					},
-					TrackId:    gjson.Get(out_str, idx+".id").String(),
-					ArtworkUrl: gjson.Get(out_str, idx+thumbnail_field).String(),
+					TrackId:    track_id,
+					ArtworkUrl: thumbnail,
 					AudioUrl: "",
 				})
 			}

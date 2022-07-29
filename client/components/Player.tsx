@@ -79,7 +79,6 @@ const setNextTrack = (
 const getYtSrc = async (trackId:string): Promise<string>  => {
   if (trackId !== undefined && trackId!=""){
     const ytUrl = (await fetch(`${Config.serverUrl}/yturl/${trackId}`)).text()
-    Log(`Setting audio source: '${trackId}' - '${ytUrl}'`)
     return ytUrl
   }
   return ""
@@ -153,6 +152,7 @@ const Player = (props: {
         const y = props.track as YtTrack
         // Update the `ytId`, triggering a new call to `getYtSrc`
         setYtId(y.TrackId)
+        Log(`Setting audio source: '${props.track.Title}' - '${y.TrackId}'`)
 
         setCoverSource(y.ArtworkUrl)
         setNavigatorMetadata(props.track, coverSource())
