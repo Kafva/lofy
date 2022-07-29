@@ -39,7 +39,7 @@ body {
 
     @include vars.mobile {
       font-size: vars.$mobile_font_size;
-      margin-top: 25%;
+      margin-top: 10%;
     }
 
     // Only the <Tracks> are displayed as a flex-item

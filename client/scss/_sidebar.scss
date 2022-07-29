@@ -8,7 +8,7 @@ div#sidebar {
   position: fixed;
   overflow-y: scroll;
   left: 0;
-  top: 1%;
+  top: 0;
 
   width: vars.$sidebar_width;
 
@@ -16,6 +16,7 @@ div#sidebar {
     width: vars.$widescreen_sidebar_width;
   }
   @include vars.mobile {
+    top: 1%;
     width: vars.$mobile_sidebar_width;
     font-size: vars.$mobile_font_size;
   }
