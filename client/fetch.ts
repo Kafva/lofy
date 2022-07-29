@@ -22,7 +22,7 @@ const initFetchCache = (mediaList: MediaListType): Map<string,[Track[],boolean]>
 
 /**
 * The cache contains one `Map` for each media list:
-*   { playlist1: { [tracks...], fully_loaded }, playlist2: { [tracks...], fully_loaded } ...
+*   { playlist1: { [tracks...], last_page }, playlist2: { [tracks...], last_page } ...
 */
 const FETCH_CACHE = {
   [MediaListType.LocalPlaylist]: initFetchCache(MediaListType.LocalPlaylist),
@@ -39,13 +39,13 @@ const endpointFetch = async (
   const cachedList = FETCH_CACHE[typing].get(mediaName)
 
   if (cachedList!==undefined && cachedList[1]) {
-    // Return cached data if the second field (`fully_loaded`) has been set
+    // Return cached data if the second field, `last_page`, has been set
     Log(`Returning cached data for ${mediaName}`)
     return cachedList 
   } else {
     try {
       Log(`Fetching page ${page} for ${mediaName}`)
-      let params = endpoint == "yt" ? `single=${single}` : `page=${page}`
+      const params = endpoint == "yt" ? `single=${single}` : `page=${page}`
 
       const data = await 
       (await fetch(
@@ -61,8 +61,13 @@ const endpointFetch = async (
         }
         const last_page = data['last_page'] as boolean;
 
-        // Save the fetched data into the cache
-        FETCH_CACHE[typing].set(mediaName, [tracks,last_page])
+        // Append fetched data into the cache
+        const existing_value = FETCH_CACHE[typing].get(mediaName)
+        let joined_values: Track[] = []
+        if (existing_value !== undefined){
+          joined_values = [...existing_value[0], ...tracks]
+        }
+        FETCH_CACHE[typing].set(mediaName, [joined_values, last_page])
 
         return [tracks,last_page]
       } else {
@@ -85,6 +90,7 @@ const FetchMediaList = async (
   page: number,
   single: boolean,
   typing: MediaListType): Promise<[Track[],boolean]> => {
+  Log("FETCH_CACHE", FETCH_CACHE)
   switch (typing) {
   case MediaListType.LocalPlaylist:
     return endpointFetch("meta/playlist", mediaName, page, single, typing) as 

@@ -39,7 +39,11 @@ div#cover {
     background-color: transparent;
 
     img {
+      // 600x600 seems to be the standard for iTunes covers
+      // We zoom in on all other media to fit these dimensions
+      // See `components/Player.tsx`
       border-radius: 5%;
+      object-fit: none;
     }
     p {
       font-size: 34px;

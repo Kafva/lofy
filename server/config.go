@@ -18,8 +18,8 @@ const PLAYLIST_DIR  =  "~/Music/.playlists"
 const YT_PLAYLIST_FILE = "~/Music/.playlists/yt"
 const YT_MAX_PLAYLIST_CNT = 255;
 
-// Alternatively, `maxresdefault.jpg`
-const YT_THUMBNAIL_FILENAME = "sddefault.jpg"
+// Alternatively, `sddefault.jpg`
+const YT_THUMBNAIL_FILENAME = "maxresdefault.jpg"
 
 // Album directory names MUST adhear to the regex defined by `ALBUM_NAME_REGEX`
 const ALBUM_DIR     =  "~/Music"

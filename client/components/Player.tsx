@@ -4,12 +4,13 @@ import Config, { TRACK_HISTORY } from '../config';
 import { Track, LocalTrack, YtTrack } from '../types';
 import { Log, DisplayTime } from '../util';
 
-const getAudio = (): HTMLAudioElement => { 
-  const audio = document.querySelector("audio")
-  if (audio == undefined) {
-    throw "Missing <audio> element"
+/** Generic getter for DOM elements */
+function getHTMLElement<Type extends Element>(selector:string): Type {
+  const el = document.querySelector(selector) as Type;
+  if (el == undefined) {
+    throw `No element found matching ${selector}`
   }
-  return audio
+  return el
 }
 
 /**
@@ -108,6 +109,7 @@ const Player = (props: {
   isPlaying: boolean
 }) => {
   let audio: HTMLAudioElement;
+  let img: HTMLImageElement;
 
   const [volume,setVolume] = createSignal(Config.defaultVolume)
   const [currentTime,setCurrentTime] = createSignal(0)
@@ -162,7 +164,8 @@ const Player = (props: {
 
   onMount( () => {
     // Initalise the <audio> with the desired default volume
-    audio = getAudio()
+    img   = getHTMLElement<HTMLImageElement>("#cover > div > img")
+    audio = getHTMLElement<HTMLAudioElement>("audio")
     audio.volume = volume()
   })
 
@@ -178,9 +181,13 @@ const Player = (props: {
           "background-image": `url(${coverSource()})`
         }}/>
         <div>
-          <img src={coverSource()}/>
-          <p>{props.track.Title}</p>
-          <p>{props.track.Artist}</p>
+          <img src={coverSource()}  onLoad={ () => {
+            // Maintain the original dimensions of images smaller than 600x600
+            // and scale down larger images
+            if (img.width  > 600) { img.width  = 600; }
+            if (img.height > 600) { img.height = 600; }
+          }} />
+          <p>{props.track.Title} ―  {props.track.Artist}</p>
         </div>
       </div>
     </Portal>
