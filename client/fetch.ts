@@ -1,7 +1,23 @@
-import { MediaListType, LocalTrack, YtTrack, Track } from './types';
-import Config, { MEDIA_LISTS } from './config';
+import { MediaListType, LocalTrack, YtTrack, Track, ActiveTuple, PlaylistEntry } from './types';
+import Config, { MEDIA_LISTS, TRACK_HISTORY, PLAYLIST_ORDER } from './config';
 import { Err, Log } from './util';
 
+
+/**
+* Sort an array of `LocalTrack` objects such that they are in the
+* order indicated by a `PlaylistEntry` array from `PLAYLIST_ORDER`
+*/
+const sortPlaylist = (unsorted: LocalTrack[], playlist_name: string) => {
+  unsorted.sort( (a:LocalTrack,b:LocalTrack) => {
+    const pl_index_a = PLAYLIST_ORDER.get(playlist_name)!.findIndex(
+      (e:PlaylistEntry) => e.AlbumFS==a.AlbumFS && e.AlbumId == a.AlbumId
+    )
+    const pl_index_b = PLAYLIST_ORDER.get(playlist_name)!.findIndex((e:PlaylistEntry) =>
+      e.AlbumFS==b.AlbumFS && e.AlbumId == b.AlbumId
+    )
+    return pl_index_a - pl_index_b
+  })
+}
 
 const initFetchCache = (mediaList: MediaListType): Map<string,[Track[],boolean]> => {
   let mediaListNames = [];
@@ -85,7 +101,7 @@ const endpointFetch = async (
  * Returns an array of tracks and a boolean value that indicates
  * if there is more data to fetch.
  */
-const FetchMediaList = async (
+const fetchMediaList = async (
   mediaName: string, 
   page: number,
   single: boolean,
@@ -104,4 +120,49 @@ const FetchMediaList = async (
   }
 }
 
-export {FetchMediaList}
+
+/**
+* Currently does not support loading pages incrementally to the frontend
+* A previous implementation used a hack in `createEffect()`
+*  See: 4d49475a338f214197db91712b8160dd5cac0654
+*/
+const FetchTracks = async (
+  source: ActiveTuple,
+): Promise<Track[]> =>  {
+  Log("Change to activeTuple detected...", source)
+  if (source.mediaName == undefined || source.mediaName == ""){ return [] }  
+
+  // Clear the history before fetching new data
+  while(TRACK_HISTORY.length>0){ TRACK_HISTORY.pop(); }
+  const fetched: Track[] = []
+
+  // Set the `?single=boolean` parameter 
+  let single = false
+  if  (source.activeList == MediaListType.YouTube) {
+    single = document.querySelector(
+      `#_yt-playlists > li[data-id='${source.mediaName}']`
+    )?.getAttribute("data-single") == "true"
+  }
+
+  let tracks: Track[] = []
+  let page = 1
+  let last_page = false
+
+  while (!last_page) {
+    // Incrementally fetch media until the last page of data is recieved
+    [tracks, last_page] = 
+        await fetchMediaList(source.mediaName, page, single, source.activeList)
+    fetched.push(...tracks)
+    page++
+  }
+
+  // Sort the list in accordance with `PLAYLIST_ORDER` if applicable
+  if (source.activeList == MediaListType.LocalPlaylist){
+    sortPlaylist(fetched as LocalTrack[], source.mediaName)
+  }
+  Log("Done", fetched)
+  return fetched
+}
+
+
+export {FetchTracks}

@@ -1,27 +1,10 @@
-import { createSignal, Index, createEffect } from 'solid-js';
-import { createStore } from "solid-js/store";
+import { createSignal, Index, createResource } from 'solid-js';
 import List from './List';
 import Tracks from './Tracks';
 import Player from './Player';
-import Config, { LIST_TYPES, MEDIA_LISTS, PLAYLIST_ORDER, TRACK_HISTORY } from '../config'
-import { FetchMediaList } from '../fetch';
-import { MediaListType, EmptyTrack, Track, LocalTrack, PlaylistEntry } from '../types';
-
-/**
-* Sort an array of `LocalTrack` objects such that they are in the
-* order indicated by a `PlaylistEntry` array from `PLAYLIST_ORDER`
-*/
-const sortPlaylist = (unsorted: LocalTrack[], playlist_name: string) => {
-  unsorted.sort( (a:LocalTrack,b:LocalTrack) => {
-    const pl_index_a = PLAYLIST_ORDER.get(playlist_name)!.findIndex(
-      (e:PlaylistEntry) => e.AlbumFS==a.AlbumFS && e.AlbumId == a.AlbumId
-    )
-    const pl_index_b = PLAYLIST_ORDER.get(playlist_name)!.findIndex((e:PlaylistEntry) =>
-      e.AlbumFS==b.AlbumFS && e.AlbumId == b.AlbumId
-    )
-    return pl_index_a - pl_index_b
-  })
-}
+import Config, { LIST_TYPES, MEDIA_LISTS } from '../config'
+import { FetchTracks } from '../fetch';
+import { MediaListType, EmptyTrack, Track, ActiveTuple } from '../types';
 
 const App = () => {
   // Restore values from a previous session if possible
@@ -38,8 +21,30 @@ const App = () => {
   // Flag to determine the selected index in the current list
   const [listIndex,setListIndex] = createSignal(prevListIndex)
 
+  // Derived signal that incorporates each attribute needed for a data fetch
+  const activeTpl = () => { 
+    return { 
+      'activeList': activeList(), 
+      'listIndex': listIndex(),
+      'mediaName': MEDIA_LISTS[activeList()][listIndex()].innerHTML || ""
+    } as ActiveTuple 
+  }
+
+  // Derived signals for the current track and track count
+  const currentTrack = ():Track => {
+    const curr = currentList()
+    if (curr !== undefined && curr[playingIdx()] !== undefined) {
+      return curr[playingIdx()]
+    }
+    return EmptyTrack()
+  }
+  const currentTrackCount = ():number => {
+    const curr = currentList(); 
+    return curr !== undefined ? curr.length : 0
+  }
+
   // Array with all of the tracks in the current list
-  const [currentList,setCurrentList] = createStore([])
+  const [currentList] = createResource(activeTpl, FetchTracks)
 
   // The currently playing track in the current list
   const [playingIdx,setPlayingIdx] = createSignal(0)
@@ -47,55 +52,6 @@ const App = () => {
   // True if playback is not paused
   const [isPlaying,setIsPlaying] = createSignal(true)
 
-  // Fetch metadata about a list whenever the listIndex() or activeList() changes
-  createEffect( () => {
-    if (listIndex() >= 0 ) {
-      const el = MEDIA_LISTS[activeList()][listIndex()]
-      const mediaName = activeList() == MediaListType.YouTube ?
-        el.getAttribute("data-id") :  el.innerHTML
-
-      if (mediaName !== null && mediaName != "") {
-        (async() => {
-          // Clear the current list and history before fetching new data
-          setCurrentList([])
-          while(TRACK_HISTORY.length>0){ TRACK_HISTORY.pop(); }
-
-          // Set the `?single=boolean` parameter 
-          let single = false
-          if  (activeList() == MediaListType.YouTube) {
-            single = document.querySelector(`#_yt-playlists > li[data-id='${mediaName}']`)
-              ?.getAttribute("data-single") == "true"
-          }
-
-          let tracks: Track[] = []
-          let page = 1
-          let last_page = false
-
-          while (!last_page) {
-            // Incrementally fetch media until the last page of data is recieved
-            [tracks, last_page] = 
-              await FetchMediaList(mediaName, page, single, activeList())
-
-            // Sort the list in accordance with `PLAYLIST_ORDER` if applicable
-            const updated_list = [...currentList,...tracks]
-
-            if (activeList() == MediaListType.LocalPlaylist){
-              sortPlaylist(updated_list as LocalTrack[], mediaName)
-            }
-
-            setCurrentList(updated_list)
-
-            if (page == 1) {
-              // Auto-select the first entry in the media list
-              // once the first page has loaded
-              setPlayingIdx(0)
-            }
-            page++
-          }
-        })();
-      }
-    }
-  })
 
   // Unlike <For>, <Index> components will not be re-rendered
   // if the underlying data in an array changes
@@ -120,7 +76,7 @@ const App = () => {
 
     <Tracks
       activeList={activeList()}
-      currentList={currentList}
+      currentList={currentList() || [] as Track[]}
 
       playingIdx={playingIdx()}
       setPlayingIdx={(s:number)=>setPlayingIdx(s)}
@@ -128,11 +84,8 @@ const App = () => {
     />
 
     <Player
-      track={ currentList[playingIdx()] !== undefined ?
-        currentList[playingIdx()] :
-        EmptyTrack()
-      }
-      trackCount={currentList.length}
+      track={currentTrack()}
+      trackCount={currentTrackCount()}
 
       setPlayingIdx={(s:number)=>setPlayingIdx(s)}
       playingIdx={playingIdx()}

@@ -85,6 +85,47 @@ const getYtSrc = async (trackId:string): Promise<string>  => {
   return ""
 }
 
+//const getAudioSrc = async (trackId:string, info: {track:Track} ): Promise<string>  => {
+//
+//    if (props.track !== undefined && props.track.Title != "") {
+//      /**
+//      * The source for the audio element can be determined for local resources
+//      * using the `Track.AlbumFS` and `Track.AlbumId` attributes.
+//      * For YouTube resources a request to the server
+//      * that determine the audio source is needed
+//      */
+//      if ('AlbumFS' in props.track) { // Local files (no async required)
+//        const l = props.track as LocalTrack
+//        // Clear the YtId and change the value of `audioSrc`
+//        // directly without an async call using `mutate`
+//        setYtId("")
+//        const audioSrc = `${Config.serverUrl}/audio/${l.AlbumFS}/${l.AlbumId}`
+//        mutate(audioSrc)
+//        Log(`Setting audio source: '${props.track.Title}' - '${audioSrc}'`)
+//
+//        setCoverSource(`/art/${l.AlbumFS}/${l.AlbumId}`)
+//        setNavigatorMetadata(props.track, coverSource())
+//
+//      } else if ('TrackId' in props.track) { // YouTube
+//        const y = props.track as YtTrack
+//        // Update the `ytId`, triggering a new call to `getYtSrc`
+//        setYtId(y.TrackId)
+//        Log(`Setting audio source: '${props.track.Title}' - '${y.TrackId}'`)
+//
+//        setCoverSource(y.ArtworkUrl)
+//        setNavigatorMetadata(props.track, coverSource())
+//      }
+//    }
+//
+//
+//
+//  if (trackId !== undefined && trackId!=""){
+//    const ytUrl = (await fetch(`${Config.serverUrl}/yturl/${trackId}`)).text()
+//    return ytUrl
+//  }
+//  return ""
+//}
+
 /** Seek in the <audio> based on the X coordinate of a mouse event */
 const seekToPercent = (audio:HTMLAudioElement, e:MouseEvent) => {
   if (e.pageX !== undefined) {
