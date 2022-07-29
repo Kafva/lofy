@@ -83,6 +83,13 @@ const getYtSrc = async (trackId:string): Promise<string>  => {
   return ""
 }
 
+/** Seek in the <audio> based on the X coordinate of a mouse event */
+const seekToPercent = (audio:HTMLAudioElement, e:MouseEvent) => {
+  if (e.pageX !== undefined) {
+    audio.currentTime = (e.pageX / document.body.clientWidth)*audio.duration
+  }
+}
+
 /**
 * Holds the actual <audio> element used to play a track
 * and all the buttons for controlling playback
@@ -303,10 +310,12 @@ const Player = (props: {
             changeVolume(volume()-Config.volumeStep, audio, setVolume)
           }/>
         </div>
-        <div/>
-        <div style={{
-          "width": `${Math.floor(105*(currentTime()/props.track.Duration))}%`
-        }}/>
+        <div onClick={(e:MouseEvent) => seekToPercent(audio,e)}/>
+        <div onClick={(e:MouseEvent) => seekToPercent(audio,e)}
+          style={{
+            "width": `${Math.floor(105*(currentTime()/props.track.Duration))}%`
+          }}
+        />
       </nav>
     </Portal>
   </>);

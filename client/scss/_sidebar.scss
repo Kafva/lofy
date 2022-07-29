@@ -61,6 +61,7 @@ div#sidebar {
         border-bottom: vars.$default_bottom_border;
         &:hover {
           border-bottom: vars.$hl_bottom_border;
+          color: vars.$accent;
         }
       }
       a { // Yt link

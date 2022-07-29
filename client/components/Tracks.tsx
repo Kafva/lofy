@@ -1,6 +1,7 @@
 import { Index, Show } from 'solid-js';
+import { TRACK_HISTORY } from '../config';
 import { Track, MediaListType, YtTrack } from '../types';
-import { DisplayTime } from '../util';
+import { DisplayTime, Log } from '../util';
 
 const TrackItem = (props: {
   track: Track,
@@ -12,7 +13,12 @@ const TrackItem = (props: {
   return (
     <tr>
       <td role="menuitem" 
-        onClick={ () => props.setPlayingIdx(props.trackIdx) }
+        onClick={ () => { 
+          TRACK_HISTORY.push(props.trackIdx)
+          Log("TRACK_HISTORY", TRACK_HISTORY)
+
+          props.setPlayingIdx(props.trackIdx) 
+        }}
         classList={{selected:  props.trackIdx == props.playingIdx }}>
         <span classList={{
           amp: props.trackIdx == props.playingIdx && props.isPlaying
