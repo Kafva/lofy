@@ -2,7 +2,6 @@ import { MediaListType, LocalTrack, YtTrack, Track, ActiveTuple, PlaylistEntry }
 import Config, { MEDIA_LISTS, TRACK_HISTORY, PLAYLIST_ORDER } from './config';
 import { Err, Log } from './util';
 
-
 /**
 * Sort an array of `LocalTrack` objects such that they are in the
 * order indicated by a `PlaylistEntry` array from `PLAYLIST_ORDER`
@@ -20,15 +19,15 @@ const sortPlaylist = (unsorted: LocalTrack[], playlist_name: string) => {
 }
 
 const initFetchCache = (mediaList: MediaListType): Map<string,[Track[],boolean]> => {
-  let mediaListNames = [];
+  let mediaListNames: string[] = [];
   if (mediaList == MediaListType.YouTube) {
-    mediaListNames = 
-      MEDIA_LISTS[mediaList].map( (el:HTMLLIElement) => 
-        el.getAttribute("data-id")?.toString())
+    mediaListNames =
+      MEDIA_LISTS[mediaList].map( (el:HTMLLIElement) =>
+        el.getAttribute("data-id")!.toString())
   } else {
-    mediaListNames = 
-      MEDIA_LISTS[mediaList].map( (el:HTMLLIElement) => 
-        el.innerHTML?.toString() )
+    mediaListNames =
+      MEDIA_LISTS[mediaList].map( (el:HTMLLIElement) =>
+        el.innerHTML!.toString() )
   }
 
   const nameMapping = new Map<string, [Track[],boolean]>()
@@ -47,8 +46,8 @@ const FETCH_CACHE = {
 }
 
 const endpointFetch = async (
-  endpoint: string, 
-  mediaName: string, 
+  endpoint: string,
+  mediaName: string,
   page: number,
   single: boolean,
   typing: MediaListType): Promise<[Track[],boolean]> => {
@@ -57,13 +56,13 @@ const endpointFetch = async (
   if (cachedList!==undefined && cachedList[1]) {
     // Return cached data if the second field, `last_page`, has been set
     Log(`Returning cached data for ${mediaName}`)
-    return cachedList 
+    return cachedList
   } else {
     try {
       Log(`Fetching page ${page} for ${mediaName}`)
       const params = endpoint == "yt" ? `single=${single}` : `page=${page}`
 
-      const data = await 
+      const data = await
       (await fetch(
         `${Config.serverUrl}/${endpoint}/${mediaName}?${params}`
       )).json()
@@ -71,7 +70,7 @@ const endpointFetch = async (
         const tracks = data['tracks']
         if (endpoint.startsWith("meta")) {
           // Sort the tracks based on the album id
-          tracks.sort((a:Track,b:Track) => 
+          tracks.sort((a:Track,b:Track) =>
             (a as LocalTrack).AlbumId - (b as LocalTrack).AlbumId
           )
         }
@@ -91,7 +90,7 @@ const endpointFetch = async (
       }
     } catch (e: any) {
       Err(`Failed to fetch: '${endpoint}/${mediaName}'\n`, e)
-    } 
+    }
   }
   return [<Track[]>[],true]
 }
@@ -102,41 +101,40 @@ const endpointFetch = async (
  * if there is more data to fetch.
  */
 const fetchMediaList = async (
-  mediaName: string, 
+  mediaName: string,
   page: number,
   single: boolean,
   typing: MediaListType): Promise<[Track[],boolean]> => {
   Log("FETCH_CACHE", FETCH_CACHE)
   switch (typing) {
   case MediaListType.LocalPlaylist:
-    return endpointFetch("meta/playlist", mediaName, page, single, typing) as 
+    return endpointFetch("meta/playlist", mediaName, page, single, typing) as
       Promise<[LocalTrack[],boolean]>
   case MediaListType.LocalAlbum:
-    return endpointFetch("meta/album", mediaName, page, single, typing) as 
+    return endpointFetch("meta/album", mediaName, page, single, typing) as
       Promise<[LocalTrack[],boolean]>
   case MediaListType.YouTube:
-    return endpointFetch("yt", mediaName, page, single, typing) as 
+    return endpointFetch("yt", mediaName, page, single, typing) as
       Promise<[YtTrack[],boolean]>
   }
 }
 
-
 /**
 * Currently does not support loading pages incrementally to the frontend
-* A previous implementation used a hack in `createEffect()`
+* A previous implementation used a hack in `createEffect()` to accomplish this
 *  See: 4d49475a338f214197db91712b8160dd5cac0654
 */
 const FetchTracks = async (
   source: ActiveTuple,
 ): Promise<Track[]> =>  {
   Log("Change to activeTuple detected...", source)
-  if (source.mediaName == undefined || source.mediaName == ""){ return [] }  
+  if (source.mediaName == undefined || source.mediaName == ""){ return [] }
 
   // Clear the history before fetching new data
   while(TRACK_HISTORY.length>0){ TRACK_HISTORY.pop(); }
   const fetched: Track[] = []
 
-  // Set the `?single=boolean` parameter 
+  // Set the `?single=boolean` parameter
   let single = false
   if  (source.activeList == MediaListType.YouTube) {
     single = document.querySelector(
@@ -150,7 +148,7 @@ const FetchTracks = async (
 
   while (!last_page) {
     // Incrementally fetch media until the last page of data is recieved
-    [tracks, last_page] = 
+    [tracks, last_page] =
         await fetchMediaList(source.mediaName, page, single, source.activeList)
     fetched.push(...tracks)
     page++
@@ -160,9 +158,7 @@ const FetchTracks = async (
   if (source.activeList == MediaListType.LocalPlaylist){
     sortPlaylist(fetched as LocalTrack[], source.mediaName)
   }
-  Log("Done", fetched)
   return fetched
 }
-
 
 export {FetchTracks}

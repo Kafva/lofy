@@ -22,12 +22,12 @@ const App = () => {
   const [listIndex,setListIndex] = createSignal(prevListIndex)
 
   // Derived signal that incorporates each attribute needed for a data fetch
-  const activeTpl = () => { 
-    return { 
-      'activeList': activeList(), 
+  const activeTpl = () => {
+    return {
+      'activeList': activeList(),
       'listIndex': listIndex(),
       'mediaName': MEDIA_LISTS[activeList()][listIndex()].innerHTML || ""
-    } as ActiveTuple 
+    } as ActiveTuple
   }
 
   // Derived signals for the current track and track count
@@ -39,7 +39,7 @@ const App = () => {
     return EmptyTrack()
   }
   const currentTrackCount = ():number => {
-    const curr = currentList(); 
+    const curr = currentList();
     return curr !== undefined ? curr.length : 0
   }
 
@@ -60,10 +60,10 @@ const App = () => {
   return (<>
     <div id="sidebar">
       <Index each={LIST_TYPES}>{(listType) =>
-      // We can pass the setter function to a child as in `props`
+        // We can pass the setter function to a child as in `props`
         <List
           listType={listType()}
-        
+
           activeList={activeList()}
           setActiveList={(s:MediaListType)=> setActiveList(s)}
 

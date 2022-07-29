@@ -1,4 +1,4 @@
-import { createEffect, createResource, createSignal, onMount, Setter } from 'solid-js';
+import { createEffect, createResource, createSignal, onMount, Setter, untrack } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import Config, { TRACK_HISTORY } from '../config';
 import { Track, LocalTrack, YtTrack } from '../types';
@@ -51,7 +51,7 @@ const setNextTrack = (
   trackCount: number,
 
   setPlayingIdx: (arg0: number) => any,
-  playingIdx: number, 
+  playingIdx: number,
 
   shuffle: boolean,
 ) => {
@@ -74,7 +74,7 @@ const setNextTrack = (
   } else {
     newIndex = playingIdx+1 >= trackCount ? 0 : playingIdx+1
   }
-  setPlayingIdx(newIndex) 
+  setPlayingIdx(newIndex)
 }
 
 const getYtSrc = async (trackId:string): Promise<string>  => {
@@ -85,46 +85,6 @@ const getYtSrc = async (trackId:string): Promise<string>  => {
   return ""
 }
 
-//const getAudioSrc = async (trackId:string, info: {track:Track} ): Promise<string>  => {
-//
-//    if (props.track !== undefined && props.track.Title != "") {
-//      /**
-//      * The source for the audio element can be determined for local resources
-//      * using the `Track.AlbumFS` and `Track.AlbumId` attributes.
-//      * For YouTube resources a request to the server
-//      * that determine the audio source is needed
-//      */
-//      if ('AlbumFS' in props.track) { // Local files (no async required)
-//        const l = props.track as LocalTrack
-//        // Clear the YtId and change the value of `audioSrc`
-//        // directly without an async call using `mutate`
-//        setYtId("")
-//        const audioSrc = `${Config.serverUrl}/audio/${l.AlbumFS}/${l.AlbumId}`
-//        mutate(audioSrc)
-//        Log(`Setting audio source: '${props.track.Title}' - '${audioSrc}'`)
-//
-//        setCoverSource(`/art/${l.AlbumFS}/${l.AlbumId}`)
-//        setNavigatorMetadata(props.track, coverSource())
-//
-//      } else if ('TrackId' in props.track) { // YouTube
-//        const y = props.track as YtTrack
-//        // Update the `ytId`, triggering a new call to `getYtSrc`
-//        setYtId(y.TrackId)
-//        Log(`Setting audio source: '${props.track.Title}' - '${y.TrackId}'`)
-//
-//        setCoverSource(y.ArtworkUrl)
-//        setNavigatorMetadata(props.track, coverSource())
-//      }
-//    }
-//
-//
-//
-//  if (trackId !== undefined && trackId!=""){
-//    const ytUrl = (await fetch(`${Config.serverUrl}/yturl/${trackId}`)).text()
-//    return ytUrl
-//  }
-//  return ""
-//}
 
 /** Seek in the <audio> based on the X coordinate of a mouse event */
 const seekToPercent = (audio:HTMLAudioElement, e:MouseEvent) => {
@@ -151,6 +111,7 @@ const Player = (props: {
 }) => {
   let audio: HTMLAudioElement;
   let img: HTMLImageElement;
+  let coverBkg: HTMLDivElement;
 
   const [volume,setVolume] = createSignal(Config.defaultVolume)
   const [currentTime,setCurrentTime] = createSignal(0)
@@ -189,7 +150,9 @@ const Player = (props: {
         Log(`Setting audio source: '${props.track.Title}' - '${audioSrc}'`)
 
         setCoverSource(`/art/${l.AlbumFS}/${l.AlbumId}`)
-        setNavigatorMetadata(props.track, coverSource())
+
+        // Untrack the `coverSource` to avoid a second update
+        setNavigatorMetadata(props.track, untrack(coverSource))
 
       } else if ('TrackId' in props.track) { // YouTube
         const y = props.track as YtTrack
@@ -198,36 +161,48 @@ const Player = (props: {
         Log(`Setting audio source: '${props.track.Title}' - '${y.TrackId}'`)
 
         setCoverSource(y.ArtworkUrl)
-        setNavigatorMetadata(props.track, coverSource())
+        setNavigatorMetadata(props.track, untrack(coverSource))
+
+        // Prefetch next YT url!
       }
     }
   })
 
+  createEffect( () => {
+    Log(`Setting cover source '${coverSource()}'`)
+    if (coverSource() !== undefined && coverSource() !== ""){
+      // Maintain the original dimensions of images smaller than 600x600
+      // and scale down larger images
+      if (img.width  > 600) { img.width  = 600; }
+      if (img.height > 600) { img.height = 600; }
+      // The `coverSource()` seems to lose reactivity if it is placed
+      // directly in the JSX
+      coverBkg.setAttribute("style", 
+        `background-image: url('${coverSource()}')`
+      )
+    }
+    console.log(coverBkg)
+  })
+
   onMount( () => {
     // Initalise the <audio> with the desired default volume
-    img   = getHTMLElement<HTMLImageElement>("#cover > div > img")
-    audio = getHTMLElement<HTMLAudioElement>("audio")
+    img       = getHTMLElement<HTMLImageElement>("#cover > div > img")
+    coverBkg  = getHTMLElement<HTMLDivElement>("#cover > div:first-child")
+    audio     = getHTMLElement<HTMLAudioElement>("audio")
     audio.volume = volume()
   })
 
   // <Portal> components will be inserted as direct children of the <body>
   // rather than the #root element
   //
-  // The #cover needs to exist even when it is not shown so that we can 
+  // The #cover needs to exist even when it is not shown so that we can
   // update the `src` field from `getAudioSource()`
   return (<>
     <Portal>
-      <div hidden id="cover"> 
-        <div style={{
-          "background-image": `url(${coverSource()})`
-        }}/>
+      <div hidden id="cover">
+        <div/>
         <div>
-          <img src={coverSource()}  onLoad={ () => {
-            // Maintain the original dimensions of images smaller than 600x600
-            // and scale down larger images
-            if (img.width  > 600) { img.width  = 600; }
-            if (img.height > 600) { img.height = 600; }
-          }} />
+          <img src={coverSource()}/>
           <p>{props.track.Title} ―  {props.track.Artist}</p>
         </div>
       </div>
@@ -248,7 +223,7 @@ const Player = (props: {
         props.setIsPlaying(true)
       }}
       onEnded={ () => {
-        setNextTrack(props.trackCount, 
+        setNextTrack(props.trackCount,
           props.setPlayingIdx, props.playingIdx, shuffle()
         )
         setCurrentTime(0)
@@ -265,10 +240,10 @@ const Player = (props: {
               }
             }}
           />
-          <span role="button" 
-            class={shuffle() ? "nf nf-mdi-shuffle_variant" : 
+          <span role="button"
+            class={shuffle() ? "nf nf-mdi-shuffle_variant" :
               "nf nf-mdi-shuffle_disabled"
-            } 
+            }
             onClick={ () => setShuffle(!shuffle()) }
           />
 
@@ -319,7 +294,7 @@ const Player = (props: {
                   audio.currentTime = newPos
                 }
               } else {
-                setNextTrack(props.trackCount, 
+                setNextTrack(props.trackCount,
                   props.setPlayingIdx, props.playingIdx, shuffle()
                 )
                 setCurrentTime(0)
