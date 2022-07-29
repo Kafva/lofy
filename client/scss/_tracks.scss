@@ -31,9 +31,7 @@ div#root > table {
   // Currently playing indicator
   span.amp {
       height: vars.$font_size;
-      @media 
-        (min-width: vars.$mobile_min_width) and 
-        (max-width: vars.$mobile_max_width) {
+      @include vars.mobile {
         height: vars.$mobile_font_size;
       }
       content: url("amp.gif");
