@@ -168,7 +168,6 @@ func GetLocalMetadata(w http.ResponseWriter, r *http.Request){
 				return
 			}
 		default:
-			json.NewEncoder(w).Encode([]string{})
 			return
   }
 
@@ -204,7 +203,7 @@ func GetLocalMetadata(w http.ResponseWriter, r *http.Request){
       sort.Strings(track_paths)
 
       for i,p := range track_paths {
-        go get_file_metadata(p, i, tracks_channel)
+        go get_file_metadata(p, i +(page-1)*ITEMS_PER_REQ, tracks_channel)
       }
   }
 	// Consume the data on the channel

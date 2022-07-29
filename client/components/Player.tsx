@@ -78,7 +78,9 @@ const setNextTrack = (
 
 const getYtSrc = async (trackId:string): Promise<string>  => {
   if (trackId !== undefined && trackId!=""){
-    return (await fetch(`${Config.serverUrl}/yturl/${trackId}`)).text()
+    const ytUrl = (await fetch(`${Config.serverUrl}/yturl/${trackId}`)).text()
+    Log(`Setting audio source: '${trackId}' - '${ytUrl}'`)
+    return ytUrl
   }
   return ""
 }
@@ -129,7 +131,6 @@ const Player = (props: {
   // modified, i.e. `track` in this case.
   createEffect( () => {
     if (props.track !== undefined && props.track.Title != "") {
-      Log(`Setting audio source: ${props.track.Title}`)
       /**
       * The source for the audio element can be determined for local resources
       * using the `Track.AlbumFS` and `Track.AlbumId` attributes.
@@ -141,7 +142,9 @@ const Player = (props: {
         // Clear the YtId and change the value of `audioSrc`
         // directly without an async call using `mutate`
         setYtId("")
-        mutate(`${Config.serverUrl}/audio/${l.AlbumFS}/${l.AlbumId}`)
+        const audioSrc = `${Config.serverUrl}/audio/${l.AlbumFS}/${l.AlbumId}`
+        mutate(audioSrc)
+        Log(`Setting audio source: '${props.track.Title}' - '${audioSrc}'`)
 
         setCoverSource(`/art/${l.AlbumFS}/${l.AlbumId}`)
         setNavigatorMetadata(props.track, coverSource())
@@ -226,7 +229,7 @@ const Player = (props: {
           <span role="button"
             class="nf nf-mdi-skip_previous"
             onClick={ () => {
-            // Seek skipping for long tracks
+              // Seek skipping for long tracks
               if (props.track.Duration >= 60*Config.sameTrackSkipMin) {
                 const newPos = audio.currentTime - 60*Config.sameTrackSeekStepMin
                 if (newPos > 0){
@@ -234,7 +237,7 @@ const Player = (props: {
                 }
               } else {
                 const prevIndex = TRACK_HISTORY.pop();
-                Log("TRACK_HISTORY", TRACK_HISTORY)
+                Log("TRACK_HISTORY", TRACK_HISTORY, "(popped)", prevIndex)
 
                 if (prevIndex != null) {
                   props.setPlayingIdx(prevIndex)

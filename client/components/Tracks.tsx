@@ -14,7 +14,7 @@ const TrackItem = (props: {
     <tr>
       <td role="menuitem" 
         onClick={ () => { 
-          TRACK_HISTORY.push(props.trackIdx)
+          TRACK_HISTORY.push(props.playingIdx)
           Log("TRACK_HISTORY", TRACK_HISTORY)
 
           props.setPlayingIdx(props.trackIdx) 

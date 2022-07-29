@@ -41,6 +41,7 @@ class Config {
 * Pushed to during: 
 *  <audio> 'onended' event
 *  'nexttrack' event
+*  click on another entry
 * Popped from during:
 *  'previoustrack' event
 * Reset when a new list is picked in <App>
