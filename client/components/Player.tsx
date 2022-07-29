@@ -175,8 +175,9 @@ const Player = (props: {
   })
 
   createEffect( () => {
-    Log(`DETECT: Change to cover source '${coverSource()}'`)
+    // Log(`DETECT: Change to cover source '${coverSource()}'`)
     if (coverSource() !== undefined && coverSource() !== ""){      
+      Log(`Setting cover source: '${coverSource()}'`)
       // Update the navigators metadata
       setNavigatorMetadata(props.track, coverSource())
       // The `coverSource()` seems to lose reactivity if it is placed

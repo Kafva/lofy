@@ -37,6 +37,11 @@ nav {
      span.nf-mdi-creation { // Hide fullscreen option on mobile
       @include vars.mobile { display: none; }
      }
+
+     // Limit length of title (the 8th <span>)
+     span:nth-child(8) {
+      @include vars.limit-width(20em, 7em, fit-content, inline-grid);
+     }
    } 
 
    %progress-bar {

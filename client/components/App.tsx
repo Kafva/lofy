@@ -53,8 +53,9 @@ const App = () => {
 
   // Change to index 0 if the index has been set to -1 (from switching lists)
   // and fetching from `FetchTracks` has finished
+  // TODO: How to know if we are looking at the old list..............
   createEffect( () => {
-    if ( playingIdx() == -1 ){
+    if (playingIdx() == -1){
       const curr = currentList();
       if (curr !== undefined && curr.length > 0 && !currentList.loading){
         setPlayingIdx(0);

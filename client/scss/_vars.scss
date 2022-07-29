@@ -69,11 +69,11 @@ $table_z: 7;
 }
 
 // Limit text overflow and the width of an element
-@mixin limit-width($max-width, $min-width: $max-width, $display: inline-block) {
+@mixin limit-width($max-width, $min-width: $max-width, $width: $max-width, $display: inline-block) {
   display: $display;
   max-width: $max-width;
   min-width: $min-width;
-  width: $max-width;
+  width: $width;
 
   white-space: nowrap;
   text-overflow: ellipsis;
