@@ -5,7 +5,6 @@ enum MediaListType {
 interface ActiveTuple {
   activeList: MediaListType,
   listIndex: number,
-  mediaName: string
 }
 
 interface PlaylistEntry {

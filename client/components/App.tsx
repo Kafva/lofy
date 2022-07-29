@@ -2,7 +2,7 @@ import { createSignal, Index, createResource } from 'solid-js';
 import List from './List';
 import Tracks from './Tracks';
 import Player from './Player';
-import Config, { LIST_TYPES, MEDIA_LISTS } from '../config'
+import Config, { LIST_TYPES } from '../config'
 import { FetchTracks } from '../fetch';
 import { MediaListType, EmptyTrack, Track, ActiveTuple } from '../types';
 
@@ -26,21 +26,7 @@ const App = () => {
     return {
       'activeList': activeList(),
       'listIndex': listIndex(),
-      'mediaName': MEDIA_LISTS[activeList()][listIndex()].innerHTML || ""
     } as ActiveTuple
-  }
-
-  // Derived signals for the current track and track count
-  const currentTrack = ():Track => {
-    const curr = currentList()
-    if (curr !== undefined && curr[playingIdx()] !== undefined) {
-      return curr[playingIdx()]
-    }
-    return EmptyTrack()
-  }
-  const currentTrackCount = ():number => {
-    const curr = currentList();
-    return curr !== undefined ? curr.length : 0
   }
 
   // Array with all of the tracks in the current list
@@ -52,6 +38,18 @@ const App = () => {
   // True if playback is not paused
   const [isPlaying,setIsPlaying] = createSignal(true)
 
+  // Derived signals for the current track and track count
+  const currentTrack = ():Track => {
+    const curr = currentList();
+    if (curr !== undefined && curr[playingIdx()] !== undefined) {
+      return curr[playingIdx()]
+    }
+    return EmptyTrack()
+  }
+  const currentTrackCount = ():number => {
+    const curr = currentList();
+    return curr !== undefined ? curr.length : 0
+  }
 
   // Unlike <For>, <Index> components will not be re-rendered
   // if the underlying data in an array changes

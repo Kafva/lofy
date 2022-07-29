@@ -1,4 +1,4 @@
-import { createEffect, createResource, createSignal, onMount, Setter, untrack } from 'solid-js';
+import { createEffect, createResource, createSignal, onMount, Setter } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import Config, { TRACK_HISTORY } from '../config';
 import { Track, LocalTrack, YtTrack } from '../types';
@@ -142,26 +142,24 @@ const Player = (props: {
       */
       if ('AlbumFS' in props.track) { // Local files (no async required)
         const l = props.track as LocalTrack
+        const audioSrc = `${Config.serverUrl}/audio/${l.AlbumFS}/${l.AlbumId}`
+        Log(`Setting audio source: '${props.track.Title}' - '${audioSrc}'`)
+
         // Clear the YtId and change the value of `audioSrc`
         // directly without an async call using `mutate`
         setYtId("")
-        const audioSrc = `${Config.serverUrl}/audio/${l.AlbumFS}/${l.AlbumId}`
         mutate(audioSrc)
-        Log(`Setting audio source: '${props.track.Title}' - '${audioSrc}'`)
 
+        // Trigger the `coverSource()` effect
         setCoverSource(`/art/${l.AlbumFS}/${l.AlbumId}`)
-
-        // Untrack the `coverSource` to avoid a second update
-        setNavigatorMetadata(props.track, untrack(coverSource))
 
       } else if ('TrackId' in props.track) { // YouTube
         const y = props.track as YtTrack
-        // Update the `ytId`, triggering a new call to `getYtSrc`
-        setYtId(y.TrackId)
         Log(`Setting audio source: '${props.track.Title}' - '${y.TrackId}'`)
 
+        // Update the `ytId`, triggering a new call to `getYtSrc`
+        setYtId(y.TrackId)
         setCoverSource(y.ArtworkUrl)
-        setNavigatorMetadata(props.track, untrack(coverSource))
 
         // Prefetch next YT url!
       }
@@ -170,18 +168,15 @@ const Player = (props: {
 
   createEffect( () => {
     Log(`Setting cover source '${coverSource()}'`)
-    if (coverSource() !== undefined && coverSource() !== ""){
-      // Maintain the original dimensions of images smaller than 600x600
-      // and scale down larger images
-      if (img.width  > 600) { img.width  = 600; }
-      if (img.height > 600) { img.height = 600; }
+    if (coverSource() !== undefined && coverSource() !== ""){      
+      // Update the navigators metadata
+      setNavigatorMetadata(props.track, coverSource())
       // The `coverSource()` seems to lose reactivity if it is placed
       // directly in the JSX
       coverBkg.setAttribute("style", 
         `background-image: url('${coverSource()}')`
       )
     }
-    console.log(coverBkg)
   })
 
   onMount( () => {
@@ -202,7 +197,12 @@ const Player = (props: {
       <div hidden id="cover">
         <div/>
         <div>
-          <img src={coverSource()}/>
+          <img src={coverSource()} onLoad={()=>{
+            // Maintain the original dimensions of images smaller than 600x600
+            // and scale down larger images
+            img.width  = img.naturalWidth  > 600 ? 600 : img.naturalWidth;
+            img.height = img.naturalHeight > 600 ? 600 : img.naturalHeight;
+          }}/>
           <p>{props.track.Title} ―  {props.track.Artist}</p>
         </div>
       </div>

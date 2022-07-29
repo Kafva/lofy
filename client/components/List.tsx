@@ -22,7 +22,6 @@ const List = (props: {
   setListIndex: (arg0: number) => any,
 
   setPlayingIdx: (arg0: number) => any
-
 }) => {
   // Determines if the currently selected list should be collapsed or open
   const [show,setShow] = createSignal(true)
@@ -51,14 +50,13 @@ const List = (props: {
           batch( () => {
             props.setActiveList(props.listType) 
             props.setListIndex(0)
-            props.setPlayingIdx(-1)
+            // Setting this to zero without waiting for FetchTracks to finish seeeeems fine?
+            props.setPlayingIdx(0) 
             setShow(true)
           })
-
           localStorage.setItem(Config.activeListKey, props.activeList.toFixed(0))
           localStorage.setItem(Config.listIndexKey,  props.listIndex.toFixed(0))
         }
-
       }}>
       {MEDIA_TITLES[props.listType]}
     </h3>

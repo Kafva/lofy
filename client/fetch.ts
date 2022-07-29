@@ -128,7 +128,12 @@ const FetchTracks = async (
   source: ActiveTuple,
 ): Promise<Track[]> =>  {
   Log("Change to activeTuple detected...", source)
-  if (source.mediaName == undefined || source.mediaName == ""){ return [] }
+  const el = MEDIA_LISTS[source.activeList][source.listIndex]
+
+  const mediaName = source.activeList == MediaListType.YouTube ?
+    el.getAttribute("data-id") :  el.innerHTML 
+
+  if (mediaName == undefined || mediaName == ""){ return [] }
 
   // Clear the history before fetching new data
   while(TRACK_HISTORY.length>0){ TRACK_HISTORY.pop(); }
@@ -138,7 +143,7 @@ const FetchTracks = async (
   let single = false
   if  (source.activeList == MediaListType.YouTube) {
     single = document.querySelector(
-      `#_yt-playlists > li[data-id='${source.mediaName}']`
+      `#_yt-playlists > li[data-id='${mediaName}']`
     )?.getAttribute("data-single") == "true"
   }
 
@@ -149,14 +154,14 @@ const FetchTracks = async (
   while (!last_page) {
     // Incrementally fetch media until the last page of data is recieved
     [tracks, last_page] =
-        await fetchMediaList(source.mediaName, page, single, source.activeList)
+        await fetchMediaList(mediaName, page, single, source.activeList)
     fetched.push(...tracks)
     page++
   }
 
   // Sort the list in accordance with `PLAYLIST_ORDER` if applicable
   if (source.activeList == MediaListType.LocalPlaylist){
-    sortPlaylist(fetched as LocalTrack[], source.mediaName)
+    sortPlaylist(fetched as LocalTrack[], mediaName)
   }
   return fetched
 }
