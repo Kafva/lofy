@@ -10,7 +10,7 @@ div#sidebar {
   overflow-y: scroll;
   left: 0;
   top: 1%;
-  width: vars.$sidebar_width;
+  width: var(--sidebar_width);
   height: calc(100% - 40px);
   padding: 2% 15px 20px 0;
 
@@ -21,6 +21,7 @@ div#sidebar {
     padding: $item_padding;
     padding-top: 5px;
     border-bottom: 1px solid rgba(vars.$accent, 0.5);
+    &:hover { color: vars.$accent; }
   }
   ul {
     // Disable leading dots
@@ -28,49 +29,36 @@ div#sidebar {
     margin: 0 0 0 0;
     padding: $item_padding;
 
-
-    display: inline-block;
-    overflow: hidden;
-    transition: all 0.5s ease-in-out 0s;
-
-    // Increase the height of the list once it becomes
-    // part of the `.show` class
-    &:not(.show) { 
-      max-height: 0; 
-    }
-    &.show       { 
-      max-height: 100%;  
-    }
+    @include funcs.fade-in();
 
     li {
       // The top margin is essential to not show partial
       // <li> elements when the <ul> has `max-height:0`
       margin-top: 10px;
 
-      // Hover highlighting
-      margin-bottom: 5px;
-      border-bottom: vars.$default_bottom_border;
-
-      &:hover {
-        @include funcs.hl_bottom_border(vars.$accent, vars.$hl_bg);
-      }
-
       // Spacing of name and link (only applicable for YT)
       display: grid;
       grid-template-columns: 90% 10%;
-      span {
+      span { // List name
         grid-row: 1;
         grid-column: 1;
         display: inline-block;
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
+
+        // Hover highlighting
+        border-bottom: vars.$default_bottom_border;
+        &:hover {
+          border-bottom: vars.$hl_bottom_border;
+        }
       }
-      a {
+      a { // Yt link
         grid-row: 1;
         grid-column: 2;
         margin-left: 0.5em;
         padding-left: 0.5em;
+        &:hover { color: vars.$accent; }
       }
     }
   }

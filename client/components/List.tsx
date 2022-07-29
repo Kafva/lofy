@@ -63,8 +63,8 @@ const List = (props: {
       {MEDIA_TITLES[props.listType]}
     </h3>
 
-    <Show when={props.activeList == props.listType}>
-      <ul classList={{show: show() }} >
+    <Show when={props.activeList == props.listType && show()}>
+      <ul>
         <Index each={MEDIA_LISTS[props.listType]}>{ (item,i) =>
           <li role="menuitem"
             onClick={ () => { 

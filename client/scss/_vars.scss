@@ -1,4 +1,21 @@
-@use "funcs";
+// @media queries are evaluated at runtime by the client so we cannot 
+// use compile time defined Sass variables for different layouts.
+:root {
+  //== Mobile ==//
+  @media only screen
+    and (min-device-width: 320px) 
+    and (max-device-width: 480px) {
+    --sidebar_width: 5em
+  }
+  //== Medium size ==//
+  @media (min-width: 800px) {
+    --sidebar_width: 10em
+  }
+  //== Widescreen ==//
+  @media (min-width: 1024px) {
+    --sidebar_width: 15em
+  }
+}
 
 // Font size for tracks and playlists
 $font-size: 14px;
@@ -14,13 +31,14 @@ $fg_white:   #f5e4f3;
 $fg_grey:    #8e9297;
 
 //== Selection highlighting ==//
-$hl_bg:                 #45454b;
-$default_underline:     #414040;
-$default_bottom_border: 1px solid rgba($default_underline, 0.5);
+$hl_bottom_border:      1px solid $accent;
 
-//== Side bar ==//
-//$sidebar_width: 15em; // TODO wide
-$sidebar_width: 15em;
+// Setting the border to 'none' causes flickering when
+// the visibility of the `hl_border` changes
+$default_bottom_border: 1px solid rgba(#414040, 0.0);
+
+//== Tracks ==//
+$row_height: 20px;
 
 //== Progress bar ==//
 $progress_bar_height: 6px;
