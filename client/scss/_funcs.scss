@@ -26,7 +26,7 @@
   overflow: hidden;
 }
 
-
+// Highlight the bottom border and background of a list item
 @mixin hl_bottom_border($border, $bg) {
   border-bottom: 1px solid $border;
   background-color: rgba($bg, 0.5);

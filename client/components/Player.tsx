@@ -184,12 +184,16 @@ const Player = (props: {
           setCurrentTime(audio.currentTime)
         }
       }}
+      onLoadedData={ () => {
+        // Ensure that the play-button state is toggled
+        // when clicking a new track
+        props.setIsPlaying(true)
+      }}
       onEnded={ () => {
         setNextTrack(props.trackCount, 
           props.setPlayingIdx, props.playingIdx, shuffle()
         )
         setCurrentTime(0)
-        props.setIsPlaying(true)
       }}
     />
     <Portal>

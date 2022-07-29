@@ -1,11 +1,11 @@
 @use "vars";
 @use "funcs";
 
+// Same padding for <h3> and <ul> elements
 $item_padding: 0 40px 5px 20px;
 
 div#sidebar {
   z-index: vars.$sidebar_z;
-
   position: fixed;
   overflow-y: scroll;
   left: 0;
@@ -14,29 +14,41 @@ div#sidebar {
   height: calc(100% - 40px);
   padding: 2% 15px 20px 0;
 
-  //display: inline-block;
-  //width: vars.$sidebar_width;
-  //height: 100%;
-  //padding: 4% 100px 100px 0;
-  //margin: 0 0 0 0; 
-
   background-color: vars.$sidebar_bg;
 
   h3 {
+    font-size: 1.17em;
     padding: $item_padding;
     padding-top: 5px;
     border-bottom: 1px solid rgba(vars.$accent, 0.5);
   }
   ul {
-    font-size: vars.$font-size;
+    // Disable leading dots
     list-style-type: none;
     margin: 0 0 0 0;
     padding: $item_padding;
 
+
+    display: inline-block;
+    overflow: hidden;
+    transition: all 0.5s ease-in-out 0s;
+
+    // Increase the height of the list once it becomes
+    // part of the `.show` class
+    &:not(.show) { 
+      max-height: 0; 
+    }
+    &.show       { 
+      max-height: 100%;  
+    }
+
     li {
-      //== Highlighting ==//
+      // The top margin is essential to not show partial
+      // <li> elements when the <ul> has `max-height:0`
+      margin-top: 10px;
+
+      // Hover highlighting
       margin-bottom: 5px;
-      padding: 3px;
       border-bottom: vars.$default_bottom_border;
 
       &:hover {

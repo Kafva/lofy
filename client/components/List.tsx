@@ -1,4 +1,4 @@
-import { batch, Index, Show } from 'solid-js';
+import { batch, createSignal, Index, Show } from 'solid-js';
 import Config, { MEDIA_TITLES, MEDIA_LISTS, MEDIA_TITLE_CLASSES } from '../config'
 import { MediaListType } from '../types';
 
@@ -24,37 +24,47 @@ const List = (props: {
   setPlayingIdx: (arg0: number) => any
 
 }) => {
+  // Determines if the currently selected list should be collapsed or open
+  const [show,setShow] = createSignal(true)
+  
   // Note that `item` needs to be called when using <Index> and `i` needs
   // to be called for <For> components.
   // We use `role` to make elements clickable with Vimium
-  
   return (<>
     <h3 role="menuitem"
       classList={{
         selected: props.activeList == props.listType,
-        [MEDIA_TITLE_CLASSES[props.listType]]: true
+        [MEDIA_TITLE_CLASSES[props.listType]]: true,
       }}
       onClick={() => { 
-        // To avoid intermediary states we batch the updates to: 
-        //  The selected medialist, 
-        //  The selected playlist/album 
-        // batch() will combine several signal changes into one re-render.
-        // The selected track is only set to valid value _after_
-        // the new playlist has been loaded in <App>
-        batch( () => {
-          props.setActiveList(props.listType) 
-          props.setListIndex(0)
-          props.setPlayingIdx(-1)
-        })
+        // Collapse or open the list if the currently selected list
+        // is pressed anew
+        if (props.listType == props.activeList){
+          setShow(!show());
+        } else {
+          // To avoid intermediary states we batch the updates to: 
+          //  The selected medialist, 
+          //  The selected playlist/album 
+          // batch() will combine several signal changes into one re-render.
+          // The selected track is only set to valid value _after_
+          // the new playlist has been loaded in <App>
+          batch( () => {
+            props.setActiveList(props.listType) 
+            props.setListIndex(0)
+            props.setPlayingIdx(-1)
+            setShow(true)
+          })
 
-        localStorage.setItem(Config.activeListKey, props.activeList.toFixed(0))
-        localStorage.setItem(Config.listIndexKey,  props.listIndex.toFixed(0))
+          localStorage.setItem(Config.activeListKey, props.activeList.toFixed(0))
+          localStorage.setItem(Config.listIndexKey,  props.listIndex.toFixed(0))
+        }
+
       }}>
       {MEDIA_TITLES[props.listType]}
     </h3>
 
     <Show when={props.activeList == props.listType}>
-      <ul>
+      <ul classList={{show: show() }} >
         <Index each={MEDIA_LISTS[props.listType]}>{ (item,i) =>
           <li role="menuitem"
             onClick={ () => { 

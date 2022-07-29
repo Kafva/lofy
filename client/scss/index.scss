@@ -34,18 +34,12 @@ body {
 
   // Mountpoint container
   div#root {
+    font-size: vars.$font-size;
+
+    // Only the <Tracks> are displayed as a flex-item
     display: flex;
     align-items: flex-start;
     justify-content: center;
-
-    //display: inline-block;
-    //grid-gap: vars.$root_grid_gap;
-
-    // One row that fill the entire x-axis
-    //grid-auto-rows: min-content;
-    //grid-template-rows: 100%;
-    //grid-template-columns: vars.$sidebar_width 60%;
-    //grid-auto-columns: min-content;
 
     width: 100%;
     height: 100%;
