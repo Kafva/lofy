@@ -174,32 +174,6 @@ const Player = (props: {
     }
   })
 
-  // Ensure that a track is picked when the `audioSrc()` has
-  // resolved into a new value
-  //createEffect( () => {
-  //  const audio_src = audioSrc();
-  //  Log(`DETECT: Change to audio source: '${audio_src}'`, 
-  //    props.track,  audio_src, props.activeList
-  //  )
-
-  //  if (props.playingIdx == -1 && audio_src !== undefined && audio_src != ""){
-
-  //    //if (props.track !== undefined && props.track.Title != ""){
-
-  //    if (props.activeList == MediaListType.YouTube && !audio_src.startsWith(Config.serverUrl) ) {
-  //      Log("Setting `playingIdx` to 0", props.track,  audio_src, props.activeList)
-  //      props.setPlayingIdx(0)
-  //    } else if (props.activeList != MediaListType.YouTube && audio_src.startsWith(Config.serverUrl) ) {
-  //      Log("Setting `playingIdx` to 0", props.track,  audio_src, props.activeList)
-  //      props.setPlayingIdx(0)
-  //    }
-
-  //    //}
-
-
-  //  }
-  //})
-
   createEffect( () => {
     Log(`DETECT: Change to cover source '${coverSource()}'`)
     if (coverSource() !== undefined && coverSource() !== ""){      
