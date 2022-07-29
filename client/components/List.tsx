@@ -1,6 +1,6 @@
 import { batch, createSignal, Index, Show } from 'solid-js';
 import Config, { MEDIA_TITLES, MEDIA_LISTS, MEDIA_TITLE_CLASSES } from '../config'
-import { MediaListType } from '../types';
+import { MediaListType, Track } from '../types';
 
 const get_yt_link = (item: HTMLLIElement): string => {
   const yt_param = item.getAttribute('data-single') == "true" ? "v" : "list"
@@ -17,6 +17,7 @@ const List = (props: {
 
   activeList: MediaListType,
   setActiveList: (arg0: MediaListType) => any,
+  setCurrentList: (arg0: Track[]) => any,
 
   listIndex: number,
   setListIndex: (arg0: number) => any,
@@ -52,6 +53,7 @@ const List = (props: {
             // can cause the 0th track of the previous list to start playing
             // The index is explicitly set to zero by <App> once `FetchTracks` completes
             props.setPlayingIdx(-1) 
+            props.setCurrentList([] as Track[])
             setShow(true)
           })
           localStorage.setItem(Config.activeListKey, props.activeList.toFixed(0))
@@ -68,7 +70,8 @@ const List = (props: {
             onClick={ () => { 
               batch( () => {
                 props.setListIndex(i) 
-                props.setPlayingIdx(0) 
+                props.setPlayingIdx(-1) 
+                props.setCurrentList([] as Track[])
               })
               localStorage.setItem(Config.listIndexKey, i.toString())
             }}

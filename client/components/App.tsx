@@ -30,7 +30,7 @@ const App = () => {
   }
 
   // Array with all of the tracks in the current list
-  const [currentList] = createResource(activeTpl, FetchTracks)
+  const [currentList,{mutate}] = createResource(activeTpl, FetchTracks)
 
   // The currently playing track in the current list
   const [playingIdx,setPlayingIdx] = createSignal(0)
@@ -51,12 +51,13 @@ const App = () => {
     return curr !== undefined ? curr.length : 0
   }
 
-  // Change to index 0 if the index has been set to -1 (from switching lists)
-  // and fetching from `FetchTracks` has finished
-  // TODO: How to know if we are looking at the old list..............
+  // Change to index 0 if the index has been set to -1 
+  // (caused from switching lists) and fetching from `FetchTracks` has finished
   createEffect( () => {
     if (playingIdx() == -1){
       const curr = currentList();
+      // To ensure that we do not consider the previous list as a 'new',
+      // we zero out the `currentList()` on a switch
       if (curr !== undefined && curr.length > 0 && !currentList.loading){
         setPlayingIdx(0);
       }
@@ -76,6 +77,7 @@ const App = () => {
 
           activeList={activeList()}
           setActiveList={(s:MediaListType)=> setActiveList(s)}
+          setCurrentList={mutate}
 
           listIndex={listIndex()}
           setListIndex={(s:MediaListType)=>setListIndex(s)}
