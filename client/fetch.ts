@@ -105,7 +105,6 @@ const fetchMediaList = async (
   page: number,
   single: boolean,
   typing: MediaListType): Promise<[Track[],boolean]> => {
-  Log("FETCH_CACHE", FETCH_CACHE)
   switch (typing) {
   case MediaListType.LocalPlaylist:
     return endpointFetch("meta/playlist", mediaName, page, single, typing) as
@@ -125,7 +124,7 @@ const fetchMediaList = async (
 *  See: 4d49475a338f214197db91712b8160dd5cac0654
 */
 const FetchTracks = async (
-  source: ActiveTuple,
+  source: ActiveTuple
 ): Promise<Track[]> =>  {
   Log("Change to activeTuple detected...", source)
   const el = MEDIA_LISTS[source.activeList][source.listIndex]
@@ -163,6 +162,7 @@ const FetchTracks = async (
   if (source.activeList == MediaListType.LocalPlaylist){
     sortPlaylist(fetched as LocalTrack[], mediaName)
   }
+  // Log("FETCH_CACHE", FETCH_CACHE)
   return fetched
 }
 

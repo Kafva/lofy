@@ -45,13 +45,13 @@ const List = (props: {
           //  The selected medialist, 
           //  The selected playlist/album 
           // batch() will combine several signal changes into one re-render.
-          // The selected track is only set to valid value _after_
-          // the new playlist has been loaded in <App>
           batch( () => {
             props.setActiveList(props.listType) 
             props.setListIndex(0)
-            // Setting this to zero without waiting for FetchTracks to finish seeeeems fine?
-            props.setPlayingIdx(0) 
+            // Setting this to zero without waiting for `FetchTracks` 
+            // can cause the 0th track of the previous list to start playing
+            // The index is explicitly set to zero by <App> once `FetchTracks` completes
+            props.setPlayingIdx(-1) 
             setShow(true)
           })
           localStorage.setItem(Config.activeListKey, props.activeList.toFixed(0))
@@ -66,7 +66,10 @@ const List = (props: {
         <Index each={MEDIA_LISTS[props.listType]}>{ (item,i) =>
           <li role="menuitem"
             onClick={ () => { 
-              props.setListIndex(i) 
+              batch( () => {
+                props.setListIndex(i) 
+                props.setPlayingIdx(0) 
+              })
               localStorage.setItem(Config.listIndexKey, i.toString())
             }}
             data-id={item().getAttribute('data-id')}>

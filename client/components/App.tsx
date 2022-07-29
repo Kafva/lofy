@@ -1,4 +1,4 @@
-import { createSignal, Index, createResource } from 'solid-js';
+import { createSignal, Index, createResource, createEffect } from 'solid-js';
 import List from './List';
 import Tracks from './Tracks';
 import Player from './Player';
@@ -51,6 +51,17 @@ const App = () => {
     return curr !== undefined ? curr.length : 0
   }
 
+  // Change to index 0 if the index has been set to -1 (from switching lists)
+  // and fetching from `FetchTracks` has finished
+  createEffect( () => {
+    if ( playingIdx() == -1 ){
+      const curr = currentList();
+      if (curr !== undefined && curr.length > 0 && !currentList.loading){
+        setPlayingIdx(0);
+      }
+    }
+  })
+
   // Unlike <For>, <Index> components will not be re-rendered
   // if the underlying data in an array changes
   // the lists are not going to change so it is therefore preferable
@@ -84,6 +95,7 @@ const App = () => {
     <Player
       track={currentTrack()}
       trackCount={currentTrackCount()}
+      activeList={activeList()}
 
       setPlayingIdx={(s:number)=>setPlayingIdx(s)}
       playingIdx={playingIdx()}

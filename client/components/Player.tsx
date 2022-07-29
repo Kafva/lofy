@@ -1,7 +1,7 @@
-import { createEffect, createResource, createSignal, onMount, Setter } from 'solid-js';
+import { createEffect, createResource, createSignal, onMount, Setter, untrack } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import Config, { TRACK_HISTORY } from '../config';
-import { Track, LocalTrack, YtTrack } from '../types';
+import { Track, LocalTrack, YtTrack, MediaListType } from '../types';
 import { Log, DisplayTime } from '../util';
 
 /** Generic getter for DOM elements */
@@ -77,10 +77,14 @@ const setNextTrack = (
   setPlayingIdx(newIndex)
 }
 
-const getYtSrc = async (trackId:string): Promise<string>  => {
-  if (trackId !== undefined && trackId!=""){
-    const ytUrl = (await fetch(`${Config.serverUrl}/yturl/${trackId}`)).text()
-    return ytUrl
+const getAudioSrc = async (trackId:string): Promise<string>  => {
+  if (trackId !== undefined && trackId != ""){
+    if (trackId.startsWith(Config.serverUrl)) { // Local source
+      return trackId;
+    } else {
+      const ytUrl = (await fetch(`${Config.serverUrl}/yturl/${trackId}`)).text()
+      return ytUrl
+    }
   }
   return ""
 }
@@ -103,6 +107,8 @@ const Player = (props: {
   track: Track,
   trackCount: number,
 
+  activeList: MediaListType,
+
   setPlayingIdx: (arg0: number) => any
   playingIdx: number,
 
@@ -119,14 +125,14 @@ const Player = (props: {
   const [shuffle,setShuffle] = createSignal(Config.shuffleDefaultOn)
   const [coverSource,setCoverSource] = createSignal("")
 
-  // The YouTube Id for the current track (empty for non-yt tracks)
-  const [ytId,setYtId] = createSignal("")
+  // The YouTube Id for the current track or the server url for local tracks
+  const [audioId,setAudioId] = createSignal("")
 
   // `createResource()` allows us to connect a signal with an async task
-  // whenever the `ytId` singal changes, the `getYtSrc` function will re-run.
+  // whenever the `audioId` singal changes, the `getAudioSrc` function will re-run.
   // The resolved data is stored in `audioSrc`
-  // `mutate()` allows us to set `audioSrc` directly without using `getYtSrc`.
-  const [audioSrc,{mutate}] = createResource(ytId, getYtSrc)
+  // `mutate()` allows us to set `audioSrc` directly without using `getAudioSrc`.
+  const [audioSrc] = createResource(audioId, getAudioSrc)
 
   // Update the audio source whenever the track changes
   // `createEffect()` is triggered whenever
@@ -140,34 +146,62 @@ const Player = (props: {
       * For YouTube resources a request to the server
       * that determine the audio source is needed
       */
+      let artwork_url = ""
+      let audio_src = ""
+
       if ('AlbumFS' in props.track) { // Local files (no async required)
         const l = props.track as LocalTrack
-        const audioSrc = `${Config.serverUrl}/audio/${l.AlbumFS}/${l.AlbumId}`
-        Log(`Setting audio source: '${props.track.Title}' - '${audioSrc}'`)
-
-        // Clear the YtId and change the value of `audioSrc`
-        // directly without an async call using `mutate`
-        setYtId("")
-        mutate(audioSrc)
-
-        // Trigger the `coverSource()` effect
-        setCoverSource(`/art/${l.AlbumFS}/${l.AlbumId}`)
+        artwork_url = `/art/${l.AlbumFS}/${l.AlbumId}`
+        audio_src = `${Config.serverUrl}/audio/${l.AlbumFS}/${l.AlbumId}`
 
       } else if ('TrackId' in props.track) { // YouTube
         const y = props.track as YtTrack
-        Log(`Setting audio source: '${props.track.Title}' - '${y.TrackId}'`)
-
-        // Update the `ytId`, triggering a new call to `getYtSrc`
-        setYtId(y.TrackId)
-        setCoverSource(y.ArtworkUrl)
-
-        // Prefetch next YT url!
+        artwork_url = y.ArtworkUrl;
+        audio_src = y.TrackId;
       }
+
+      if (audio_src!=""){
+        Log(`Setting audio source: '${props.track.Title}' - '${audio_src}'`)
+        // Update the `audioId`, triggering a new call to `getAudioSrc`
+        setAudioId(audio_src)
+
+        // Trigger the `coverSource()` effect
+        if (artwork_url != untrack(coverSource)) {
+          setCoverSource(artwork_url)
+        }
+      }
+
     }
   })
 
+  // Ensure that a track is picked when the `audioSrc()` has
+  // resolved into a new value
+  //createEffect( () => {
+  //  const audio_src = audioSrc();
+  //  Log(`DETECT: Change to audio source: '${audio_src}'`, 
+  //    props.track,  audio_src, props.activeList
+  //  )
+
+  //  if (props.playingIdx == -1 && audio_src !== undefined && audio_src != ""){
+
+  //    //if (props.track !== undefined && props.track.Title != ""){
+
+  //    if (props.activeList == MediaListType.YouTube && !audio_src.startsWith(Config.serverUrl) ) {
+  //      Log("Setting `playingIdx` to 0", props.track,  audio_src, props.activeList)
+  //      props.setPlayingIdx(0)
+  //    } else if (props.activeList != MediaListType.YouTube && audio_src.startsWith(Config.serverUrl) ) {
+  //      Log("Setting `playingIdx` to 0", props.track,  audio_src, props.activeList)
+  //      props.setPlayingIdx(0)
+  //    }
+
+  //    //}
+
+
+  //  }
+  //})
+
   createEffect( () => {
-    Log(`Setting cover source '${coverSource()}'`)
+    Log(`DETECT: Change to cover source '${coverSource()}'`)
     if (coverSource() !== undefined && coverSource() !== ""){      
       // Update the navigators metadata
       setNavigatorMetadata(props.track, coverSource())
