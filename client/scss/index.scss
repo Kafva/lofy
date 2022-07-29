@@ -34,7 +34,12 @@ body {
 
   // Mountpoint container
   div#root {
-    font-size: vars.$font-size;
+    font-size: vars.$font_size;
+    @media 
+      (min-width: vars.$mobile_min_width) and 
+      (max-width: vars.$mobile_max_width) {
+      font-size: vars.$mobile_font_size;
+    }
 
     // Only the <Tracks> are displayed as a flex-item
     display: flex;

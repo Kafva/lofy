@@ -1,24 +1,15 @@
-// @media queries are evaluated at runtime by the client so we cannot 
-// use compile time defined Sass variables for different layouts.
-:root {
-  //== Mobile ==//
-  @media only screen
-    and (min-device-width: 320px) 
-    and (max-device-width: 480px) {
-    --sidebar_width: 5em
-  }
-  //== Medium size ==//
-  @media (min-width: 800px) {
-    --sidebar_width: 10em
-  }
-  //== Widescreen ==//
-  @media (min-width: 1024px) {
-    --sidebar_width: 15em
-  }
-}
+// @media query cut-off points
+$mobile_min_width: 320px;
+$mobile_max_width: 480px;
+$widescreen_min_width: 1400px;
+
+$mobile_sidebar_width: 8em;
+$sidebar_width: 10em;
+$widescreen_sidebar_width: 15em;
 
 // Font size for tracks and playlists
-$font-size: 14px;
+$font_size: 14px;
+$mobile_font_size: 10px;
 
 //== Color scheme ==
 $accent:     #6e85d3;
@@ -52,4 +43,40 @@ $nav_z: 9;
 $sidebar_z: 8;
 $table_z: 7;
 
+
+//== Mixins ==//
+@mixin mobile() {
+  @media 
+    (min-width: $mobile_min_width) and 
+    (max-width: $mobile_max_width) {
+    @content;
+  }
+}
+
+@mixin widescreen() {
+  @media 
+    (min-width: $widescreen_min_width) {
+    @content;
+  }
+}
+
+@mixin fade-in($sec: 1.0s) {
+  @keyframes _fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  animation: _fade-in $sec;
+}
+
+// Limit text overflow and the width of an element
+@mixin limit-width($max-width, $min-width: $max-width, $display: inline-block) {
+  display: $display;
+  max-width: $max-width;
+  min-width: $min-width;
+  width: $max-width;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
 

@@ -1,5 +1,4 @@
 @use "vars";
-@use "funcs";
 
 div#root > table {
   margin-top:  4%;
@@ -31,12 +30,17 @@ div#root > table {
   }
   // Currently playing indicator
   span.amp {
-      height: vars.$font-size;
+      height: vars.$font_size;
+      @media 
+        (min-width: vars.$mobile_min_width) and 
+        (max-width: vars.$mobile_max_width) {
+        height: vars.$mobile_font_size;
+      }
       content: url("amp.gif");
       margin-right: 1em;
   }
   th,td {
-    @include funcs.fade-in();
+    @include vars.fade-in();
     height: vars.$row_height;
     margin: 4px 0 5px 0;
 
@@ -45,27 +49,32 @@ div#root > table {
 
     // Each column needs a min-width for proper alignment
     &:nth-child(1) { // Title
-      @include funcs.limit-width(14%, 18em);
+      @include vars.limit-width(14%, 18em);
       border-bottom: vars.$default_bottom_border;
       &:hover { color: vars.$accent; }
     }
     &:nth-child(2) { // Album
-      @include funcs.limit-width(14%, 18em);
+      @include vars.limit-width(14%, 18em);
       border-bottom: vars.$default_bottom_border;
+      @include vars.mobile { display: none };
     }
     &:nth-child(3) { // Artist
-      @include funcs.limit-width(14%, 18em);
+      @include vars.limit-width(14%, 18em);
       border-bottom: vars.$default_bottom_border;
+      display: none;
+      @media (min-width: vars.$widescreen_min_width) { // Only on widescreen
+        display: inline-block;
+      }
     }
     &:nth-child(4) { // Duration
-      @include funcs.limit-width(4.2em);
+      @include vars.limit-width(4.2em);
       border-bottom: vars.$default_bottom_border;
+      @include vars.mobile { display: none };
     }
     &:nth-child(5) { // Youtube link
-      @include funcs.limit-width(1.5em);
+      @include vars.limit-width(1.5em);
       a:hover { color: vars.$accent; }
+      @include vars.mobile { display: none };
     }
   }
 }
-
-

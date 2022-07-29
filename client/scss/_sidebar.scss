@@ -1,5 +1,4 @@
 @use "vars";
-@use "funcs";
 
 // Same padding for <h3> and <ul> elements
 $item_padding: 0 40px 5px 20px;
@@ -10,7 +9,18 @@ div#sidebar {
   overflow-y: scroll;
   left: 0;
   top: 1%;
-  width: var(--sidebar_width);
+
+  width: vars.$sidebar_width;
+
+  @include vars.widescreen {
+    width: vars.$widescreen_sidebar_width;
+  }
+  @include vars.mobile {
+    width: vars.$mobile_sidebar_width;
+    font-size: vars.$mobile_font_size;
+  }
+
+
   height: calc(100% - 40px);
   padding: 2% 15px 20px 0;
 
@@ -29,7 +39,7 @@ div#sidebar {
     margin: 0 0 0 0;
     padding: $item_padding;
 
-    @include funcs.fade-in();
+    @include vars.fade-in();
 
     li {
       // The top margin is essential to not show partial
@@ -59,6 +69,7 @@ div#sidebar {
         margin-left: 0.5em;
         padding-left: 0.5em;
         &:hover { color: vars.$accent; }
+        @include vars.mobile { display: none }
       }
     }
   }
