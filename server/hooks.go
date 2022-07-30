@@ -39,8 +39,8 @@ func TemplateHook(next http.Handler) http.Handler {
 			var tmpl = template.Must(template.ParseFiles(WEBROOT_DIR+"/index.html"))
 
       data := TemplateData {
-        Playlists: get_local_playlists(PLAYLIST_DIR),
-        Albums: get_albums(ALBUM_DIR),
+        Playlists: get_local_playlists(CONFIG.PLAYLIST_DIR),
+        Albums: get_albums(CONFIG.ALBUM_DIR),
 				YtPlaylists: get_yt_playlists(),
       }
 
@@ -77,7 +77,7 @@ func TranslateIndexToFilename(next http.Handler) http.Handler {
 		}
 
 		filename :=
-			album_id_to_filename(album_index, TranslateTilde(ALBUM_DIR+"/"+album))
+			album_id_to_filename(album_index, TranslateTilde(CONFIG.ALBUM_DIR+"/"+album))
 
 		// Update the request path and forward the request to the `FileServer`
 		r.URL.Path = album+"/"+filename
@@ -89,7 +89,7 @@ func TranslateIndexToFilename(next http.Handler) http.Handler {
 // Return a list of all playlists defined in `YT_PLAYLIST_FILE`
 func get_yt_playlists() []YtPlaylist  {
 	playlists := make([]YtPlaylist,0,YT_MAX_PLAYLIST_CNT)
-	f, err := os.Open(TranslateTilde(YT_PLAYLIST_FILE))
+	f, err := os.Open(TranslateTilde(CONFIG.YT_PLAYLIST_FILE))
 	if err == nil {
 		defer f.Close()
 		scanner := bufio.NewScanner(f)
@@ -102,7 +102,7 @@ func get_yt_playlists() []YtPlaylist  {
 
 			split := strings.Split(text, ";")
 			if len(split)!=3 {
-				Die("Invalid format of '"+YT_PLAYLIST_FILE+"', line "+strconv.Itoa(line))
+				Die("Invalid format of '"+CONFIG.YT_PLAYLIST_FILE+"', line "+strconv.Itoa(line))
 			}
 			playlists = append(playlists, YtPlaylist{
 				SingleTrack: strings.TrimSpace(split[0]) == SINGLE_YT_TRACK,
@@ -111,7 +111,7 @@ func get_yt_playlists() []YtPlaylist  {
 			})
 		}
 	} else {
-		Die("Failed to locate '" + YT_PLAYLIST_FILE+"'")
+		Die("Failed to locate '"+CONFIG.YT_PLAYLIST_FILE+"'")
 	}
 
 	return playlists

@@ -67,7 +67,7 @@ type YtTrack struct {
 
 func (y *YtTrack) FetchYtUrl(video_id string) {
     cmd     := exec.Command(
-      YTDL_BIN, "-j", "--format", "bestaudio",
+      CONFIG.YTDL_BIN, "-j", "--format", "bestaudio",
       "--extract-audio", "--skip-download",
       "https://www.youtube.com/watch?v="+video_id,
     )
