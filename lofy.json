@@ -1,0 +1,17 @@
+{
+  "USE_TLS": true,
+  "ADDR": "127.0.0.1",
+  "PORT": 20111,
+  "TLS_KEY":  "./tls/server.key",
+  "TLS_CERT": "./tls/server.crt",
+  "PLAYLIST_DIR":  "~/Music/.playlists",
+  "ALBUM_DIR":  "~/Music",
+  "YT_PLAYLIST_FILE": "~/Music/.playlists/yt",
+
+  "DEBUG": true,
+  "LOG_COLOR": true,
+
+  "YTDL_BIN": "yt-dlp",
+  "FFMPEG_BIN": "ffmpeg",
+  "FFPROBE_BIN": "ffprobe"
+}
