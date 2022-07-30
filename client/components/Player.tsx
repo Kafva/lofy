@@ -2,17 +2,8 @@ import { createEffect, createResource, createSignal, onMount, Setter, untrack } 
 import { Portal } from 'solid-js/web';
 import Config from '../config';
 import { TRACK_HISTORY } from '../global';
-import { Track, LocalTrack, YtTrack, MediaListType } from '../types';
-import { Log, DisplayTime, Err } from '../util';
-
-/** Generic getter for DOM elements */
-function getHTMLElement<Type extends Element>(selector:string): Type {
-  const el = document.querySelector(selector) as Type;
-  if (el == undefined) {
-    throw `No element found matching ${selector}`
-  }
-  return el
-}
+import { Track, LocalTrack, YtTrack, SourceType } from '../types';
+import { Log, FmtTime, Err, GetHTMLElement } from '../util';
 
 /**
 * The `navigator` API generally works even if the `sizes` and `type`
@@ -108,7 +99,7 @@ const Player = (props: {
   track: Track,
   trackCount: number,
 
-  activeList: MediaListType,
+  activeSource: SourceType,
 
   setPlayingIdx: (arg0: number) => any
   playingIdx: number,
@@ -130,15 +121,12 @@ const Player = (props: {
   const [audioId,setAudioId] = createSignal("")
 
   // `createResource()` allows us to connect a signal with an async task
-  // whenever the `audioId` singal changes, the `getAudioSrc` function will re-run.
+  // whenever the `audioId` singal changes, the `getAudioSrc` 
+  // function will re-run.
   // The resolved data is stored in `audioSrc`
-  // `mutate()` allows us to set `audioSrc` directly without using `getAudioSrc`.
   const [audioSrc] = createResource(audioId, getAudioSrc)
 
-  // Update the audio source whenever the track changes
-  // `createEffect()` is triggered whenever
-  // reactive components inside the function are
-  // modified, i.e. `track` in this case.
+  // Update the audio source whenever the `prop.track` changes
   createEffect( () => {
     if (props.track !== undefined && props.track.Title != "") {
       /**
@@ -175,6 +163,8 @@ const Player = (props: {
     }
   })
 
+  // `createEffect()` is triggered whenever a reactive component that is called 
+  // within the body changes, `coverSource()` in this case.
   createEffect( () => {
     // Skip updates where the `coverSource()` is empty
     if (coverSource() !== undefined && coverSource() !== ""){
@@ -190,10 +180,10 @@ const Player = (props: {
   })
 
   onMount( () => {
+    img       = GetHTMLElement<HTMLImageElement>("#cover > div > img")
+    coverBkg  = GetHTMLElement<HTMLDivElement>("#cover > div:first-child")
+    audio     = GetHTMLElement<HTMLAudioElement>("audio")
     // Initalise the <audio> with the desired default volume
-    img       = getHTMLElement<HTMLImageElement>("#cover > div > img")
-    coverBkg  = getHTMLElement<HTMLDivElement>("#cover > div:first-child")
-    audio     = getHTMLElement<HTMLAudioElement>("audio")
     audio.volume = volume()
   })
 
@@ -231,8 +221,9 @@ const Player = (props: {
         // Resume playback if needed
         if (audio.paused){
           audio.play().catch( (e:DOMException) => {
-            // Media from the same origin as the server is on the autoplay allowlist by default
-            // other sources require 'interaction from the user' before being auto-playable
+            // Media from the same origin as the server is on the autoplay 
+            // allowlist by default other sources require 
+            // 'interaction from the user' before being auto-playable
             //  https://developer.mozilla.org/en-US/docs/Web/Media/Autoplay_guide#autoplay_availability
             Err("Autoplay failed: ", e)
           })
@@ -275,9 +266,10 @@ const Player = (props: {
             onClick={ () => {
               // Seek skipping for long tracks
               if (props.track.Duration >= 60*Config.sameTrackSkipMin) {
-                const newPos = audio.currentTime - 60*Config.sameTrackSeekStepMin
-                if (newPos > 0){
-                  audio.currentTime = newPos
+                const newTime = 
+                  audio.currentTime - 60*Config.sameTrackSeekStepMin
+                if (newTime > 0){
+                  audio.currentTime = newTime
                 }
               } else {
                 const prevIndex = TRACK_HISTORY.pop();
@@ -305,14 +297,13 @@ const Player = (props: {
           <span role="button"
             class="nf nf-mdi-skip_next"
             onClick={ () => {
-              // For long tracks, e.g.
-              //  https://www.youtube.com/watch?v=_-8yfNLG5e8
-              // We skip ahead `Config.seekStepMin` minutes instead
-              // of moving to the next track
+              // For long tracks we skip ahead `Config.seekStepMin` minutes 
+              // instead of moving to the next track
               if (props.track.Duration >= 60*Config.sameTrackSkipMin) {
-                const newPos = audio.currentTime + 60*Config.sameTrackSeekStepMin
-                if (newPos <= audio.duration){
-                  audio.currentTime = newPos
+                const newTime = 
+                  audio.currentTime + 60*Config.sameTrackSeekStepMin
+                if (newTime <= audio.duration){
+                  audio.currentTime = newTime
                 }
               } else {
                 setNextTrack(props.trackCount,
@@ -330,20 +321,20 @@ const Player = (props: {
 
           <span  role="button"
             class="nf nf-fa-backward" onClick={ () => {
-              const newPos = audio.currentTime - Config.seekStepSec
-              if (newPos >= 0){
-                audio.currentTime = newPos
+              const newTime = audio.currentTime - Config.seekStepSec
+              if (newTime >= 0){
+                audio.currentTime = newTime
               }
             }}
           />
           <span>{
-            `${DisplayTime(currentTime())} / ${DisplayTime(props.track.Duration)}`
+            `${FmtTime(currentTime())} / ${FmtTime(props.track.Duration)}`
           }</span>
           <span  role="button"
             class="nf nf-fa-forward" onClick={ () => {
-              const newPos = audio.currentTime + Config.seekStepSec
-              if (newPos <= audio.duration){
-                audio.currentTime = newPos
+              const newTime = audio.currentTime + Config.seekStepSec
+              if (newTime <= audio.duration){
+                audio.currentTime = newTime
               }
             }}
           />

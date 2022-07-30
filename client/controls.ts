@@ -3,7 +3,8 @@ import Config, { SHORTCUTS } from './config';
 const queryClick = (selector: string) =>
   (document.querySelector(selector) as HTMLSpanElement).click()
 
-/** Click elements under `#shortcuts` based on the configured `SHORTCUTS` object */
+/** Click elements under `#shortcuts` based on the configured `SHORTCUTS` object 
+*/
 const handleShortcut = (e:KeyboardEvent) => {
   for (let i=0; i < SHORTCUTS.length; i++){
     if (e.key == SHORTCUTS[i].key){
@@ -61,21 +62,20 @@ const HandleKeyboardEvent = (e:KeyboardEvent) => {
   }
 }
 
-/**
-* Hook up the media keys to interact with the UI through virtual click events
+/** Hook up the media keys to interact with the UI through virtual click events
 */
 const SetupMediaHandlers = () => {
   if ('mediaSession' in navigator) {
-    navigator.mediaSession.setActionHandler('play', () => { 
+    navigator.mediaSession.setActionHandler('play', () => {
       queryClick("span.nf-fa-pause,span.nf-fa-play")
     });
-    navigator.mediaSession.setActionHandler('pause', () => { 
+    navigator.mediaSession.setActionHandler('pause', () => {
       queryClick("span.nf-fa-pause,span.nf-fa-play")
     });
-    navigator.mediaSession.setActionHandler('previoustrack', () => { 
+    navigator.mediaSession.setActionHandler('previoustrack', () => {
       queryClick("span.nf-mdi-skip_previous")
     });
-    navigator.mediaSession.setActionHandler('nexttrack', () => { 
+    navigator.mediaSession.setActionHandler('nexttrack', () => {
       queryClick("span.nf-mdi-skip_next")
     });
   }

@@ -1,15 +1,15 @@
 import { Index, Show } from 'solid-js';
 import { TRACK_HISTORY } from '../global';
-import { Track, MediaListType, YtTrack } from '../types';
-import { DisplayTime, Log } from '../util';
+import { Track, SourceType, YtTrack } from '../types';
+import { FmtTime, Log } from '../util';
 
 const TrackColumn = (props: {
-  text: string, 
-  trackIdx: number, 
+  text: string,
+  trackIdx: number,
   playingIdx: number
 }) => {
   return (
-    <td title={props.text} 
+    <td title={props.text}
       classList={{selected: props.trackIdx == props.playingIdx }}>
       {props.text}
     </td>
@@ -25,13 +25,13 @@ const TrackItem = (props: {
 }) => {
   return (
     <tr>
-      <td role="menuitem" 
+      <td role="menuitem"
         title={props.track.Title}
-        onClick={ () => { 
+        onClick={ () => {
           TRACK_HISTORY.push(props.playingIdx)
           Log("TRACK_HISTORY", TRACK_HISTORY)
 
-          props.setPlayingIdx(props.trackIdx) 
+          props.setPlayingIdx(props.trackIdx)
         }}
         classList={{selected:  props.trackIdx == props.playingIdx }}>
         <span classList={{
@@ -39,18 +39,18 @@ const TrackItem = (props: {
         }}/>
         {props.track.Title}
       </td>
-      <TrackColumn text={props.track.Album} 
+      <TrackColumn text={props.track.Album}
         trackIdx={props.trackIdx} playingIdx={props.playingIdx}
       />
-      <TrackColumn text={props.track.Artist} 
+      <TrackColumn text={props.track.Artist}
         trackIdx={props.trackIdx} playingIdx={props.playingIdx}
       />
-      <TrackColumn text={DisplayTime(props.track.Duration)} 
+      <TrackColumn text={FmtTime(props.track.Duration)}
         trackIdx={props.trackIdx} playingIdx={props.playingIdx}
       />
       <td>
         <Show when={"TrackId" in props.track}>
-          <a 
+          <a
             class="nf nf-mdi-link"
             target="_blank"
             href={
@@ -63,12 +63,8 @@ const TrackItem = (props: {
 };
 
 
-/**
-* The `Tracks` component will fetch Tracks from the server
-* based on a provided the currently selected item
-*/
 const Tracks = (props: {
-  activeList: MediaListType,
+  activeSource: SourceType,
   currentList: Track[],
 
   playingIdx: number,
@@ -86,9 +82,9 @@ const Tracks = (props: {
       </thead>
       <tbody>
         <Index each={props.currentList}>{(item,i) =>
-          <TrackItem track={item()} 
+          <TrackItem track={item()}
             trackIdx={i}
-            playingIdx={props.playingIdx} 
+            playingIdx={props.playingIdx}
             setPlayingIdx={props.setPlayingIdx}
             isPlaying={props.isPlaying}
           />

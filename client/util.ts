@@ -1,8 +1,17 @@
 import { DEBUG } from "./config"
-import { MEDIA_LISTS } from "./global";
-import { PlaylistEntry, MediaListType } from './types';
+import { SOURCE_LISTS } from "./global";
+import { PlaylistEntry, SourceType } from './types';
 
-const DisplayTime = (seconds: number): string => {
+/** Generic getter for DOM elements */
+function GetHTMLElement<Type extends Element>(selector:string): Type {
+  const el = document.querySelector(selector) as Type;
+  if (el == undefined) {
+    throw `No element found matching ${selector}`
+  }
+  return el
+}
+
+const FmtTime = (seconds: number): string => {
   const min =  Math.floor(seconds/60).toString().padStart(2,"0")
   const sec =  Math.floor(seconds%60).toString().padStart(2,"0")
   return `${min}:${sec}`
@@ -11,7 +20,7 @@ const DisplayTime = (seconds: number): string => {
 const ExtractPlaylistOrderFromTemplate = (): Map<string,PlaylistEntry[]> => {
   const order = new Map<string,PlaylistEntry[]>()
 
-  MEDIA_LISTS[MediaListType.LocalPlaylist].map((p:HTMLLIElement)=>p.innerHTML)
+  SOURCE_LISTS[SourceType.LocalPlaylist].map((p:HTMLLIElement)=>p.innerHTML)
     .forEach( (pls:string) => {
       // The order of items in the `items` array corresponds to the
       // order of the m3u playlist
@@ -45,7 +54,7 @@ const Warn = (...args: any) => {
   console.log("%c WARN ", 'background: #dbba00; color: #ffffff', ...args)
 }
 
-export { 
-  Log, Err, Warn, 
-  ExtractListsFromTemplate, ExtractPlaylistOrderFromTemplate, DisplayTime
+export {
+  Log, Err, Warn, GetHTMLElement, FmtTime,
+  ExtractListsFromTemplate, ExtractPlaylistOrderFromTemplate
 }
