@@ -43,6 +43,9 @@ func TemplateHook(next http.Handler) http.Handler {
         Albums: get_albums(ALBUM_DIR),
 				YtPlaylists: get_yt_playlists(),
       }
+			// These headers should not be needed
+			//w.Header().Add("Permissions-Policy", "autoplay=*")
+			//w.Header().Add("Feature-Policy", 		 "autoplay=*")
       tmpl.Execute(w, data)
     } else {
       next.ServeHTTP(w, r)

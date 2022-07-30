@@ -80,10 +80,10 @@ const setNextTrack = (
 
 const getAudioSrc = async (trackId:string): Promise<string>  => {
   if (trackId !== undefined && trackId != ""){
-    if (trackId.startsWith(Config.serverUrl)) { // Local source
+    if (trackId.startsWith("/")) { // Local source
       return trackId;
     } else {
-      const ytUrl = (await fetch(`${Config.serverUrl}/yturl/${trackId}`)).text()
+      const ytUrl = (await fetch(`/yturl/${trackId}`)).text()
       return ytUrl
     }
   }
@@ -153,7 +153,7 @@ const Player = (props: {
       if ('AlbumFS' in props.track) { // Local files (no async required)
         const l = props.track as LocalTrack
         artwork_url = `/art/${l.AlbumFS}/${l.AlbumId}`
-        audio_src = `${Config.serverUrl}/audio/${l.AlbumFS}/${l.AlbumId}`
+        audio_src = `/audio/${l.AlbumFS}/${l.AlbumId}`
 
       } else if ('TrackId' in props.track) { // YouTube
         const y = props.track as YtTrack
@@ -228,8 +228,13 @@ const Player = (props: {
         }
       }}
       onLoadedData={ () => {
+        // Resume playback if needed
+        if (audio.paused){ audio.play(); }
+        // Media from the same origin as the server is on the autoplay allowlist by default
+        // other sources require 'interaction from the user' before being auto-playable
+        //  https://developer.mozilla.org/en-US/docs/Web/Media/Autoplay_guide#autoplay_availability
+
         // Ensure that the play-button state is toggled
-        // when clicking a new track
         props.setIsPlaying(true)
       }}
       onEnded={ () => {

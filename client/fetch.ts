@@ -1,5 +1,4 @@
-import { MediaListType, LocalTrack, YtTrack, Track, ActiveTuple, PlaylistEntry } from './types';
-import Config from './config';
+import { MediaListType, LocalTrack, Track, ActiveTuple, PlaylistEntry } from './types';
 import { MEDIA_LISTS, TRACK_HISTORY, PLAYLIST_ORDER } from './global';
 import { Err, Log } from './util';
 
@@ -46,6 +45,11 @@ const FETCH_CACHE = {
   [MediaListType.YouTube]:       initFetchCache(MediaListType.YouTube)
 }
 
+/**
+* Fetch metadata about the given media list.
+* Returns an array of tracks and a boolean value that indicates
+* if there is more data to fetch.
+*/
 const endpointFetch = async (
   endpoint: string,
   mediaName: string,
@@ -65,7 +69,7 @@ const endpointFetch = async (
 
       const data = await
       (await fetch(
-        `${Config.serverUrl}/${endpoint}/${mediaName}?${params}`
+        `/${endpoint}/${mediaName}?${params}`
       )).json()
       if ('tracks' in data && 'last_page' in data) {
         const tracks = data['tracks']
@@ -97,29 +101,6 @@ const endpointFetch = async (
 }
 
 /**
- * Fetch metadata about the given media list.
- * Returns an array of tracks and a boolean value that indicates
- * if there is more data to fetch.
- */
-const fetchMediaList = async (
-  mediaName: string,
-  page: number,
-  single: boolean,
-  typing: MediaListType): Promise<[Track[],boolean]> => {
-  switch (typing) {
-  case MediaListType.LocalPlaylist:
-    return endpointFetch("meta/playlist", mediaName, page, single, typing) as
-      Promise<[LocalTrack[],boolean]>
-  case MediaListType.LocalAlbum:
-    return endpointFetch("meta/album", mediaName, page, single, typing) as
-      Promise<[LocalTrack[],boolean]>
-  case MediaListType.YouTube:
-    return endpointFetch("yt", mediaName, page, single, typing) as
-      Promise<[YtTrack[],boolean]>
-  }
-}
-
-/**
 * Currently does not support loading pages incrementally to the frontend
 * A previous implementation used a hack in `createEffect()` to accomplish this
 *  See: 4d49475a338f214197db91712b8160dd5cac0654
@@ -147,14 +128,29 @@ const FetchTracks = async (
     )?.getAttribute("data-single") == "true"
   }
 
+  let endpoint = ""
   let tracks: Track[] = []
   let page = 1
   let last_page = false
 
   while (!last_page) {
+    switch (source.activeList) {
+    case MediaListType.LocalPlaylist:
+      endpoint = "meta/playlist"
+      break;
+    case MediaListType.LocalAlbum:
+      endpoint = "meta/album"
+      break;
+    case MediaListType.YouTube:
+      endpoint = "yt"
+      break;
+    }
+
     // Incrementally fetch media until the last page of data is recieved
-    [tracks, last_page] =
-        await fetchMediaList(mediaName, page, single, source.activeList)
+    [tracks, last_page] = await endpointFetch(
+      endpoint, mediaName, page, single, source.activeList
+    ) as [Track[],boolean]
+
     fetched.push(...tracks)
     page++
   }
