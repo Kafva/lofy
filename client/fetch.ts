@@ -6,16 +6,16 @@ import { Err, Log } from './util';
 * Sort an array of `LocalTrack` objects such that they are in the
 * order indicated by a `PlaylistEntry` array from `PLAYLIST_ORDER`
 */
-const sortPlaylist = (unsorted: LocalTrack[], playlist_name: string) => {
+const sortPlaylist = (unsorted: LocalTrack[], playlistName: string) => {
   unsorted.sort( (a:LocalTrack,b:LocalTrack) => {
-    const pl_index_a = PLAYLIST_ORDER.get(playlist_name)!.findIndex(
+    const plIndexA = PLAYLIST_ORDER.get(playlistName)!.findIndex(
       (e:PlaylistEntry) => e.AlbumFS==a.AlbumFS && e.AlbumId == a.AlbumId
     )
-    const pl_index_b = PLAYLIST_ORDER.get(playlist_name)!.findIndex(
+    const plIndexB = PLAYLIST_ORDER.get(playlistName)!.findIndex(
       (e:PlaylistEntry) =>
         e.AlbumFS==b.AlbumFS && e.AlbumId == b.AlbumId
     )
-    return pl_index_a - pl_index_b
+    return plIndexA - plIndexB
   })
 }
 
@@ -84,17 +84,17 @@ const endpointFetch = async (
             (a as LocalTrack).AlbumId - (b as LocalTrack).AlbumId
           )
         }
-        const last_page = data['last_page'] as boolean;
+        const lastPage = data['last_page'] as boolean;
 
         // Append fetched data into the cache
-        const existing_value = FETCH_CACHE[typing].get(mediaName)
-        let joined_values: Track[] = []
-        if (existing_value !== undefined){
-          joined_values = [...existing_value[0], ...tracks]
+        const existingValues = FETCH_CACHE[typing].get(mediaName)
+        let joinedValues: Track[] = []
+        if (existingValues !== undefined){
+          joinedValues = [...existingValues[0], ...tracks]
         }
-        FETCH_CACHE[typing].set(mediaName, [joined_values, last_page])
+        FETCH_CACHE[typing].set(mediaName, [joinedValues, lastPage])
 
-        return [tracks,last_page]
+        return [tracks,lastPage]
       } else {
         Err(`Missing JSON key(s) in response: '${endpoint}/${mediaName}'\n`)
       }
@@ -136,9 +136,9 @@ const FetchTracks = async (
   let endpoint = ""
   let tracks: Track[] = []
   let page = 1
-  let last_page = false
+  let lastPage = false
 
-  while (!last_page) {
+  while (!lastPage) {
     switch (source.activeSource) {
     case SourceType.LocalPlaylist:
       endpoint = "meta/playlist"
@@ -152,7 +152,7 @@ const FetchTracks = async (
     }
 
     // Incrementally fetch media until the last page of data is recieved
-    [tracks, last_page] = await endpointFetch(
+    [tracks, lastPage] = await endpointFetch(
       endpoint, mediaName, page, single, source.activeSource
     ) as [Track[],boolean]
 

@@ -135,28 +135,28 @@ const Player = (props: {
       * For YouTube resources a request to the server
       * that determine the audio source is needed
       */
-      let artwork_url = ""
-      let audio_src = ""
+      let artworkUrl = ""
+      let audioLoc = ""
 
       if ('AlbumFS' in props.track) { // Local files (no async required)
         const l = props.track as LocalTrack
-        artwork_url = `/art/${l.AlbumFS}/${l.AlbumId}`
-        audio_src = `/audio/${l.AlbumFS}/${l.AlbumId}`
+        artworkUrl = `/art/${l.AlbumFS}/${l.AlbumId}`
+        audioLoc = `/audio/${l.AlbumFS}/${l.AlbumId}`
 
       } else if ('TrackId' in props.track) { // YouTube
         const y = props.track as YtTrack
-        artwork_url = y.ArtworkUrl;
-        audio_src = y.TrackId;
+        artworkUrl = y.ArtworkUrl;
+        audioLoc = y.TrackId;
       }
 
-      if (audio_src!=""){
-        Log(`Setting audio source: '${props.track.Title}' - '${audio_src}'`)
+      if (audioLoc!=""){
+        Log(`Setting audio source: '${props.track.Title}' - '${audioLoc}'`)
         // Update the `audioId`, triggering a new call to `getAudioSrc`
-        setAudioId(audio_src)
+        setAudioId(audioLoc)
 
         // Trigger the `coverSource()` effect
-        if (artwork_url != untrack(coverSource)) {
-          setCoverSource(artwork_url)
+        if (artworkUrl != untrack(coverSource)) {
+          setCoverSource(artworkUrl)
         }
       }
 
