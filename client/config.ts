@@ -31,10 +31,6 @@ class Config {
   static readonly seekForwardKey = 'L';
   static readonly shuffleKey = 'S';
   static readonly coverKey = 'F';
-
-  // Internals
-  static readonly activeListKey = "activeList"
-  static readonly listIndexKey  = "listIndex"
 }
 
 export { DEBUG, SHORTCUTS }

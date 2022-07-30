@@ -2,18 +2,17 @@ import { createSignal, Index, createResource, createEffect } from 'solid-js';
 import List from './List';
 import Tracks from './Tracks';
 import Player from './Player';
-import Config from '../config'
-import { LIST_TYPES } from '../global'
+import { ACTIVE_LIST_KEY, LIST_INDEX_KEY, LIST_TYPES } from '../global'
 import { FetchTracks } from '../fetch';
 import { MediaListType, EmptyTrack, Track, ActiveTuple } from '../types';
 
 const App = () => {
   // Restore values from a previous session if possible
   const prevActiveList = parseInt(
-    localStorage.getItem(Config.activeListKey)|| "0"
+    localStorage.getItem(ACTIVE_LIST_KEY)|| "0"
   ) as MediaListType
   const prevListIndex  = parseInt(
-    localStorage.getItem(Config.listIndexKey) || "0"
+    localStorage.getItem(LIST_INDEX_KEY) || "0"
   )
 
   // Flag to determine the active media list

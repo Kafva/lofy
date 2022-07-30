@@ -1,6 +1,6 @@
 import { batch, createSignal, Index, Show, For } from 'solid-js';
-import Config, { SHORTCUTS } from '../config'
-import { MEDIA_LISTS, MEDIA_TITLE_CLASSES } from '../global'
+import { SHORTCUTS } from '../config'
+import { ACTIVE_LIST_KEY, LIST_INDEX_KEY, MEDIA_LISTS, MEDIA_TITLE_CLASSES } from '../global'
 import { MediaListType, Track } from '../types';
 
 const get_yt_link = (item: HTMLLIElement): string => {
@@ -57,8 +57,8 @@ const List = (props: {
             props.setCurrentList([] as Track[])
             setShow(true)
           })
-          localStorage.setItem(Config.activeListKey, props.activeList.toFixed(0))
-          localStorage.setItem(Config.listIndexKey,  props.listIndex.toFixed(0))
+          localStorage.setItem(ACTIVE_LIST_KEY, props.activeList.toFixed(0))
+          localStorage.setItem(LIST_INDEX_KEY,  props.listIndex.toFixed(0))
         }
       }}/>
     <Show when={props.activeList == props.listType && show()}>
@@ -71,7 +71,7 @@ const List = (props: {
                 props.setPlayingIdx(-1) 
                 props.setCurrentList([] as Track[])
               })
-              localStorage.setItem(Config.listIndexKey, i.toString())
+              localStorage.setItem(LIST_INDEX_KEY, i.toString())
             }}
             data-id={item().getAttribute('data-id')}>
             <span title={item().innerHTML} 
@@ -103,8 +103,8 @@ const List = (props: {
             props.setCurrentList([] as Track[])
             setShow(true)
           })
-          localStorage.setItem(Config.activeListKey, shortcut.activeList.toFixed())
-          localStorage.setItem(Config.listIndexKey,  shortcut.listIndex.toFixed())
+          localStorage.setItem(ACTIVE_LIST_KEY, shortcut.activeList.toFixed())
+          localStorage.setItem(LIST_INDEX_KEY,  shortcut.listIndex.toFixed())
         }}/>  
       }
       </For>

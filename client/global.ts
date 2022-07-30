@@ -49,9 +49,12 @@ const MEDIA_TITLE_CLASSES = Object.freeze({
   [MediaListType.YouTube]:      "nf nf-mdi-youtube_play"
 })
 
+// Names of keys in localStorage
+const ACTIVE_LIST_KEY = "activeList"
+const LIST_INDEX_KEY  = "listIndex"
 
 export {
   MEDIA_LISTS, LIST_TYPES, PLAYLIST_ORDER, TRACK_HISTORY,
-  MEDIA_TITLE_CLASSES 
+  MEDIA_TITLE_CLASSES, ACTIVE_LIST_KEY, LIST_INDEX_KEY
 }
 
