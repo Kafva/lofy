@@ -22,6 +22,14 @@ const LOG_COLOR = true
 
 //============================================================================//
 
+// Restrict origins that content can be loaded from (Content-Security-Policy)
+var CSP_VALUES = [...]string{
+	"connect-src 'self';",
+	"font-src 'self';",
+	"img-src 'self' https://*.ytimg.com;",
+	"media-src 'self' https://*.googlevideo.com;",
+}
+
 const YTDL_BIN = "yt-dlp"
 const FFMPEG_BIN = "ffmpeg"
 const FFPROBE_BIN = "ffprobe"

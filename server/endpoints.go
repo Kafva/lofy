@@ -21,7 +21,6 @@ import (
 // an empty response is returned.
 //  GET   /yturl/<video id>
 func GetYtUrl(w http.ResponseWriter, r *http.Request){
-  w.Header().Set("Access-Control-Allow-Origin", "*")
   //== Input validation ==//
   input_regex := regexp.MustCompile(ALLOWED_STRS)
   video_id := filepath.Base(r.URL.Path)
@@ -33,7 +32,6 @@ func GetYtUrl(w http.ResponseWriter, r *http.Request){
 
 		w.Header().Set("Content-Type", "text/plain")
     w.Write([]byte(yt_track.AudioUrl))
-
   } else {
     Warn("Invalid YouTube video ID requested by " + r.RemoteAddr )
   }
@@ -53,9 +51,7 @@ func GetYtPlaylist(w http.ResponseWriter, r *http.Request) {
     single    := r.URL.Query().Get("single") == "true"
 		yt_tracks := fetch_yt_playlist(playlist_id, single)
 
-    w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Content-Type", "application/json")
-
     res := map[string]interface{} { "tracks": yt_tracks, "last_page": true }
 		json.NewEncoder(w).Encode(res)
 	}
@@ -148,7 +144,6 @@ func GetLocalMetadata(w http.ResponseWriter, r *http.Request){
     }
   }
 
-  w.Header().Set("Access-Control-Allow-Origin", "*")
   w.Header().Set("Content-Type", "application/json")
 
 	track_paths := make([]string, 0, MAX_TRACKS)
