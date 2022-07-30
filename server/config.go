@@ -69,6 +69,7 @@ var CONFIG = DefaultConfig()
 
 
 //============================================================================//
+
 // The directory with build output of the client relative to the
 // working directory of the server
 const WEBROOT_DIR = "./dist"

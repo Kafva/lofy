@@ -1,6 +1,9 @@
 package main
 
 import (
+	"encoding/json"
+	"flag"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 
@@ -9,6 +12,20 @@ import (
 
 
 func main(){
+	var config = ""
+  flag.StringVar(&config, "c", "", "Path to a JSON configuration file")
+  flag.Parse()
+	if config != "" {
+		f,err := ioutil.ReadFile(config)
+		if err != nil {
+			Die(err)
+		}
+		err = json.Unmarshal(f, &CONFIG)	
+		if err != nil {
+			Die(err)
+		}
+	}
+
   // Web app resources are mounted at `/app`
 	// The entrypoint is `/app/index.html`
   web_root := http.FileServer(http.Dir(WEBROOT_DIR))
