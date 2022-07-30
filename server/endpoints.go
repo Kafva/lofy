@@ -21,7 +21,6 @@ import (
 // an empty response is returned.
 //  GET   /yturl/<video id>
 func GetYtUrl(w http.ResponseWriter, r *http.Request){
-  //== Input validation ==//
   input_regex := regexp.MustCompile(ALLOWED_STRS)
   video_id := filepath.Base(r.URL.Path)
 
@@ -47,7 +46,6 @@ func GetYtPlaylist(w http.ResponseWriter, r *http.Request) {
   playlist_id := filepath.Base(r.URL.Path)
 
 	if input_regex.Match([]byte(playlist_id)) {
-
     single    := r.URL.Query().Get("single") == "true"
 		yt_tracks := fetch_yt_playlist(playlist_id, single)
 
@@ -55,55 +53,6 @@ func GetYtPlaylist(w http.ResponseWriter, r *http.Request) {
     res := map[string]interface{} { "tracks": yt_tracks, "last_page": true }
 		json.NewEncoder(w).Encode(res)
 	}
-}
-
-// Fetches a list of all YtTrack objects for a playlist (or a single track)
-// The `AudioUrl` field will be empty and needs to be requested separately
-func fetch_yt_playlist(yt_id string, single_track bool) []YtTrack {
-    yt_param := "list"
-		var thumbnail = ""
-    if single_track {
-      yt_param = "v"
-			thumbnail = "https://i.ytimg.com/vi/"+yt_id+"/"+YT_THUMBNAIL_FILENAME
-    }
-    cmd     := exec.Command(
-      YTDL_BIN, "-j", "--format", "bestaudio",
-      "--flat-playlist", "--skip-download",
-      "https://www.youtube.com/watch?"+yt_param+"="+yt_id,
-    )
-    out,err   := cmd.Output()
-		if err == nil {
-			// The JSON output lacks an outer array
-			out_str := "["+string(out)+"]"
-
-			length := gjson.Get(out_str, "#").Int()
-			yt_tracks := make([]YtTrack,0,length)
-
-			for i:=0; i < int(length); i++ {
-				idx := strconv.Itoa(i)
-
-				track_id := gjson.Get(out_str, idx+".id").String()
-				if !single_track {
-					thumbnail = "https://i.ytimg.com/vi/"+track_id+"/"+YT_THUMBNAIL_FILENAME
-				}
-
-				yt_tracks = append(yt_tracks, YtTrack{
-					Track: Track {
-						Title: 		gjson.Get(out_str, idx+".title").String(),
-						Artist: 	gjson.Get(out_str, idx+".uploader").String(),
-						Album: 		gjson.Get(out_str, idx+".playlist").String(),
-						Duration: int(gjson.Get(out_str, idx+".duration").Int()),
-					},
-					TrackId:    track_id,
-					ArtworkUrl: thumbnail,
-					AudioUrl: "",
-				})
-			}
-			return yt_tracks
-		} else {
-				Warn("Failed to fetch YouTube metadata: ", yt_id)
-		}
-		return []YtTrack{}
 }
 
 // Fetch metadata about tracks in a playlist or album
@@ -216,6 +165,101 @@ func GetLocalMetadata(w http.ResponseWriter, r *http.Request){
 		"tracks": tracks, "last_page": last_page,
 	}
 	json.NewEncoder(w).Encode(res)
+}
+
+//    GET /art/<album>/<album_id>   -> <data>
+func GetArtwork(w http.ResponseWriter, r *http.Request){
+  album, album_id_str, _ :=
+    strings.Cut(strings.TrimPrefix(r.URL.Path, "/art/"), "/")
+
+	//== Parameter validation ==//
+	album_id,err := strconv.Atoi(album_id_str)
+	if err != nil {
+		return  // Non-numeric album id
+	}
+	if !regexp.MustCompile(ALBUM_NAME_REGEX).Match([]byte(album)) {
+		return; // Invalid album name
+	}
+
+	// Translate the album ID to a filename
+	album_path := TranslateTilde(ALBUM_DIR)+"/"+album
+	track_path := album_path+"/"+album_id_to_filename(album_id, album_path)
+
+	if track_path != "" {
+		data,err := ffprobe(track_path)
+		if err == nil {
+			stream_id,codec_name := get_cover_stream(string(data))
+
+			// Set the content type based on the image format
+			if codec_name == "mjpeg" {
+				codec_name = "jpeg"
+			}
+
+			// Extract the image stream and pipe it to the HTTP response
+			cover,err := exec.Command(FFMPEG_BIN, "-i", track_path, "-map",
+				"0:"+strconv.Itoa(stream_id), "-f", "image2", "-vcodec", "copy",
+				"-vframes", "1", "pipe:",
+			).Output()
+
+			if err != nil {
+				Err(err)
+			} else {
+				w.Header().Set("Content-Type","image/"+codec_name)
+				w.Write(cover)
+			}
+		}
+	}
+}
+
+//============================================================================//
+
+// Fetches a list of all YtTrack objects for a playlist (or a single track)
+// The `AudioUrl` field will be empty and needs to be requested separately
+func fetch_yt_playlist(yt_id string, single_track bool) []YtTrack {
+    yt_param := "list"
+		var thumbnail = ""
+    if single_track {
+      yt_param = "v"
+			thumbnail = "https://i.ytimg.com/vi/"+yt_id+"/"+YT_THUMBNAIL_FILENAME
+    }
+    cmd     := exec.Command(
+      YTDL_BIN, "-j", "--format", "bestaudio",
+      "--flat-playlist", "--skip-download",
+      "https://www.youtube.com/watch?"+yt_param+"="+yt_id,
+    )
+    out,err   := cmd.Output()
+		if err == nil {
+			// The JSON output lacks an outer array
+			out_str := "["+string(out)+"]"
+
+			length := gjson.Get(out_str, "#").Int()
+			yt_tracks := make([]YtTrack,0,length)
+
+			for i:=0; i < int(length); i++ {
+				idx := strconv.Itoa(i)
+
+				track_id := gjson.Get(out_str, idx+".id").String()
+				if !single_track {
+					thumbnail = "https://i.ytimg.com/vi/"+track_id+"/"+YT_THUMBNAIL_FILENAME
+				}
+
+				yt_tracks = append(yt_tracks, YtTrack{
+					Track: Track {
+						Title: 		gjson.Get(out_str, idx+".title").String(),
+						Artist: 	gjson.Get(out_str, idx+".uploader").String(),
+						Album: 		gjson.Get(out_str, idx+".playlist").String(),
+						Duration: int(gjson.Get(out_str, idx+".duration").Int()),
+					},
+					TrackId:    track_id,
+					ArtworkUrl: thumbnail,
+					AudioUrl: "",
+				})
+			}
+			return yt_tracks
+		} else {
+				Warn("Failed to fetch YouTube metadata: ", yt_id)
+		}
+		return []YtTrack{}
 }
 
 func get_track_paths_from_playlist(path string, track_paths *[]string) bool {
@@ -340,48 +384,5 @@ func album_id_to_filename(album_id int, path string) string {
 	return ""
 }
 
-//    GET /art/<album>/<album_id>   -> <data>
-func GetArtwork(w http.ResponseWriter, r *http.Request){
-  album, album_id_str, _ :=
-    strings.Cut(strings.TrimPrefix(r.URL.Path, "/art/"), "/")
-
-	//== Parameter validation ==//
-	album_id,err := strconv.Atoi(album_id_str)
-	if err != nil {
-		return  // Non-numeric album id
-	}
-	if !regexp.MustCompile(ALBUM_NAME_REGEX).Match([]byte(album)) {
-		return; // Invalid album name
-	}
-
-	// Translate the album ID to a filename
-	album_path := TranslateTilde(ALBUM_DIR)+"/"+album
-	track_path := album_path+"/"+album_id_to_filename(album_id, album_path)
-
-	if track_path != "" {
-		data,err := ffprobe(track_path)
-		if err == nil {
-			stream_id,codec_name := get_cover_stream(string(data))
-
-			// Set the content type based on the image format
-			if codec_name == "mjpeg" {
-				codec_name = "jpeg"
-			}
-
-			// Extract the image stream and pipe it to the HTTP response
-			cover,err := exec.Command(FFMPEG_BIN, "-i", track_path, "-map",
-				"0:"+strconv.Itoa(stream_id), "-f", "image2", "-vcodec", "copy",
-				"-vframes", "1", "pipe:",
-			).Output()
-
-			if err != nil {
-				Err(err)
-			} else {
-				w.Header().Set("Content-Type","image/"+codec_name)
-				w.Write(cover)
-			}
-		}
-	}
-}
 
 
