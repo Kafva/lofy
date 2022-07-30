@@ -1,4 +1,5 @@
 import { SourceType, Shortcut } from './types';
+
 /** Toggles `console.log()` output */
 const DEBUG = true
 
@@ -15,14 +16,19 @@ class Config {
   static readonly defaultVolume = 0.8;
   static readonly seekStepSec = 5;
 
-  // Only applicable for YouTube videos >= 30 min
+  /**
+  * If a video has a duration equal or above this threshold, the 
+  * media prev/next events are mapped to seeking back and forwards
+  * in the current track
+  */
   static readonly sameTrackSkipMin = 30;
   static readonly sameTrackSeekStepMin = 3;
 
   // Keyboard shortcuts
+  // ... without <Shift>
   static readonly pausePlayKey = ' ';
 
-  // With <Shift> modifier
+  // ... with <Shift>
   static readonly previousTrackKey = 'ArrowLeft';
   static readonly nextTrackKey = 'ArrowRight';
   static readonly volumeDownKey = 'ArrowDown';
@@ -30,6 +36,12 @@ class Config {
   static readonly seekBackKey = 'H';
   static readonly seekForwardKey = 'L';
   static readonly shuffleKey = 'S';
+
+  /**
+  * Show a fullscreen view of the cover for the currently playing track
+  * Inspired by: 
+  *  https://github.com/spicetify/spicetify-cli/blob/master/Extensions/fullAppDisplay.js
+  */
   static readonly coverKey = 'F';
 }
 
