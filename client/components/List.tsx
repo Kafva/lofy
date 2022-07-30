@@ -5,9 +5,9 @@ import {
 } from '../global'
 import { SourceType, Track } from '../types';
 
-const get_yt_link = (item: HTMLLIElement): string => {
-  const yt_param = item.getAttribute('data-single') == "true" ? "v" : "list"
-  return `https://youtube.com/watch?${yt_param}=${item.getAttribute('data-id')}`
+const getYtLink = (item: HTMLLIElement): string => {
+  const ytParam = item.getAttribute('data-single') == "true" ? "v" : "list"
+  return `https://youtube.com/watch?${ytParam}=${item.getAttribute('data-id')}`
 }
 
 /**
@@ -85,7 +85,7 @@ const List = (props: {
               <a
                 class="nf nf-mdi-link"
                 target="_blank"
-                href={ get_yt_link(item()) }
+                href={ getYtLink(item()) }
               />
             </Show>
           </li>
