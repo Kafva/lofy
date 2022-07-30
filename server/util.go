@@ -19,7 +19,7 @@ func Die(strs ... interface{}) {
 }
 
 func Debug(strs ... interface{}) {
-  if DEBUG {
+  if CONFIG.DEBUG {
     logPrefix("34", "DEBUG")
     log.Println(strs ...)
   }
@@ -36,7 +36,7 @@ func Err(args ... interface{}) {
 }
 
 func logPrefix(color string, label string) {
-  if LOG_COLOR {
+  if CONFIG.LOG_COLOR {
     log.SetPrefix("\033["+color+"m"+label+"\033[0m ")
   } else {
     log.SetPrefix(label+" ")

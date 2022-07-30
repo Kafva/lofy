@@ -17,7 +17,7 @@ func main(){
   ))
   http.HandleFunc("/", redirect_to_app)
 
-  audio_root := http.FileServer(http.Dir(TranslateTilde(ALBUM_DIR)))
+  audio_root := http.FileServer(http.Dir(TranslateTilde(CONFIG.ALBUM_DIR)))
   http.Handle("/audio/",
 			TranslateIndexToFilename(DisableDirListings(audio_root),
   ))
@@ -30,12 +30,13 @@ func main(){
   http.HandleFunc("/meta/", GetLocalMetadata)
   http.HandleFunc("/art/", GetArtwork)
 
-	serverLocation := ADDR+":"+strconv.Itoa(PORT)
+	serverLocation := CONFIG.ADDR+":"+strconv.Itoa(CONFIG.PORT)
 
-	if USE_TLS {
+	if CONFIG.USE_TLS {
 		Debug("Listening on 'https://"+serverLocation+"'...")
 		err := http.ListenAndServeTLS(serverLocation,
-			TLS_CERT, TLS_KEY, nil,
+			CONFIG.TLS_CERT, 
+			CONFIG.TLS_KEY, nil,
 		)
 		if err != nil {
 				Die("ListenAndServeTLS", err)

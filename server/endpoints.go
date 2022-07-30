@@ -100,13 +100,13 @@ func GetLocalMetadata(w http.ResponseWriter, r *http.Request){
 	// Populate the `track_paths` slice with data based on the given subcommand
   switch endpoint {
     case "playlist":
-			playlist_path := TranslateTilde(PLAYLIST_DIR)+"/"+name+"."+PLAYLIST_EXT
+			playlist_path := TranslateTilde(CONFIG.PLAYLIST_DIR)+"/"+name+"."+PLAYLIST_EXT
 			if ! get_track_paths_from_playlist(playlist_path, &track_paths) {
 				Warn("Non-existent playlist requested by " + r.RemoteAddr)
 				return
 			}
     case "album":
-      album_path := TranslateTilde(ALBUM_DIR)+"/"+name
+      album_path := TranslateTilde(CONFIG.ALBUM_DIR)+"/"+name
 
       if entries, err := os.ReadDir(album_path); err==nil {
 				// Create a list of all files under the specified album
@@ -182,7 +182,7 @@ func GetArtwork(w http.ResponseWriter, r *http.Request){
 	}
 
 	// Translate the album ID to a filename
-	album_path := TranslateTilde(ALBUM_DIR)+"/"+album
+	album_path := TranslateTilde(CONFIG.ALBUM_DIR)+"/"+album
 	track_path := album_path+"/"+album_id_to_filename(album_id, album_path)
 
 	if track_path != "" {
@@ -196,7 +196,7 @@ func GetArtwork(w http.ResponseWriter, r *http.Request){
 			}
 
 			// Extract the image stream and pipe it to the HTTP response
-			cover,err := exec.Command(FFMPEG_BIN, "-i", track_path, "-map",
+			cover,err := exec.Command(CONFIG.FFMPEG_BIN, "-i", track_path, "-map",
 				"0:"+strconv.Itoa(stream_id), "-f", "image2", "-vcodec", "copy",
 				"-vframes", "1", "pipe:",
 			).Output()
@@ -223,7 +223,7 @@ func fetch_yt_playlist(yt_id string, single_track bool) []YtTrack {
 			thumbnail = "https://i.ytimg.com/vi/"+yt_id+"/"+YT_THUMBNAIL_FILENAME
     }
     cmd     := exec.Command(
-      YTDL_BIN, "-j", "--format", "bestaudio",
+      CONFIG.YTDL_BIN, "-j", "--format", "bestaudio",
       "--flat-playlist", "--skip-download",
       "https://www.youtube.com/watch?"+yt_param+"="+yt_id,
     )
@@ -338,7 +338,7 @@ func get_cover_stream(data string) (int,string) {
 }
 
 func ffprobe(path string) ([]byte,error) {
-		return exec.Command(FFPROBE_BIN, "-v", "quiet", "-print_format",
+		return exec.Command(CONFIG.FFPROBE_BIN, "-v", "quiet", "-print_format",
 			"json", "-show_format", "-show_streams", path,
 		).Output()
 }
