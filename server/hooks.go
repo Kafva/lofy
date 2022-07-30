@@ -45,7 +45,7 @@ func TemplateHook(next http.Handler) http.Handler {
       }
 			// These headers should not be needed
 			//w.Header().Add("Permissions-Policy", "autoplay=*")
-			//w.Header().Add("Feature-Policy", 		 "autoplay=*")
+			//w.Header().Add("Feature-Policy",		 "autoplay=*")
       tmpl.Execute(w, data)
     } else {
       next.ServeHTTP(w, r)
@@ -63,7 +63,7 @@ func TranslateIndexToFilename(next http.Handler) http.Handler {
 		album, idx, _ :=
 			strings.Cut(strings.TrimPrefix(r.URL.Path, "/audio/"), "/")
 
-		album_regex 	   := regexp.MustCompile(ALBUM_NAME_REGEX)
+		album_regex			 := regexp.MustCompile(ALBUM_NAME_REGEX)
 		album_index,err  := strconv.Atoi(idx)
 
 		if err != nil {

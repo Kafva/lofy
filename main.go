@@ -30,8 +30,21 @@ func main(){
   http.HandleFunc("/meta/", GetLocalMetadata)
   http.HandleFunc("/art/", GetArtwork)
 
-  Debug("Listening on port "+strconv.Itoa(PORT)+"...")
-  http.ListenAndServe(ADDR+":"+strconv.Itoa(PORT), nil)
+	serverLocation := ADDR+":"+strconv.Itoa(PORT)
+
+	if USE_TLS {
+		Debug("Listening on 'https://"+serverLocation+"'...")
+		err := http.ListenAndServeTLS(serverLocation,
+			TLS_CERT, TLS_KEY, nil,
+		)
+		if err != nil {
+				Die("ListenAndServeTLS", err)
+		}
+	} else {
+		Debug("Listening on 'http://"+serverLocation+"'...")
+		http.ListenAndServe(serverLocation, nil)
+	}
+
 }
 
 func redirect_to_app(w http.ResponseWriter, r *http.Request) {

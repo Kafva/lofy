@@ -1,28 +1,37 @@
 package server
 
-const YTDL_BIN = "yt-dlp"
-const FFMPEG_BIN = "ffmpeg"
-const FFPROBE_BIN = "ffprobe"
-
-const DEBUG = true
-const LOG_COLOR = true
-const WEBROOT_DIR  = "./dist"
+const USE_TLS = true
+const ADDR = "127.0.0.1"
+const PORT = 20111
+const TLS_KEY =  "./tls/server.key"
+const TLS_CERT = "./tls/server.crt"
 
 // Local playlists are given as `.m3u` files
 // Music referenced in a playlist must be under `ALBUM_DIR`
 const PLAYLIST_DIR  =  "~/Music/.playlists"
+// Album directory names MUST adhear to the regex defined by `ALBUM_NAME_REGEX`
+const ALBUM_DIR     =  "~/Music"
 
 // List of YouTube playlits on the following format
 //	<Display name>; <`list=` value>
 // Leading and trailing whitespaces are ignored
 const YT_PLAYLIST_FILE = "~/Music/.playlists/yt"
+
+const DEBUG = true
+const LOG_COLOR = true
+
+//============================================================================//
+
+const YTDL_BIN = "yt-dlp"
+const FFMPEG_BIN = "ffmpeg"
+const FFPROBE_BIN = "ffprobe"
+
+const WEBROOT_DIR  = "./dist"
+
 const YT_MAX_PLAYLIST_CNT = 255;
 
 // Alternatively, `sddefault.jpg`
 const YT_THUMBNAIL_FILENAME = "maxresdefault.jpg"
-
-// Album directory names MUST adhear to the regex defined by `ALBUM_NAME_REGEX`
-const ALBUM_DIR     =  "~/Music"
 
 // Local playlists must have this extension to be recognized
 const PLAYLIST_EXT  = "m3u"
@@ -38,9 +47,6 @@ const MAX_TRACKS = 500;
 
 // Pagination threshold for track metadata
 const ITEMS_PER_REQ = 20;
-
-const PORT = 20111
-const ADDR = "127.0.0.1"
 
 const SINGLE_YT_TRACK = "SINGLE"
 
