@@ -59,10 +59,7 @@ const List = (props: {
           localStorage.setItem(Config.activeListKey, props.activeList.toFixed(0))
           localStorage.setItem(Config.listIndexKey,  props.listIndex.toFixed(0))
         }
-      }}>
-      {MEDIA_TITLES[props.listType]}
-    </h3>
-
+      }}/>
     <Show when={props.activeList == props.listType && show()}>
       <ul>
         <Index each={MEDIA_LISTS[props.listType]}>{ (item,i) =>
@@ -76,7 +73,10 @@ const List = (props: {
               localStorage.setItem(Config.listIndexKey, i.toString())
             }}
             data-id={item().getAttribute('data-id')}>
-            <span classList={{selected:  props.listIndex == i }}>{item().innerHTML}</span>
+            <span title={item().innerHTML} 
+              classList={{selected:  props.listIndex == i}}>
+              {item().innerHTML}
+            </span>
             <Show when={props.listType == MediaListType.YouTube}>
               <a 
                 class="nf nf-mdi-link"

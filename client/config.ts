@@ -76,11 +76,6 @@ const MEDIA_LISTS = Object.freeze({
 */
 const PLAYLIST_ORDER = ExtractPlaylistOrderFromTemplate()
 
-const MEDIA_TITLES = Object.freeze({
-  [MediaListType.LocalPlaylist]:"",
-  [MediaListType.LocalAlbum]:   "",
-  [MediaListType.YouTube]:      ""
-})
 const MEDIA_TITLE_CLASSES = Object.freeze({
   [MediaListType.LocalPlaylist]:"nf nf-mdi-playlist_play",
   [MediaListType.LocalAlbum]:   "nf nf-mdi-album",
@@ -89,7 +84,7 @@ const MEDIA_TITLE_CLASSES = Object.freeze({
 
 
 export {
-  MEDIA_LISTS, LIST_TYPES, MEDIA_TITLES, PLAYLIST_ORDER, TRACK_HISTORY, DEBUG,
+  MEDIA_LISTS, LIST_TYPES, PLAYLIST_ORDER, TRACK_HISTORY, DEBUG,
   MEDIA_TITLE_CLASSES
 }
 export default Config;

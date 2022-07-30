@@ -3,6 +3,19 @@ import { TRACK_HISTORY } from '../config';
 import { Track, MediaListType, YtTrack } from '../types';
 import { DisplayTime, Log } from '../util';
 
+const TrackColumn = (props: {
+  text: string, 
+  trackIdx: number, 
+  playingIdx: number
+}) => {
+  return (
+    <td title={props.text} 
+      classList={{selected: props.trackIdx == props.playingIdx }}>
+      {props.text}
+    </td>
+  )
+}
+
 const TrackItem = (props: {
   track: Track,
   trackIdx: number,
@@ -13,6 +26,7 @@ const TrackItem = (props: {
   return (
     <tr>
       <td role="menuitem" 
+        title={props.track.Title}
         onClick={ () => { 
           TRACK_HISTORY.push(props.playingIdx)
           Log("TRACK_HISTORY", TRACK_HISTORY)
@@ -25,15 +39,15 @@ const TrackItem = (props: {
         }}/>
         {props.track.Title}
       </td>
-      <td classList={{selected: props.trackIdx == props.playingIdx }}>
-        {props.track.Album}
-      </td>
-      <td classList={{selected: props.trackIdx == props.playingIdx }}>
-        {props.track.Artist}
-      </td>
-      <td classList={{selected: props.trackIdx == props.playingIdx }}>
-        {DisplayTime(props.track.Duration)}
-      </td>
+      <TrackColumn text={props.track.Album} 
+        trackIdx={props.trackIdx} playingIdx={props.playingIdx}
+      />
+      <TrackColumn text={props.track.Artist} 
+        trackIdx={props.trackIdx} playingIdx={props.playingIdx}
+      />
+      <TrackColumn text={DisplayTime(props.track.Duration)} 
+        trackIdx={props.trackIdx} playingIdx={props.playingIdx}
+      />
       <td>
         <Show when={"TrackId" in props.track}>
           <a 

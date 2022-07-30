@@ -253,7 +253,9 @@ const Player = (props: {
             class={shuffle() ? "nf nf-mdi-shuffle_variant" :
               "nf nf-mdi-shuffle_disabled"
             }
-            onClick={ () => setShuffle(!shuffle()) }
+            onClick={ () => {
+              setShuffle(!shuffle()) 
+            }}
           />
 
           <span class="seperator"/>
@@ -314,7 +316,7 @@ const Player = (props: {
 
           <span class="seperator"/>
 
-          <span>{props.track.Title}</span>
+          <span title={props.track.Title}>{props.track.Title}</span>
 
           <span  role="button"
             class="nf nf-fa-backward" onClick={ () => {
