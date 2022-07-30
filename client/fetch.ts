@@ -1,5 +1,6 @@
 import { MediaListType, LocalTrack, YtTrack, Track, ActiveTuple, PlaylistEntry } from './types';
-import Config, { MEDIA_LISTS, TRACK_HISTORY, PLAYLIST_ORDER } from './config';
+import Config from './config';
+import { MEDIA_LISTS, TRACK_HISTORY, PLAYLIST_ORDER } from './global';
 import { Err, Log } from './util';
 
 /**

@@ -1,7 +1,17 @@
-import Config from './config';
+import Config, { SHORTCUTS } from './config';
 
 const queryClick = (selector: string) =>
   (document.querySelector(selector) as HTMLSpanElement).click()
+
+/** Click elements under `#shortcuts` based on the configured `SHORTCUTS` object */
+const handleShortcut = (e:KeyboardEvent) => {
+  for (let i=0; i < SHORTCUTS.length; i++){
+    if (e.key == SHORTCUTS[i].key){
+      queryClick(`#shortcuts > span:nth-child(${i+1})`)
+      break;
+    }
+  }
+}
 
 /**
 * To preserve reactivity we can NOT change the <audio> element directly,
@@ -37,12 +47,16 @@ const HandleKeyboardEvent = (e:KeyboardEvent) => {
     case Config.coverKey:
       queryClick("span.nf-mdi-creation")
       break;
+    default:
+      handleShortcut(e)
     }
   } else { // Unprefixed bindings
     switch (e.key) {
     case Config.pausePlayKey:
       queryClick("span.nf-fa-pause,span.nf-fa-play")
       break;
+    default:
+      handleShortcut(e)
     }
   }
 }

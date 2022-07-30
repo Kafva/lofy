@@ -1,5 +1,6 @@
-import { batch, createSignal, Index, Show } from 'solid-js';
-import Config, { MEDIA_TITLES, MEDIA_LISTS, MEDIA_TITLE_CLASSES } from '../config'
+import { batch, createSignal, Index, Show, For } from 'solid-js';
+import Config, { SHORTCUTS } from '../config'
+import { MEDIA_LISTS, MEDIA_TITLE_CLASSES } from '../global'
 import { MediaListType, Track } from '../types';
 
 const get_yt_link = (item: HTMLLIElement): string => {
@@ -89,6 +90,25 @@ const List = (props: {
         </Index>
       </ul>
     </Show>
+
+    <div hidden id="shortcuts">
+      <For each={SHORTCUTS}>{(shortcut) => 
+        <span onClick={ () => {
+          // Switch to the playlist indicated by the shortcut
+          // Each hidden span element is given a shortcut in `controls.ts`
+          batch( () => {
+            props.setActiveList(shortcut.activeList) 
+            props.setListIndex(shortcut.listIndex)
+            props.setPlayingIdx(-1) 
+            props.setCurrentList([] as Track[])
+            setShow(true)
+          })
+          localStorage.setItem(Config.activeListKey, shortcut.activeList.toFixed())
+          localStorage.setItem(Config.listIndexKey,  shortcut.listIndex.toFixed())
+        }}/>  
+      }
+      </For>
+    </div>
 
   </>);
 };

@@ -2,7 +2,8 @@ import { createSignal, Index, createResource, createEffect } from 'solid-js';
 import List from './List';
 import Tracks from './Tracks';
 import Player from './Player';
-import Config, { LIST_TYPES } from '../config'
+import Config from '../config'
+import { LIST_TYPES } from '../global'
 import { FetchTracks } from '../fetch';
 import { MediaListType, EmptyTrack, Track, ActiveTuple } from '../types';
 

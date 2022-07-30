@@ -1,6 +1,7 @@
 import { createEffect, createResource, createSignal, onMount, Setter, untrack } from 'solid-js';
 import { Portal } from 'solid-js/web';
-import Config, { TRACK_HISTORY } from '../config';
+import Config from '../config';
+import { TRACK_HISTORY } from '../global';
 import { Track, LocalTrack, YtTrack, MediaListType } from '../types';
 import { Log, DisplayTime } from '../util';
 

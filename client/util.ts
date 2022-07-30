@@ -1,4 +1,5 @@
-import { DEBUG, MEDIA_LISTS } from "./config"
+import { DEBUG } from "./config"
+import { MEDIA_LISTS } from "./global";
 import { PlaylistEntry, MediaListType } from './types';
 
 const DisplayTime = (seconds: number): string => {

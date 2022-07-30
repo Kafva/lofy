@@ -1,5 +1,5 @@
 import { Index, Show } from 'solid-js';
-import { TRACK_HISTORY } from '../config';
+import { TRACK_HISTORY } from '../global';
 import { Track, MediaListType, YtTrack } from '../types';
 import { DisplayTime, Log } from '../util';
 
