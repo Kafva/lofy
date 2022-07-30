@@ -1,12 +1,12 @@
-import { MediaListType, Shortcut } from './types';
+import { SourceType, Shortcut } from './types';
 /** Toggles `console.log()` output */
 const DEBUG = true
 
 /** Custom shortcuts for switching to particular playlists/albums */
 const SHORTCUTS: Shortcut[] = [
-  { key: "z", activeList: MediaListType.LocalPlaylist, listIndex: 1 },
-  { key: "Z", activeList: MediaListType.LocalPlaylist, listIndex: 2 },
-  { key: "m", activeList: MediaListType.YouTube,       listIndex: 5 }
+  { key: "z", activeSource: SourceType.LocalPlaylist, listIndex: 1 },
+  { key: "Z", activeSource: SourceType.LocalPlaylist, listIndex: 2 },
+  { key: "m", activeSource: SourceType.YouTube,       listIndex: 5 }
 ]
 
 class Config {
@@ -14,7 +14,7 @@ class Config {
   static readonly volumeStep = 0.05;
   static readonly defaultVolume = 0.8;
   static readonly seekStepSec = 5;
-  
+
   // Only applicable for YouTube videos >= 30 min
   static readonly sameTrackSkipMin = 30;
   static readonly sameTrackSeekStepMin = 3;

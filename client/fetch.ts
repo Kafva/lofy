@@ -1,5 +1,5 @@
-import { MediaListType, LocalTrack, Track, ActiveTuple, PlaylistEntry } from './types';
-import { MEDIA_LISTS, TRACK_HISTORY, PLAYLIST_ORDER } from './global';
+import { SourceType, LocalTrack, Track, ActiveTuple, PlaylistEntry } from './types';
+import { SOURCE_LISTS, TRACK_HISTORY, PLAYLIST_ORDER } from './global';
 import { Err, Log } from './util';
 
 /**
@@ -11,38 +11,43 @@ const sortPlaylist = (unsorted: LocalTrack[], playlist_name: string) => {
     const pl_index_a = PLAYLIST_ORDER.get(playlist_name)!.findIndex(
       (e:PlaylistEntry) => e.AlbumFS==a.AlbumFS && e.AlbumId == a.AlbumId
     )
-    const pl_index_b = PLAYLIST_ORDER.get(playlist_name)!.findIndex((e:PlaylistEntry) =>
-      e.AlbumFS==b.AlbumFS && e.AlbumId == b.AlbumId
+    const pl_index_b = PLAYLIST_ORDER.get(playlist_name)!.findIndex(
+      (e:PlaylistEntry) =>
+        e.AlbumFS==b.AlbumFS && e.AlbumId == b.AlbumId
     )
     return pl_index_a - pl_index_b
   })
 }
 
-const initFetchCache = (mediaList: MediaListType): Map<string,[Track[],boolean]> => {
-  let mediaListNames: string[] = [];
-  if (mediaList == MediaListType.YouTube) {
-    mediaListNames =
-      MEDIA_LISTS[mediaList].map( (el:HTMLLIElement) =>
+const initFetchCache = (
+  mediaSource: SourceType
+): Map<string,[Track[],boolean]> => {
+  let mediaSourceNames: string[] = [];
+  if (mediaSource == SourceType.YouTube) {
+    mediaSourceNames =
+      SOURCE_LISTS[mediaSource].map( (el:HTMLLIElement) =>
         el.getAttribute("data-id")!.toString())
   } else {
-    mediaListNames =
-      MEDIA_LISTS[mediaList].map( (el:HTMLLIElement) =>
+    mediaSourceNames =
+      SOURCE_LISTS[mediaSource].map( (el:HTMLLIElement) =>
         el.innerHTML!.toString() )
   }
 
   const nameMapping = new Map<string, [Track[],boolean]>()
-  mediaListNames.forEach( (el:string) => nameMapping.set(el, [<Track[]>[],false]) )
+  mediaSourceNames.forEach( (el:string) =>
+    nameMapping.set(el, [<Track[]>[],false])
+  )
   return nameMapping
 }
 
 /**
 * The cache contains one `Map` for each media list:
-*   { playlist1: { [tracks...], last_page }, playlist2: { [tracks...], last_page } ...
+*   { playlist: { [tracks...], last_page } ... }
 */
 const FETCH_CACHE = {
-  [MediaListType.LocalPlaylist]: initFetchCache(MediaListType.LocalPlaylist),
-  [MediaListType.LocalAlbum]:    initFetchCache(MediaListType.LocalAlbum),
-  [MediaListType.YouTube]:       initFetchCache(MediaListType.YouTube)
+  [SourceType.LocalPlaylist]: initFetchCache(SourceType.LocalPlaylist),
+  [SourceType.LocalAlbum]:    initFetchCache(SourceType.LocalAlbum),
+  [SourceType.YouTube]:       initFetchCache(SourceType.YouTube)
 }
 
 /**
@@ -55,7 +60,7 @@ const endpointFetch = async (
   mediaName: string,
   page: number,
   single: boolean,
-  typing: MediaListType): Promise<[Track[],boolean]> => {
+  typing: SourceType): Promise<[Track[],boolean]> => {
   const cachedList = FETCH_CACHE[typing].get(mediaName)
 
   if (cachedList!==undefined && cachedList[1]) {
@@ -109,10 +114,10 @@ const FetchTracks = async (
   source: ActiveTuple
 ): Promise<Track[]> =>  {
   Log("Change to activeTuple detected...", source)
-  const el = MEDIA_LISTS[source.activeList][source.listIndex]
+  const el = SOURCE_LISTS[source.activeSource][source.listIndex]
 
-  const mediaName = source.activeList == MediaListType.YouTube ?
-    el.getAttribute("data-id") :  el.innerHTML 
+  const mediaName = source.activeSource == SourceType.YouTube ?
+    el.getAttribute("data-id") :  el.innerHTML
 
   if (mediaName == undefined || mediaName == ""){ return [] }
 
@@ -122,7 +127,7 @@ const FetchTracks = async (
 
   // Set the `?single=boolean` parameter
   let single = false
-  if  (source.activeList == MediaListType.YouTube) {
+  if  (source.activeSource == SourceType.YouTube) {
     single = document.querySelector(
       `#_yt-playlists > li[data-id='${mediaName}']`
     )?.getAttribute("data-single") == "true"
@@ -134,21 +139,21 @@ const FetchTracks = async (
   let last_page = false
 
   while (!last_page) {
-    switch (source.activeList) {
-    case MediaListType.LocalPlaylist:
+    switch (source.activeSource) {
+    case SourceType.LocalPlaylist:
       endpoint = "meta/playlist"
       break;
-    case MediaListType.LocalAlbum:
+    case SourceType.LocalAlbum:
       endpoint = "meta/album"
       break;
-    case MediaListType.YouTube:
+    case SourceType.YouTube:
       endpoint = "yt"
       break;
     }
 
     // Incrementally fetch media until the last page of data is recieved
     [tracks, last_page] = await endpointFetch(
-      endpoint, mediaName, page, single, source.activeList
+      endpoint, mediaName, page, single, source.activeSource
     ) as [Track[],boolean]
 
     fetched.push(...tracks)
@@ -156,7 +161,7 @@ const FetchTracks = async (
   }
 
   // Sort the list in accordance with `PLAYLIST_ORDER` if applicable
-  if (source.activeList == MediaListType.LocalPlaylist){
+  if (source.activeSource == SourceType.LocalPlaylist){
     sortPlaylist(fetched as LocalTrack[], mediaName)
   }
   // Log("FETCH_CACHE", FETCH_CACHE)

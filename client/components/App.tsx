@@ -2,21 +2,21 @@ import { createSignal, Index, createResource, createEffect } from 'solid-js';
 import List from './List';
 import Tracks from './Tracks';
 import Player from './Player';
-import { ACTIVE_LIST_KEY, LIST_INDEX_KEY, LIST_TYPES } from '../global'
+import { ACTIVE_LIST_KEY, LIST_INDEX_KEY, SOURCE_TYPES } from '../global'
 import { FetchTracks } from '../fetch';
-import { MediaListType, EmptyTrack, Track, ActiveTuple } from '../types';
+import { SourceType, EmptyTrack, Track, ActiveTuple } from '../types';
 
 const App = () => {
   // Restore values from a previous session if possible
-  const prevActiveList = parseInt(
+  const prevActiveSource = parseInt(
     localStorage.getItem(ACTIVE_LIST_KEY)|| "0"
-  ) as MediaListType
+  ) as SourceType
   const prevListIndex  = parseInt(
     localStorage.getItem(LIST_INDEX_KEY) || "0"
   )
 
   // Flag to determine the active media list
-  const [activeList,setActiveList] = createSignal(prevActiveList)
+  const [activeSource,setActiveSource] = createSignal(prevActiveSource)
 
   // Flag to determine the selected index in the current list
   const [listIndex,setListIndex] = createSignal(prevListIndex)
@@ -24,7 +24,7 @@ const App = () => {
   // Derived signal that incorporates each attribute needed for a data fetch
   const activeTpl = () => {
     return {
-      'activeList': activeList(),
+      'activeSource': activeSource(),
       'listIndex': listIndex(),
     } as ActiveTuple
   }
@@ -51,8 +51,8 @@ const App = () => {
     return curr !== undefined ? curr.length : 0
   }
 
-  // Change to index 0 if the index has been set to -1 
-  // (caused from switching lists) and fetching from `FetchTracks` has finished
+  // Change to index 0 if the index has been set to -1
+  // (caused from switching source) and fetching from `FetchTracks` has finished
   createEffect( () => {
     if (playingIdx() == -1){
       const curr = currentList();
@@ -70,24 +70,24 @@ const App = () => {
   // to use <Index> in this case.
   return (<>
     <div id="sidebar">
-      <Index each={LIST_TYPES}>{(listType) =>
+      <Index each={SOURCE_TYPES}>{(listType) =>
         // We can pass the setter function to a child as in `props`
         <List
           listType={listType()}
 
-          activeList={activeList()}
-          setActiveList={(s:MediaListType)=> setActiveList(s)}
+          activeSource={activeSource()}
+          setActiveSource={(s:SourceType)=> setActiveSource(s)}
           setCurrentList={mutate}
 
           listIndex={listIndex()}
-          setListIndex={(s:MediaListType)=>setListIndex(s)}
+          setListIndex={(s:SourceType)=>setListIndex(s)}
           setPlayingIdx={(s:number)=>setPlayingIdx(s)}
         />
       }</Index>
     </div>
 
     <Tracks
-      activeList={activeList()}
+      activeSource={activeSource()}
       currentList={currentList() || [] as Track[]}
 
       playingIdx={playingIdx()}
@@ -98,7 +98,7 @@ const App = () => {
     <Player
       track={currentTrack()}
       trackCount={currentTrackCount()}
-      activeList={activeList()}
+      activeSource={activeSource()}
 
       setPlayingIdx={(s:number)=>setPlayingIdx(s)}
       playingIdx={playingIdx()}

@@ -1,15 +1,15 @@
-enum MediaListType {
+enum SourceType {
   LocalPlaylist = 0, LocalAlbum = 1, YouTube = 2
 }
 
 interface Shortcut {
   key: string
-  activeList: MediaListType,
+  activeSource: SourceType,
   listIndex: number
 }
 
 interface ActiveTuple {
-  activeList: MediaListType,
+  activeSource: SourceType,
   listIndex: number,
 }
 
@@ -41,4 +41,4 @@ const EmptyTrack = (): Track =>  {
 }
 
 export type { PlaylistEntry, Track, LocalTrack, YtTrack, ActiveTuple, Shortcut }
-export { EmptyTrack, MediaListType }
+export { EmptyTrack, SourceType }

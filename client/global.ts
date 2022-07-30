@@ -1,12 +1,12 @@
-import { MediaListType } from './types';
-import { 
-  ExtractListsFromTemplate, ExtractPlaylistOrderFromTemplate 
+import { SourceType } from './types';
+import {
+  ExtractListsFromTemplate, ExtractPlaylistOrderFromTemplate
 } from './util';
 
 /**
 * A stack of indices representing previously played tracks
 * in the current list by index
-* Pushed to during: 
+* Pushed to during:
 *  <audio> 'onended' event
 *  'nexttrack' event
 *  click on another entry
@@ -18,10 +18,10 @@ import {
 const TRACK_HISTORY: number[] = []
 
 /** Creating this array programmatically is not necessary */
-const LIST_TYPES = Object.freeze([
-  MediaListType.LocalPlaylist,
-  MediaListType.LocalAlbum,
-  MediaListType.YouTube
+const SOURCE_TYPES = Object.freeze([
+  SourceType.LocalPlaylist,
+  SourceType.LocalAlbum,
+  SourceType.YouTube
 ])
 
 /**
@@ -29,10 +29,10 @@ const LIST_TYPES = Object.freeze([
 * already exist in the DOM when we recieve `index.html` from the server.
 * We extract these values into ararys ONCE and not for every `render()`
 */
-const MEDIA_LISTS = Object.freeze({
-  [MediaListType.LocalPlaylist]: ExtractListsFromTemplate("_playlists"),
-  [MediaListType.LocalAlbum]:    ExtractListsFromTemplate("_albums"),
-  [MediaListType.YouTube]:       ExtractListsFromTemplate("_yt-playlists"),
+const SOURCE_LISTS = Object.freeze({
+  [SourceType.LocalPlaylist]: ExtractListsFromTemplate("_playlists"),
+  [SourceType.LocalAlbum]:    ExtractListsFromTemplate("_albums"),
+  [SourceType.YouTube]:       ExtractListsFromTemplate("_yt-playlists"),
 })
 
 
@@ -43,18 +43,18 @@ const MEDIA_LISTS = Object.freeze({
 */
 const PLAYLIST_ORDER = ExtractPlaylistOrderFromTemplate()
 
-const MEDIA_TITLE_CLASSES = Object.freeze({
-  [MediaListType.LocalPlaylist]:"nf nf-mdi-playlist_play",
-  [MediaListType.LocalAlbum]:   "nf nf-mdi-album",
-  [MediaListType.YouTube]:      "nf nf-mdi-youtube_play"
+const SOURCE_TITLE_CLASSES = Object.freeze({
+  [SourceType.LocalPlaylist]:"nf nf-mdi-playlist_play",
+  [SourceType.LocalAlbum]:   "nf nf-mdi-album",
+  [SourceType.YouTube]:      "nf nf-mdi-youtube_play"
 })
 
 // Names of keys in localStorage
-const ACTIVE_LIST_KEY = "activeList"
+const ACTIVE_LIST_KEY = "activeSource"
 const LIST_INDEX_KEY  = "listIndex"
 
 export {
-  MEDIA_LISTS, LIST_TYPES, PLAYLIST_ORDER, TRACK_HISTORY,
-  MEDIA_TITLE_CLASSES, ACTIVE_LIST_KEY, LIST_INDEX_KEY
+  SOURCE_LISTS, SOURCE_TYPES, PLAYLIST_ORDER, TRACK_HISTORY,
+  SOURCE_TITLE_CLASSES, ACTIVE_LIST_KEY, LIST_INDEX_KEY
 }
 
