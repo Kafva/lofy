@@ -3,7 +3,7 @@ import { Portal } from 'solid-js/web';
 import Config from '../config';
 import { TRACK_HISTORY } from '../global';
 import { Track, LocalTrack, YtTrack, MediaListType } from '../types';
-import { Log, DisplayTime } from '../util';
+import { Log, DisplayTime, Err } from '../util';
 
 /** Generic getter for DOM elements */
 function getHTMLElement<Type extends Element>(selector:string): Type {
@@ -176,14 +176,14 @@ const Player = (props: {
   })
 
   createEffect( () => {
-    // Log(`DETECT: Change to cover source '${coverSource()}'`)
-    if (coverSource() !== undefined && coverSource() !== ""){      
+    // Skip updates where the `coverSource()` is empty
+    if (coverSource() !== undefined && coverSource() !== ""){
       Log(`Setting cover source: '${coverSource()}'`)
       // Update the navigators metadata
       setNavigatorMetadata(props.track, coverSource())
       // The `coverSource()` seems to lose reactivity if it is placed
       // directly in the JSX
-      coverBkg.setAttribute("style", 
+      coverBkg.setAttribute("style",
         `background-image: url('${coverSource()}')`
       )
     }
@@ -229,10 +229,14 @@ const Player = (props: {
       }}
       onLoadedData={ () => {
         // Resume playback if needed
-        if (audio.paused){ audio.play(); }
-        // Media from the same origin as the server is on the autoplay allowlist by default
-        // other sources require 'interaction from the user' before being auto-playable
-        //  https://developer.mozilla.org/en-US/docs/Web/Media/Autoplay_guide#autoplay_availability
+        if (audio.paused){
+          audio.play().catch( (e:DOMException) => {
+            // Media from the same origin as the server is on the autoplay allowlist by default
+            // other sources require 'interaction from the user' before being auto-playable
+            //  https://developer.mozilla.org/en-US/docs/Web/Media/Autoplay_guide#autoplay_availability
+            Err("Autoplay failed: ", e)
+          })
+        }
 
         // Ensure that the play-button state is toggled
         props.setIsPlaying(true)
@@ -260,7 +264,7 @@ const Player = (props: {
               "nf nf-mdi-shuffle_disabled"
             }
             onClick={ () => {
-              setShuffle(!shuffle()) 
+              setShuffle(!shuffle())
             }}
           />
 

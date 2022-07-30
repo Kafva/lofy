@@ -12,7 +12,7 @@ const SHORTCUTS: Shortcut[] = [
 class Config {
   static readonly shuffleDefaultOn = true;
   static readonly volumeStep = 0.05;
-  static readonly defaultVolume = 0.0;
+  static readonly defaultVolume = 0.8;
   static readonly seekStepSec = 5;
   
   // Only applicable for YouTube videos >= 30 min
