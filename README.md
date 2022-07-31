@@ -17,7 +17,7 @@ The output of the build process is placed under `./dist`.
 ### Configuration
 The server is built and ran with
 ```bash
-go build && ./lofy -c lofy.json
+go build && ./lofy -c examples/lofy.json
 ```
 The configuration file format is described in `./server/config.go`.
 
@@ -48,7 +48,7 @@ go test -v --run get_albums ./server
 ```
 For automatic rebuilds of the server and client during development use:
 ```bash
-./live.sh
+./live.sh $config
 vite build --watch
 ```
 ## Quirks
@@ -57,6 +57,6 @@ vite build --watch
 * Audio files are expected to have a non-empty `title` in their metadata.
 
 ## Future work
-YouTube-dl has support for many other sources and it should not be to difficult
+YouTube-dl has support for many other sources and it should not be too difficult
 to integrate e.g. Soundcloud.
 

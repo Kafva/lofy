@@ -10,7 +10,7 @@ onmessage = (e:MessageEvent) => {
 
   if (msg !== undefined && msg.currentTrackId !== undefined) {
     if (NEXT_TRACK_ID == msg.currentTrackId) {
-      // Responed with the currently stored next track ID
+      // Respond with the currently stored next track ID
       // if it matches the requested ID
       const toSend = NEXT_YT_URL
       NEXT_TRACK_ID = ""
