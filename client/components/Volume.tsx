@@ -23,13 +23,13 @@ const Volume = (props: {
   })
 
   return (<>
-      <span  role="button" class="nf nf-mdi-volume_plus" onClick={() =>
-        changeVolume(props.volume+Config.volumeStep, audio, props.setVolume)
-      }/>
-      <span>{ Math.round(props.volume*100) + " %" }</span>
-      <span  role="button" class="nf nf-mdi-volume_minus" onClick={() =>
-        changeVolume(props.volume-Config.volumeStep, audio, props.setVolume)
-      }/>
+    <span  role="button" class="nf nf-mdi-volume_plus" onClick={() =>
+      changeVolume(props.volume+Config.volumeStep, audio, props.setVolume)
+    }/>
+    <span>{ Math.round(props.volume*100) + " %" }</span>
+    <span  role="button" class="nf nf-mdi-volume_minus" onClick={() =>
+      changeVolume(props.volume-Config.volumeStep, audio, props.setVolume)
+    }/>
   </>);
 };
 
