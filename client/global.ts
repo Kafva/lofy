@@ -35,6 +35,15 @@ const SOURCE_LISTS = Object.freeze({
   [SourceType.YouTube]:       ExtractListsFromTemplate("_yt-playlists"),
 })
 
+/**
+* To avoid interruptions when transitioning to a new YouTube video,
+* the next url is prefetched by a webworker
+*
+* The `import.meta.url` argument is needed to create the name 
+* of the compiled version of `worker.js`
+*
+*/
+const WORKER = new Worker(new URL('./worker.ts', import.meta.url))
 
 /**
 * Contains a mapping on the form { playlist_name: [ PlaylistEntry ] }
@@ -55,6 +64,7 @@ const LIST_INDEX_KEY  = "listIndex"
 
 export {
   SOURCE_LISTS, SOURCE_TYPES, PLAYLIST_ORDER, TRACK_HISTORY,
-  SOURCE_TITLE_CLASSES, ACTIVE_LIST_KEY, LIST_INDEX_KEY
+  SOURCE_TITLE_CLASSES, ACTIVE_LIST_KEY, LIST_INDEX_KEY,
+  WORKER
 }
 

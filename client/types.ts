@@ -2,15 +2,20 @@ enum SourceType {
   LocalPlaylist = 0, LocalAlbum = 1, YouTube = 2
 }
 
+interface WorkerMessage {
+  currentTrackId: string
+  nextPredictedTrackId: string
+}
+
 interface Shortcut {
   key: string
-  activeSource: SourceType,
+  activeSource: SourceType
   listIndex: number
 }
 
 interface ActiveTuple {
-  activeSource: SourceType,
-  listIndex: number,
+  activeSource: SourceType
+  listIndex: number
 }
 
 interface PlaylistEntry {
@@ -40,5 +45,8 @@ const EmptyTrack = (): Track =>  {
   return { Title: "", Artist: "", Album: "", Duration: 0 } as Track;
 }
 
-export type { PlaylistEntry, Track, LocalTrack, YtTrack, ActiveTuple, Shortcut }
+export type { 
+  PlaylistEntry, Track, LocalTrack, YtTrack, ActiveTuple, Shortcut,
+  WorkerMessage
+}
 export { EmptyTrack, SourceType }
