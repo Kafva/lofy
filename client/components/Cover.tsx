@@ -28,7 +28,7 @@ const Cover = (props: {
   coverSource: string,
 }) => {
   let img: HTMLImageElement;
-  let coverBkg: HTMLDivElement;
+  let bkg: HTMLDivElement;
 
   // `createEffect()` is triggered whenever a reactive component that is called
   // within the body changes, `coverSource` in this case.
@@ -40,15 +40,15 @@ const Cover = (props: {
       setNavigatorMetadata(props.track, props.coverSource)
       // The `coverSource()` seems to lose reactivity if it is placed
       // directly in the JSX as  a style
-      coverBkg.setAttribute("style",
+      bkg.setAttribute("style",
         `background-image: url('${props.coverSource}')`
       )
     }
   })
 
   onMount( () => {
-    img       = GetHTMLElement<HTMLImageElement>(`.${styles.cover} > div > img`)
-    coverBkg  = GetHTMLElement<HTMLDivElement>(`.${styles.cover} > div:first-child`)
+    img      = GetHTMLElement<HTMLImageElement>(`.${styles.cover} > div > img`)
+    bkg = GetHTMLElement<HTMLDivElement>(`.${styles.cover} > div:first-child`)
   })
 
   // <Portal> components will be inserted as direct children of the <body>
@@ -59,7 +59,8 @@ const Cover = (props: {
   return (<>
       <span role="button" class="nf nf-mdi-creation"
         onClick={ () => {
-          const cover = document.querySelector(`.${styles.cover}`) as HTMLDivElement
+          const cover = 
+            document.querySelector(`.${styles.cover}`) as HTMLDivElement
           if (cover !== undefined) {
             cover.hidden = !cover.hidden
           }
