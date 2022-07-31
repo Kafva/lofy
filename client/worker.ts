@@ -1,4 +1,6 @@
+/** Toggle `console.log()` output of worker */
 const DEBUG = true
+
 let NEXT_YT_URL = ""
 let NEXT_TRACK_ID = ""
 
@@ -31,7 +33,7 @@ onmessage = (e:MessageEvent) => {
       .then( (r:Response) => r.text())
       .then( (d:string) => {
         if (d !== undefined && d !== ""){
-          Log("Prefetched URL:", d)
+          Log("Saving prefetched URL:", d)
           NEXT_YT_URL = d
           NEXT_TRACK_ID = msg.nextPredictedTrackId
         }

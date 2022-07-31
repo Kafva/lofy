@@ -17,7 +17,7 @@ class Config {
   static readonly seekStepSec = 5;
 
   /**
-  * If a video has a duration equal or above this threshold, the 
+  * If a video has a duration equal or above this threshold, the
   * media prev/next events are mapped to seeking back and forwards
   * in the current track
   */
@@ -39,7 +39,7 @@ class Config {
 
   /**
   * Show a fullscreen view of the cover for the currently playing track
-  * Inspired by: 
+  * Inspired by:
   *  https://github.com/spicetify/spicetify-cli/blob/master/Extensions/fullAppDisplay.js
   */
   static readonly coverKey = 'F';

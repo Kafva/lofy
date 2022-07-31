@@ -1,7 +1,7 @@
 import { batch, createSignal, Index, Show, For } from 'solid-js';
 import { SHORTCUTS } from '../config'
-import { 
-  ACTIVE_LIST_KEY, LIST_INDEX_KEY, SOURCE_LISTS, SOURCE_TITLE_CLASSES 
+import {
+  ACTIVE_LIST_KEY, LIST_INDEX_KEY, SOURCE_LISTS, SOURCE_TITLE_CLASSES
 } from '../global'
 import { SourceType, Track } from '../types';
 
@@ -54,7 +54,7 @@ const List = (props: {
             props.setListIndex(0)
             // Setting this to zero without waiting for `FetchTracks`
             // can cause the 0th track of the previous list to start playing
-            // The index is explicitly set to zero by the <App> once 
+            // The index is explicitly set to zero by the <App> once
             // `FetchTracks` completes
             props.setPlayingIdx(-1)
             props.setCurrentList([] as Track[])

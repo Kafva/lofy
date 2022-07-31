@@ -3,7 +3,7 @@ import Config, { SHORTCUTS } from './config';
 const queryClick = (selector: string) =>
   (document.querySelector(selector) as HTMLSpanElement).click()
 
-/** Click elements under `#shortcuts` based on the configured `SHORTCUTS` object 
+/** Click elements under `#shortcuts` based on the configured `SHORTCUTS` object
 */
 const handleShortcut = (e:KeyboardEvent) => {
   for (let i=0; i < SHORTCUTS.length; i++){

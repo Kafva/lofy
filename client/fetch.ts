@@ -1,4 +1,6 @@
-import { SourceType, LocalTrack, Track, ActiveTuple, PlaylistEntry } from './types';
+import { 
+  SourceType, LocalTrack, Track, ActiveTuple, PlaylistEntry 
+} from './types';
 import { SOURCE_LISTS, TRACK_HISTORY, PLAYLIST_ORDER } from './global';
 import { Err, Log } from './util';
 

@@ -2,11 +2,6 @@ enum SourceType {
   LocalPlaylist = 0, LocalAlbum = 1, YouTube = 2
 }
 
-interface WorkerMessage {
-  currentTrackId: string
-  nextPredictedTrackId: string
-}
-
 interface Shortcut {
   key: string
   activeSource: SourceType
@@ -45,8 +40,7 @@ const EmptyTrack = (): Track =>  {
   return { Title: "", Artist: "", Album: "", Duration: 0 } as Track;
 }
 
-export type { 
-  PlaylistEntry, Track, LocalTrack, YtTrack, ActiveTuple, Shortcut,
-  WorkerMessage
+export type {
+  PlaylistEntry, Track, LocalTrack, YtTrack, ActiveTuple, Shortcut
 }
 export { EmptyTrack, SourceType }

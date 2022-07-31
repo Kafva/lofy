@@ -37,11 +37,13 @@ const SOURCE_LISTS = Object.freeze({
 
 /**
 * To avoid interruptions when transitioning to a new YouTube video,
-* the next url is prefetched by a webworker
+* the next url is prefetched by a webworker. Prefetching more than
+* one URL would most likely be a bed idea since the URL derived by
+* `yt-dlp` is only valid for a limited time. This will likely cause
+* bugs in playlists with very long videos.
 *
-* The `import.meta.url` argument is needed to create the name 
-* of the compiled version of `worker.js`
-*
+* The `import.meta.url` argument is needed to create the name
+* of the compiled version of `worker.ts` in the output.
 */
 const WORKER = new Worker(new URL('./worker.ts', import.meta.url))
 

@@ -2,7 +2,7 @@ import { createEffect, createSignal, onMount, Setter, untrack } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import Config from '../config';
 import { TRACK_HISTORY, WORKER } from '../global';
-import { Track, LocalTrack, YtTrack, SourceType, WorkerMessage } from '../types';
+import { Track, LocalTrack, YtTrack, SourceType } from '../types';
 import { Log, FmtTime, Err, GetHTMLElement } from '../util';
 
 /**
@@ -36,9 +36,15 @@ const changeVolume = (
 }
 
 /**
-* This call will empty the history if all tracks in the current playlist have been played.
+* Determine the next track index, taking shuffle() into account.
+* This call will empty the history if all tracks in the current playlist
+* have been played.
 */
-const getNextIndex = (trackCount: number, playingIdx: number, shuffle: boolean): number => {
+const getNextIndex = (
+  trackCount: number,
+  playingIdx: number,
+  shuffle: boolean
+): number => {
   let newIndex: number
   if (shuffle && trackCount>1) {
     // If all songs in the playlist have been played,
@@ -64,10 +70,8 @@ const getNextIndex = (trackCount: number, playingIdx: number, shuffle: boolean):
 */
 const setNextTrack = (
   trackCount: number,
-
   setPlayingIdx: (arg0: number) => any,
   playingIdx: number,
-
   shuffle: boolean,
 ) => {
   TRACK_HISTORY.push(playingIdx)
@@ -76,17 +80,6 @@ const setNextTrack = (
   const newIndex = getNextIndex(trackCount, playingIdx, shuffle)
   setPlayingIdx(newIndex)
 }
-
-//const getAudioSrc = async (trackId:string): Promise<string>  => {
-//  if (trackId !== undefined && trackId != ""){
-//    if (trackId.startsWith("/")) { // Local source
-//      return trackId;
-//    } else {
-//      return (await fetch(`/yturl/${trackId}`)).text()
-//    }
-//  }
-//  return ""
-//}
 
 
 /** Seek in the <audio> based on the X coordinate of a mouse event */
@@ -124,16 +117,6 @@ const Player = (props: {
   const [shuffle,setShuffle] = createSignal(Config.shuffleDefaultOn)
   const [coverSource,setCoverSource] = createSignal("")
 
-  // The YouTube Id for the current track or the server url for local tracks
-  //const [audioId,setAudioId] = createSignal("")
-
-  // `createResource()` allows us to connect a signal with an async task
-  // whenever the `audioId` singal changes, the `getAudioSrc` 
-  // function will re-run.
-  // The resolved data is stored in `audioSrc`
-  //const [audioSrc] = createResource(audioId, getAudioSrc)
-
-
   const [audioSrc, setAudioSrc] = createSignal("")
 
   // Update the audio source whenever the `prop.track` changes
@@ -160,50 +143,42 @@ const Player = (props: {
       }
 
       if (audioLoc!="") {
-        Log(`Setting audio source: '${props.track.Title}' - '${audioLoc}'`)
-        // Update the `audioId`, triggering a new call to `getAudioSrc`
-        //setAudioId(audioLoc)
-
-
         if (props.activeSource != SourceType.YouTube) {
           // Update the `audioSrc`
+          Log(`Setting audio source: '${props.track.Title}' - '${audioLoc}'`)
           setAudioSrc(audioLoc)
         } else {
-          // audioSrc will be a regular signal, for local tracks we can update
-          // it directly with setAudioSrc() in this effect,
-          //
-          // For YouTube, we will also use setAuioSrc(), but within the handler of a workers message
-          // after sending the worker a signal, telling to fetch the current track and the next track
-          //
-          //
-          // MAIN -->   {trackIdCurr: 1, trackIdNextPredicted: 2 } --> WORKER
-          //
-          // If YT_NEXT_ID != trackIdCurr
-          //  ...fetch trackIdCurr...         --> YtUrl1
-          // Else
-          //  YtUrl1 := YT_NEXT_ID
-          //
-          // ...fetch trackIdNextPredicted... --> YT_NEXT_ID
-          //
-          //
-          // MAIN <--   { YtUrl1 } WORKER
+          // Send a message to the webworker requesting the next YouTube URL
+          // and update the audio source when a response is received
           WORKER.onmessageerror = (e:MessageEvent) => {
             Err("Worker error:", e)
           }
           WORKER.onmessage = (e:MessageEvent<string>) => {
-            console.log('Message received from worker', e.data);
             if (e.data !== undefined && e.data != "") {
+              Log(`Setting audio source: '${props.track.Title}' - '${e.data}'`)
               setAudioSrc(e.data)
             }
           }
 
-          //const nextPredictedTrackId = 
-          //  getNextIndex(props.trackCount, props.playingIdx, untrack(shuffle))
+          // Passing the entire <Tracks> list to this component is
+          // not preferable so we extract the `trackId` directly from the DOM
+          let nextPredictedTrackId = ""
+          const nextPredictedTrackIndex =
+            getNextIndex(props.trackCount, props.playingIdx, untrack(shuffle))
+
+          const nextPredictedTrack =
+            document.querySelector(
+              `tr:nth-child(${nextPredictedTrackIndex+1}) > td:last-child > a`
+            )
+          if (nextPredictedTrack!==null){
+            nextPredictedTrackId =
+              nextPredictedTrack.getAttribute("data-id")!.toString()
+          }
 
           WORKER.postMessage({
-            currentTrackId: audioLoc, 
-            nextPredictedTrackId: "TODO"
-          } as WorkerMessage)
+            currentTrackId: audioLoc,
+            nextPredictedTrackId: nextPredictedTrackId
+          })
         }
 
         // Trigger the `coverSource()` effect
@@ -216,8 +191,7 @@ const Player = (props: {
   })
 
 
-
-  // `createEffect()` is triggered whenever a reactive component that is called 
+  // `createEffect()` is triggered whenever a reactive component that is called
   // within the body changes, `coverSource()` in this case.
   createEffect( () => {
     // Skip updates where the `coverSource()` is empty
@@ -275,8 +249,8 @@ const Player = (props: {
         // Resume playback if needed
         if (audio.paused){
           audio.play().catch( (e:DOMException) => {
-            // Media from the same origin as the server is on the autoplay 
-            // allowlist by default other sources require 
+            // Media from the same origin as the server is on the autoplay
+            // allowlist by default other sources require
             // 'interaction from the user' before being auto-playable
             //  https://developer.mozilla.org/en-US/docs/Web/Media/Autoplay_guide#autoplay_availability
             Err("Autoplay failed: ", e)
@@ -320,7 +294,7 @@ const Player = (props: {
             onClick={ () => {
               // Seek skipping for long tracks
               if (props.track.Duration >= 60*Config.sameTrackSkipMin) {
-                const newTime = 
+                const newTime =
                   audio.currentTime - 60*Config.sameTrackSeekStepMin
                 if (newTime > 0){
                   audio.currentTime = newTime
@@ -351,10 +325,10 @@ const Player = (props: {
           <span role="button"
             class="nf nf-mdi-skip_next"
             onClick={ () => {
-              // For long tracks we skip ahead `Config.seekStepMin` minutes 
+              // For long tracks we skip ahead `Config.seekStepMin` minutes
               // instead of moving to the next track
               if (props.track.Duration >= 60*Config.sameTrackSkipMin) {
-                const newTime = 
+                const newTime =
                   audio.currentTime + 60*Config.sameTrackSeekStepMin
                 if (newTime <= audio.duration){
                   audio.currentTime = newTime
