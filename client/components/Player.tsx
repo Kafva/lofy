@@ -6,6 +6,7 @@ import { TRACK_HISTORY, WORKER } from '../global';
 import { Track, LocalTrack, YtTrack, SourceType } from '../types';
 import { Log, FmtTime, Err, GetHTMLElement } from '../util';
 import Cover from './Cover';
+import ProgressBar from './ProgressBar';
 
 const changeVolume = (
   newVolume: number,
@@ -62,14 +63,6 @@ const setNextTrack = (
 
   const newIndex = getNextIndex(trackCount, playingIdx, shuffle)
   setPlayingIdx(newIndex)
-}
-
-
-/** Seek in the <audio> based on the X coordinate of a mouse event */
-const seekToPercent = (audio:HTMLAudioElement, e:MouseEvent) => {
-  if (e.pageX !== undefined) {
-    audio.currentTime = (e.pageX / document.body.clientWidth)*audio.duration
-  }
 }
 
 /**
@@ -312,12 +305,7 @@ const Player = (props: {
             changeVolume(volume()-Config.volumeStep, audio, setVolume)
           }/>
         </div>
-        <div onClick={(e:MouseEvent) => seekToPercent(audio,e)}/>
-        <div onClick={(e:MouseEvent) => seekToPercent(audio,e)}
-          style={{
-            "width": `${Math.floor(105*(currentTime()/props.track.Duration))}%`
-          }}
-        />
+        <ProgressBar track={props.track} currentTime={currentTime()}/>
       </nav>
     </Portal>
   </>);
