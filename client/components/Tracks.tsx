@@ -51,6 +51,7 @@ const TrackItem = (props: {
       <td>
         <Show when={"TrackId" in props.track}>
           <a
+            data-id={(props.track as YtTrack).TrackId}
             class="nf nf-mdi-link"
             target="_blank"
             href={
