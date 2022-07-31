@@ -25,10 +25,11 @@ func GetYtUrl(w http.ResponseWriter, r *http.Request){
   video_id := filepath.Base(r.URL.Path)
 
   if input_regex.MatchString(video_id) {
-    Debug("Fetching YouTube URL for: "+video_id)
 		yt_track := NewYtTrack()
 		yt_track.FetchYtUrl(video_id)
-
+		if yt_track.AudioUrl == "" {
+			Err("No source found for "+video_id)
+		}
 		w.Header().Set("Content-Type", "text/plain")
     w.Write([]byte(yt_track.AudioUrl))
   } else {
