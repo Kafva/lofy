@@ -1,5 +1,5 @@
-import '../scss/Player.module.scss';
-import { createEffect, createSignal, onMount, Setter, untrack } from 'solid-js';
+import styles from '../scss/Player.module.scss';
+import { createEffect, createSignal, onMount, untrack } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import Config from '../config';
 import { TRACK_HISTORY, WORKER } from '../global';
@@ -7,17 +7,7 @@ import { Track, LocalTrack, YtTrack, SourceType } from '../types';
 import { Log, FmtTime, Err, GetHTMLElement } from '../util';
 import Cover from './Cover';
 import ProgressBar from './ProgressBar';
-
-const changeVolume = (
-  newVolume: number,
-  audio: HTMLAudioElement,
-  setVolume: (arg0: number) => Setter<number>) => {
-  const rounded = Math.round(newVolume*100)/100
-  if (0.0 <= rounded && rounded <= 1.0) {
-    setVolume(rounded)
-    audio.volume = rounded
-  }
-}
+import Volume from './Volume';
 
 /**
 * Determine the next track index, taking shuffle() into account.
@@ -216,7 +206,7 @@ const Player = (props: {
             }}
           />
 
-          <span class="seperator"/>
+          <span class={styles.seperator}/>
 
           <span role="button"
             class="nf nf-mdi-skip_previous"
@@ -241,7 +231,7 @@ const Player = (props: {
             }}
           />
           <span role="button"
-            class={ props.isPlaying ? "nf nf-fa-pause" : "nf nf-fa-play" }
+            class={props.isPlaying ? "nf nf-fa-pause" : "nf nf-fa-play"}
             onClick={ () => {
               if (audio.paused) {
                 audio.play()
@@ -272,9 +262,9 @@ const Player = (props: {
             }}
           />
 
-          <span class="seperator"/>
-
-          <span title={props.track.Title}>{props.track.Title}</span>
+          <span class={styles.seperator}/>
+          <span class={styles.track_name} title={props.track.Title}>{props.track.Title}</span>
+          <span class={styles.seperator}/>
 
           <span  role="button"
             class="nf nf-fa-backward" onClick={ () => {
@@ -295,15 +285,8 @@ const Player = (props: {
               }
             }}
           />
-          <span class="seperator"/>
-
-          <span  role="button" class="nf nf-mdi-volume_plus" onClick={() =>
-            changeVolume(volume()+Config.volumeStep, audio, setVolume)
-          }/>
-          <span>{ Math.round(volume()*100) + " %" }</span>
-          <span  role="button" class="nf nf-mdi-volume_minus" onClick={() =>
-            changeVolume(volume()-Config.volumeStep, audio, setVolume)
-          }/>
+          <span class={styles.seperator}/>
+          <Volume volume={volume()} setVolume={(s:number)=>setVolume(s)}/>
         </div>
         <ProgressBar track={props.track} currentTime={currentTime()}/>
       </nav>

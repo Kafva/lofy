@@ -1,5 +1,9 @@
 @use "vars";
 
+span.nf-mdi-creation { // Hide fullscreen option on mobile
+  @include vars.mobile { display: none; }
+}
+
 %cover-pos {
   position: fixed;
   left: 0;
