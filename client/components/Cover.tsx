@@ -57,16 +57,16 @@ const Cover = (props: {
   // The #cover needs to exist even when it is not shown so that we can
   // update the `src` field from `getAudioSource()`
   return (<>
-      <span role="button" class="nf nf-mdi-creation"
-        onClick={ () => {
-          const cover = 
+    <span role="button" class="nf nf-mdi-creation"
+      onClick={ () => {
+        const cover = 
             document.querySelector(`.${styles.cover}`) as HTMLDivElement
-          if (cover !== undefined) {
-            cover.hidden = !cover.hidden
-          }
-        }}
-      />
-      <Portal>
+        if (cover !== undefined) {
+          cover.hidden = !cover.hidden
+        }
+      }}
+    />
+    <Portal>
       <div hidden class={styles.cover}>
         <div/>
         <div>
@@ -79,7 +79,7 @@ const Cover = (props: {
           <p>{props.track.Title} ―  {props.track.Artist}</p>
         </div>
       </div>
-      </Portal>
+    </Portal>
   </>);
 };
 
