@@ -1,3 +1,4 @@
+import '../scss/List.module.scss';
 import { batch, createSignal, Index, Show, For } from 'solid-js';
 import { SHORTCUTS } from '../config'
 import {

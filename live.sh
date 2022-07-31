@@ -3,5 +3,10 @@
 die(){ printf "$1\n" >&2 ; exit 1; }
 [ -z "$1" ] && die "usage: $(basename $0) <config.json>"
 
-find . -name "*.go"|entr -n -s \
-  "echo 'Rebuilding...'; pkill -x lofy; go build && ./lofy -c $1&"
+find . \
+  -path ./dist -prune -o \
+  -path ./node_modules -prune -o \
+  -name "*.go" -o -name "*.ts" -o -name "*.tsx" -o -name "*.html" -o \
+  -name "*.scss" |entr -n -s \
+  "echo 'Rebuilding...'; pkill -x lofy; rm -rf dist && vite build && 
+   go build && ./lofy -c $1 &"

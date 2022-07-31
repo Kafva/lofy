@@ -1,3 +1,4 @@
+import '../scss/Tracks.module.scss';
 import { Index, Show } from 'solid-js';
 import { TRACK_HISTORY } from '../global';
 import { Track, SourceType, YtTrack } from '../types';
