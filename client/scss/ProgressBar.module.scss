@@ -1,0 +1,32 @@
+@use "vars";
+
+%shared {
+  grid-row: 2;
+  grid-column: 1;
+  height: vars.$progress_bar_height;
+  background-color: vars.$progress_bar_default;
+  width: 100%;
+}
+
+// Underlying placeholder for progress bar
+div.background {
+  @extend %shared;
+} 
+
+// The actual progress bar
+div.fill {
+  @extend %shared;
+
+  z-index: vars.$nav_progress_z;
+  background-image: vars.$progress_bar_gradient;
+
+  // For the gradient to reach the end of the screen
+  // we need a width slightly above 100%
+  width: 0%;
+
+  // Changes to the width are applied linearly over 3 seconds
+  // without any delay
+  transition: width 3s linear 0s;
+}
+
+
