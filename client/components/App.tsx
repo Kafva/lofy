@@ -1,3 +1,4 @@
+import styles from '../scss/App.module.scss';
 import { createSignal, Index, createResource, createEffect } from 'solid-js';
 import List from './List';
 import Tracks from './Tracks';
@@ -69,7 +70,7 @@ const App = () => {
   // the lists are not going to change so it is therefore preferable
   // to use <Index> in this case.
   return (<>
-    <div id="sidebar">
+    <div class={styles.sidebar}>
       <Index each={SOURCE_TYPES}>{(listType) =>
         // We can pass the setter function to a child as in `props`
         <List

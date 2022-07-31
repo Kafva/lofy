@@ -1,0 +1,54 @@
+@use "vars";
+
+// Same padding for <h3> and <ul> elements
+$item_padding: 0 40px 5px 20px;
+
+h3 {
+  font-size: 1.17em;
+  padding: $item_padding;
+  padding-top: 5px;
+  border-bottom: 1px solid rgba(vars.$accent, 0.5);
+  &:hover { color: vars.$accent; }
+}
+ul {
+  // Disable leading dots
+  list-style-type: none;
+  margin: 0 0 0 0;
+  padding: $item_padding;
+
+  @include vars.fade-in();
+
+  li {
+    // The top margin is essential to not show partial
+    // <li> elements when the <ul> has `max-height:0`
+    margin-top: 10px;
+
+    // Spacing of name and link (only applicable for YT)
+    display: grid;
+    grid-template-columns: 90% 10%;
+    span { // List name
+      grid-row: 1;
+      grid-column: 1;
+      display: inline-block;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+
+      // Hover highlighting
+      border-bottom: vars.$default_bottom_border;
+      &:hover {
+        border-bottom: vars.$hl_bottom_border;
+        color: vars.$accent;
+      }
+    }
+    a { // Yt link
+      grid-row: 1;
+      grid-column: 2;
+      margin-left: 0.5em;
+      padding-left: 0.5em;
+      &:hover { color: vars.$accent; }
+      @include vars.mobile { display: none }
+    }
+  }
+}
+

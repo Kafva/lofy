@@ -49,7 +49,6 @@ go test -v --run get_albums ./server
 For automatic rebuilds of the server and client during development use:
 ```bash
 ./live.sh $config
-vite build --watch
 ```
 ## Quirks
 * Blank spaces in a `m3u` file do _not_ need to be escaped

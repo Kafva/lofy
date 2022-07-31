@@ -1,28 +1,11 @@
+import '../scss/Player.module.scss';
 import { createEffect, createSignal, onMount, Setter, untrack } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import Config from '../config';
 import { TRACK_HISTORY, WORKER } from '../global';
 import { Track, LocalTrack, YtTrack, SourceType } from '../types';
 import { Log, FmtTime, Err, GetHTMLElement } from '../util';
-
-/**
-* The `navigator` API generally works even if the `sizes` and `type`
-* are set to default values.
-* !! NOTE: This API is prone to break if another application that uses !!
-* !! the media key API (e.g. Spotify) is open                          !!
-*/
-const setNavigatorMetadata = (track: Track, imageSrc: string) => {
-  navigator.mediaSession.metadata = new MediaMetadata({
-    title:  track.Title,
-    artist: track.Artist,
-    album:  track.Album,
-    artwork: [{
-      src: imageSrc,
-      sizes: "0x0",
-      type: "image/png"
-    }]
-  });
-}
+import Cover from './Cover';
 
 const changeVolume = (
   newVolume: number,
@@ -108,8 +91,6 @@ const Player = (props: {
   isPlaying: boolean
 }) => {
   let audio: HTMLAudioElement;
-  let img: HTMLImageElement;
-  let coverBkg: HTMLDivElement;
 
   const [volume,setVolume] = createSignal(Config.defaultVolume)
   const [currentTime,setCurrentTime] = createSignal(0)
@@ -181,7 +162,7 @@ const Player = (props: {
           })
         }
 
-        // Trigger the `coverSource()` effect
+        // Trigger a re-render of <Cover>
         if (artworkUrl != untrack(coverSource)) {
           setCoverSource(artworkUrl)
         }
@@ -190,52 +171,13 @@ const Player = (props: {
     }
   })
 
-
-  // `createEffect()` is triggered whenever a reactive component that is called
-  // within the body changes, `coverSource()` in this case.
-  createEffect( () => {
-    // Skip updates where the `coverSource()` is empty
-    if (coverSource() !== undefined && coverSource() !== ""){
-      Log(`Setting cover source: '${coverSource()}'`)
-      // Update the navigators metadata
-      setNavigatorMetadata(props.track, coverSource())
-      // The `coverSource()` seems to lose reactivity if it is placed
-      // directly in the JSX
-      coverBkg.setAttribute("style",
-        `background-image: url('${coverSource()}')`
-      )
-    }
-  })
-
   onMount( () => {
-    img       = GetHTMLElement<HTMLImageElement>("#cover > div > img")
-    coverBkg  = GetHTMLElement<HTMLDivElement>("#cover > div:first-child")
-    audio     = GetHTMLElement<HTMLAudioElement>("audio")
     // Initalise the <audio> with the desired default volume
+    audio     = GetHTMLElement<HTMLAudioElement>("audio")
     audio.volume = volume()
   })
 
-  // <Portal> components will be inserted as direct children of the <body>
-  // rather than the #root element
-  //
-  // The #cover needs to exist even when it is not shown so that we can
-  // update the `src` field from `getAudioSource()`
   return (<>
-    <Portal>
-      <div hidden id="cover">
-        <div/>
-        <div>
-          <img src={coverSource()} onLoad={()=>{
-            // Maintain the original dimensions of images smaller than 600x600
-            // and scale down larger images
-            img.width  = img.naturalWidth  > 600 ? 600 : img.naturalWidth;
-            img.height = img.naturalHeight > 600 ? 600 : img.naturalHeight;
-          }}/>
-          <p>{props.track.Title} ―  {props.track.Artist}</p>
-        </div>
-      </div>
-    </Portal>
-
     <audio hidden autoplay preload="auto"
       src={ audioSrc() || "" }
       onTimeUpdate= {() => {
@@ -270,14 +212,8 @@ const Player = (props: {
     <Portal>
       <nav>
         <div>
-          <span role="button" class="nf nf-mdi-creation"
-            onClick={ () => {
-              const cover = document.getElementById("cover") as HTMLImageElement
-              if (cover !== undefined) {
-                cover.hidden = !cover.hidden
-              }
-            }}
-          />
+          <Cover track={props.track} coverSource={coverSource()}/>
+
           <span role="button"
             class={shuffle() ? "nf nf-mdi-shuffle_variant" :
               "nf nf-mdi-shuffle_disabled"

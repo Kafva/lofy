@@ -1,8 +1,7 @@
-/* @refresh reload */
-import { render } from 'solid-js/web';
 import './scss/index.scss';
-import App from './components/App';
+import { render } from 'solid-js/web';
 import { SetupMediaHandlers, HandleKeyboardEvent } from './controls';
+import App from './components/App';
 
 // Setup global listeners for keyboard and media key events
 window.addEventListener("keydown", HandleKeyboardEvent);

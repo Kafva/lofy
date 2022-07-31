@@ -1,0 +1,26 @@
+@use "vars";
+
+.sidebar {
+  z-index: vars.$sidebar_z;
+  position: fixed;
+  overflow-y: scroll;
+  left: 0;
+  top: 0;
+
+  width: vars.$sidebar_width;
+
+  @include vars.widescreen {
+    width: vars.$widescreen_sidebar_width;
+  }
+  @include vars.mobile {
+    top: 1%;
+    width: vars.$mobile_sidebar_width;
+    font-size: vars.$mobile_font_size;
+  }
+
+  height: calc(100% - 40px);
+  padding: 2% 15px 20px 0;
+
+  background-color: vars.$sidebar_bg;
+}
+
