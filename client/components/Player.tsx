@@ -1,8 +1,8 @@
-import { createEffect, createResource, createSignal, onMount, Setter, untrack } from 'solid-js';
+import { createEffect, createSignal, onMount, Setter, untrack } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import Config from '../config';
-import { TRACK_HISTORY } from '../global';
-import { Track, LocalTrack, YtTrack, SourceType } from '../types';
+import { TRACK_HISTORY, WORKER } from '../global';
+import { Track, LocalTrack, YtTrack, SourceType, WorkerMessage } from '../types';
 import { Log, FmtTime, Err, GetHTMLElement } from '../util';
 
 /**
@@ -36,22 +36,10 @@ const changeVolume = (
 }
 
 /**
-* Pick a random index  if shuffle() is set, otherwise
-* increment `playingIdx` by one (wrapping around for last track).
+* This call will empty the history if all tracks in the current playlist have been played.
 */
-const setNextTrack = (
-  trackCount: number,
-
-  setPlayingIdx: (arg0: number) => any,
-  playingIdx: number,
-
-  shuffle: boolean,
-) => {
+const getNextIndex = (trackCount: number, playingIdx: number, shuffle: boolean): number => {
   let newIndex: number
-
-  TRACK_HISTORY.push(playingIdx)
-  Log("TRACK_HISTORY", TRACK_HISTORY)
-
   if (shuffle && trackCount>1) {
     // If all songs in the playlist have been played,
     // Clear the history
@@ -66,20 +54,39 @@ const setNextTrack = (
   } else {
     newIndex = playingIdx+1 >= trackCount ? 0 : playingIdx+1
   }
+  return newIndex
+}
+
+/**
+* Pick a random index  if shuffle() is set, otherwise
+* increment `playingIdx` by one (wrapping around for last track).
+* This call also updates the `TRACK_HISTORY`
+*/
+const setNextTrack = (
+  trackCount: number,
+
+  setPlayingIdx: (arg0: number) => any,
+  playingIdx: number,
+
+  shuffle: boolean,
+) => {
+  TRACK_HISTORY.push(playingIdx)
+  Log("TRACK_HISTORY", TRACK_HISTORY)
+
+  const newIndex = getNextIndex(trackCount, playingIdx, shuffle)
   setPlayingIdx(newIndex)
 }
 
-const getAudioSrc = async (trackId:string): Promise<string>  => {
-  if (trackId !== undefined && trackId != ""){
-    if (trackId.startsWith("/")) { // Local source
-      return trackId;
-    } else {
-      const ytUrl = (await fetch(`/yturl/${trackId}`)).text()
-      return ytUrl
-    }
-  }
-  return ""
-}
+//const getAudioSrc = async (trackId:string): Promise<string>  => {
+//  if (trackId !== undefined && trackId != ""){
+//    if (trackId.startsWith("/")) { // Local source
+//      return trackId;
+//    } else {
+//      return (await fetch(`/yturl/${trackId}`)).text()
+//    }
+//  }
+//  return ""
+//}
 
 
 /** Seek in the <audio> based on the X coordinate of a mouse event */
@@ -118,13 +125,16 @@ const Player = (props: {
   const [coverSource,setCoverSource] = createSignal("")
 
   // The YouTube Id for the current track or the server url for local tracks
-  const [audioId,setAudioId] = createSignal("")
+  //const [audioId,setAudioId] = createSignal("")
 
   // `createResource()` allows us to connect a signal with an async task
   // whenever the `audioId` singal changes, the `getAudioSrc` 
   // function will re-run.
   // The resolved data is stored in `audioSrc`
-  const [audioSrc] = createResource(audioId, getAudioSrc)
+  //const [audioSrc] = createResource(audioId, getAudioSrc)
+
+
+  const [audioSrc, setAudioSrc] = createSignal("")
 
   // Update the audio source whenever the `prop.track` changes
   createEffect( () => {
@@ -149,10 +159,52 @@ const Player = (props: {
         audioLoc = y.TrackId;
       }
 
-      if (audioLoc!=""){
+      if (audioLoc!="") {
         Log(`Setting audio source: '${props.track.Title}' - '${audioLoc}'`)
         // Update the `audioId`, triggering a new call to `getAudioSrc`
-        setAudioId(audioLoc)
+        //setAudioId(audioLoc)
+
+
+        if (props.activeSource != SourceType.YouTube) {
+          // Update the `audioSrc`
+          setAudioSrc(audioLoc)
+        } else {
+          // audioSrc will be a regular signal, for local tracks we can update
+          // it directly with setAudioSrc() in this effect,
+          //
+          // For YouTube, we will also use setAuioSrc(), but within the handler of a workers message
+          // after sending the worker a signal, telling to fetch the current track and the next track
+          //
+          //
+          // MAIN -->   {trackIdCurr: 1, trackIdNextPredicted: 2 } --> WORKER
+          //
+          // If YT_NEXT_ID != trackIdCurr
+          //  ...fetch trackIdCurr...         --> YtUrl1
+          // Else
+          //  YtUrl1 := YT_NEXT_ID
+          //
+          // ...fetch trackIdNextPredicted... --> YT_NEXT_ID
+          //
+          //
+          // MAIN <--   { YtUrl1 } WORKER
+          WORKER.onmessageerror = (e:MessageEvent) => {
+            Err("Worker error:", e)
+          }
+          WORKER.onmessage = (e:MessageEvent<string>) => {
+            console.log('Message received from worker', e.data);
+            if (e.data !== undefined && e.data != "") {
+              setAudioSrc(e.data)
+            }
+          }
+
+          //const nextPredictedTrackId = 
+          //  getNextIndex(props.trackCount, props.playingIdx, untrack(shuffle))
+
+          WORKER.postMessage({
+            currentTrackId: audioLoc, 
+            nextPredictedTrackId: "TODO"
+          } as WorkerMessage)
+        }
 
         // Trigger the `coverSource()` effect
         if (artworkUrl != untrack(coverSource)) {
@@ -162,6 +214,8 @@ const Player = (props: {
 
     }
   })
+
+
 
   // `createEffect()` is triggered whenever a reactive component that is called 
   // within the body changes, `coverSource()` in this case.
