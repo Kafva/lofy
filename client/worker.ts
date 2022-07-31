@@ -15,7 +15,7 @@ onmessage = (e:MessageEvent) => {
       const toSend = NEXT_YT_URL
       NEXT_TRACK_ID = ""
       NEXT_YT_URL = ""
-      Log("Posting prefetched URL: ", toSend)
+      Log(`Posting prefetched URL (${msg.currentTrackId}): ${toSend}`)
       postMessage(toSend)
 
     } else {
@@ -24,7 +24,7 @@ onmessage = (e:MessageEvent) => {
         .then( (r:Response) => r.text())
         .then( (d:string) => {
           // ...and post the response
-          Log("Posting newly fetched URL: ", d)
+          Log(`Posting newly fetched URL (${msg.currentTrackId}): '${d}'`)
           postMessage(d)
         })
     }
@@ -32,8 +32,8 @@ onmessage = (e:MessageEvent) => {
     fetch(`/yturl/${msg.nextPredictedTrackId}`)
       .then( (r:Response) => r.text())
       .then( (d:string) => {
-        if (d !== undefined && d !== ""){
-          Log("Saving prefetched URL:", d)
+        if (d !== undefined && d !== "") {
+          Log(`Saving prefetched URL (${msg.nextPredictedTrackId}): ${d}`)
           NEXT_YT_URL = d
           NEXT_TRACK_ID = msg.nextPredictedTrackId
         }

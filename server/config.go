@@ -104,9 +104,11 @@ var CSP_VALUES = [...]string{
 // Alternatively, `sddefault.jpg`
 const YT_THUMBNAIL_FILENAME = "maxresdefault.jpg"
 
-const SINGLE_YT_TRACK = "SINGLE"
+// YouTube video IDs are assumed to always be 11 characters
+const YT_VIDEO_ID_LENGTH = 11
+
 // Allowed characters for:
-//		the `<video id>` paramater to `/yturl`
+//		the `<video id>` parameter to `/yturl`
 //		the subcommand parameter to `/meta`
 //		the `<playlist id>` parameter for `/meta`
 const ALLOWED_STRS = "^(?i)[-_0-9A-Z]{1,60}$";

@@ -121,6 +121,10 @@ const Player = (props: {
             if (e.data !== undefined && e.data != "") {
               Log(`Setting audio source: '${props.track.Title}' - '${e.data}'`)
               setAudioSrc(e.data)
+            } else {
+              Err(`Failed to retrieve audio URL for '${props.track.Title}', `+
+                "the video could be limitied to 'YouTube Music'."
+              )
             }
           }
 
@@ -150,7 +154,6 @@ const Player = (props: {
           setCoverSource(artworkUrl)
         }
       }
-
     }
   })
 

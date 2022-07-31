@@ -101,13 +101,16 @@ func get_yt_playlists() []YtPlaylist  {
 			if len(text) == 0 { continue } // Allow empty lines
 
 			split := strings.Split(text, ";")
-			if len(split)!=3 {
+			if len(split)!=2 {
 				Die("Invalid format of '"+CONFIG.YT_PLAYLIST_FILE+"', line "+strconv.Itoa(line))
 			}
+
+			yt_id := strings.TrimSpace(split[1])
+
 			playlists = append(playlists, YtPlaylist{
-				SingleTrack: strings.TrimSpace(split[0]) == SINGLE_YT_TRACK,
-				DisplayName: strings.TrimSpace(split[1]),
-				Id: strings.TrimSpace(split[2]),
+				SingleTrack: len(yt_id) == YT_VIDEO_ID_LENGTH,
+				DisplayName: strings.TrimSpace(split[0]),
+				Id: yt_id,
 			})
 		}
 	} else {
