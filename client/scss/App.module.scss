@@ -1,5 +1,11 @@
 @use "vars";
 
+// Error message box
+.unavail {
+  font-size: 18px;
+  color: vars.$fg_grey;
+}
+
 .sidebar {
   z-index: vars.$sidebar_z;
   position: fixed;

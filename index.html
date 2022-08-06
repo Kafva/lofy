@@ -13,22 +13,22 @@
     <script src="/client/index.tsx" type="module"></script>
 
     <ul id="_playlists" hidden>
-      {{ range .Playlists }}
+      {{ range .Playlists -}}
         <li>{{.Name}}</li>
       {{ end }}
     </ul>
     <ul id="_albums" hidden>
-      {{ range .Albums }}
+      {{ range .Albums -}}
         <li>{{.}}</li>
       {{ end }}
     </ul>
     <ul id="_yt-playlists" hidden>
-      {{ range .YtPlaylists }}
+      {{- range .YtPlaylists -}}
       <li data-id={{.Id}} data-single={{.SingleTrack}}>{{.DisplayName}}</li>
       {{ end }}
     </ul>
     <ul id="_m3u-order" hidden>
-      {{ range .Playlists }}
+      {{ range .Playlists -}}
       <ul data-name={{.Name}}>
         {{ range .Sources }}
         <li>{{.}}</li>

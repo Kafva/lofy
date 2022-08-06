@@ -1,20 +1,25 @@
 import styles from '../scss/App.module.scss';
-import { createSignal, Index, createResource, createEffect } from 'solid-js';
+import { createSignal, Index, createResource, createEffect, Show } from 'solid-js';
 import List from './List';
 import Tracks from './Tracks';
 import Player from './Player';
-import { ACTIVE_LIST_KEY, LIST_INDEX_KEY, SOURCE_TYPES } from '../global'
+import { ACTIVE_LIST_KEY, LIST_INDEX_KEY, SOURCE_LISTS, SOURCE_TYPES } from '../global'
 import { FetchTracks } from '../fetch';
 import { SourceType, EmptyTrack, Track, ActiveTuple } from '../types';
 
 const App = () => {
   // Restore values from a previous session if possible
-  const prevActiveSource = parseInt(
+  let prevActiveSource = parseInt(
     localStorage.getItem(ACTIVE_LIST_KEY)|| "0"
   ) as SourceType
-  const prevListIndex  = parseInt(
+  let prevListIndex  = parseInt(
     localStorage.getItem(LIST_INDEX_KEY) || "0"
   )
+  // Fallback to 0:0 if the cached index does not exist
+  if (SOURCE_LISTS[prevActiveSource].length <= prevListIndex) {
+    prevActiveSource = 0
+    prevListIndex = 0
+  }
 
   // Flag to determine the active media list
   const [activeSource,setActiveSource] = createSignal(prevActiveSource)
@@ -87,26 +92,30 @@ const App = () => {
       }</Index>
     </div>
 
-    <Tracks
-      activeSource={activeSource()}
-      currentList={currentList() || [] as Track[]}
+    <Show when={SOURCE_LISTS[activeSource()].length > 0}
+      fallback={<p class={styles.unavail}>No data available for current source</p>}
+    >
+      <Tracks
+        activeSource={activeSource()}
+        currentList={currentList() || [] as Track[]}
 
-      playingIdx={playingIdx()}
-      setPlayingIdx={(s:number)=>setPlayingIdx(s)}
-      isPlaying={isPlaying()}
-    />
+        playingIdx={playingIdx()}
+        setPlayingIdx={(s:number)=>setPlayingIdx(s)}
+        isPlaying={isPlaying()}
+      />
 
-    <Player
-      track={currentTrack()}
-      trackCount={currentTrackCount()}
-      activeSource={activeSource()}
+      <Player
+        track={currentTrack()}
+        trackCount={currentTrackCount()}
+        activeSource={activeSource()}
 
-      setPlayingIdx={(s:number)=>setPlayingIdx(s)}
-      playingIdx={playingIdx()}
+        setPlayingIdx={(s:number)=>setPlayingIdx(s)}
+        playingIdx={playingIdx()}
 
-      setIsPlaying={(s:boolean)=>setIsPlaying(s)}
-      isPlaying={isPlaying()}
-    />
+        setIsPlaying={(s:boolean)=>setIsPlaying(s)}
+        isPlaying={isPlaying()}
+      />
+    </Show>
   </>)
 };
 
