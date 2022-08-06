@@ -1,4 +1,4 @@
-import '../scss/List.module.scss';
+import styles from '../scss/List.module.scss';
 import { batch, createSignal, Index, Show, For } from 'solid-js';
 import { SHORTCUTS } from '../config'
 import {
@@ -35,34 +35,38 @@ const List = (props: {
   // to be called for <For> components.
   // We use `role` to make elements clickable with Vimium
   return (<>
-    <h3 role="menuitem"
+    <h3 role={SOURCE_LISTS[props.listType].length != 0 ? "menuitem" : undefined}
       classList={{
         selected: props.activeSource == props.listType,
         [SOURCE_TITLE_CLASSES[props.listType]]: true,
+        [styles.disabled]: SOURCE_LISTS[props.listType].length == 0
       }}
       onClick={() => {
-        // Collapse or open the list if the currently selected list
-        // is pressed anew
-        if (props.listType == props.activeSource){
-          setShow(!show());
-        } else {
-          // To avoid intermediary states we batch the updates to:
-          //  The selected medialist,
-          //  The selected playlist/album
-          // batch() will combine several signal changes into one re-render.
-          batch( () => {
-            props.setActiveSource(props.listType)
-            props.setListIndex(0)
-            // Setting this to zero without waiting for `FetchTracks`
-            // can cause the 0th track of the previous list to start playing
-            // The index is explicitly set to zero by the <App> once
-            // `FetchTracks` completes
-            props.setPlayingIdx(-1)
-            props.setCurrentList([] as Track[])
-            setShow(true)
-          })
-          localStorage.setItem(ACTIVE_LIST_KEY, props.activeSource.toFixed(0))
-          localStorage.setItem(LIST_INDEX_KEY,  props.listIndex.toFixed(0))
+        // Only react to clicks if the list has at least one item
+        if (SOURCE_LISTS[props.listType].length != 0){
+          // Collapse or open the list if the currently selected list
+          // is pressed anew
+          if (props.listType == props.activeSource){
+            setShow(!show());
+          } else {
+            // To avoid intermediary states we batch the updates to:
+            //  The selected medialist,
+            //  The selected playlist/album
+            // batch() will combine several signal changes into one re-render.
+            batch( () => {
+              props.setActiveSource(props.listType)
+              props.setListIndex(0)
+              // Setting this to zero without waiting for `FetchTracks`
+              // can cause the 0th track of the previous list to start playing
+              // The index is explicitly set to zero by the <App> once
+              // `FetchTracks` completes
+              props.setPlayingIdx(-1)
+              props.setCurrentList([] as Track[])
+              setShow(true)
+            })
+            localStorage.setItem(ACTIVE_LIST_KEY, props.activeSource.toFixed(0))
+            localStorage.setItem(LIST_INDEX_KEY,  props.listIndex.toFixed(0))
+          }
         }
       }}/>
     <Show when={props.activeSource == props.listType && show()}>

@@ -9,6 +9,10 @@ h3 {
   padding-top: 5px;
   border-bottom: 1px solid rgba(vars.$accent, 0.5);
   &:hover { color: vars.$accent; }
+  &.disabled {
+    cursor: not-allowed;
+    color: vars.$fg_grey
+  }
 }
 ul {
   // Disable leading dots

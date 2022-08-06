@@ -1,7 +1,13 @@
 import Config, { SHORTCUTS } from './config';
 
-const queryClick = (selector: string) =>
-  (document.querySelector(selector) as HTMLSpanElement).click()
+const queryClick = (selector: string) => {
+  const span = document.querySelector(selector) as HTMLSpanElement
+  if (span !== null){
+    span.click()
+  } else {
+    console.error(`Shortcut target not found: ${selector}`)
+  }
+}
 
 /** Click elements under `#shortcuts` based on the configured `SHORTCUTS` object
 */
