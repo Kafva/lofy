@@ -6,6 +6,12 @@
 }
 
 body {
+  // Hide scrollbar
+  scrollbar-width: none; // Firefox
+  *::-webkit-scrollbar { // Chrome
+    display: none;
+  }
+
   font-family: "JetBrains", "Arial";
   background-color: vars.$body_bg;
   color: vars.$fg_white;
