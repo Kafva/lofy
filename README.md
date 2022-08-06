@@ -19,7 +19,8 @@ The server is built and ran with
 ```bash
 go build && ./lofy -c examples/lofy.json
 ```
-The configuration file format is described in `./server/config.go`.
+The configuration file format is described in [server/config.go](
+/server/config.go)
 
 ### Supported audio sources
 The application can serve content from three sources:
@@ -36,8 +37,8 @@ are taken from the `?v` parameter of a YouTube URL and playlist
 IDs are taken from the `?list` parameter.
 
 Configuration options for the client, e.g. custom shortcuts, are specified
-directly in the source code of `./client/config.ts`. Refer to this file
-for the default keybindings.
+directly in the source code of [client/config.ts](/client/config.ts). 
+Refer to this file for the default keybindings.
 
 ## Development
 There are a few simple tests for the server but no automated tests for the
