@@ -5,6 +5,7 @@ import {
   ACTIVE_LIST_KEY, LIST_INDEX_KEY, SOURCE_LISTS, SOURCE_TITLE_CLASSES
 } from '../global'
 import { SourceType, Track } from '../types';
+import { Err } from '../util';
 
 const getYtLink = (item: HTMLLIElement): string => {
   const ytParam = item.getAttribute('data-single') == "true" ? "v" : "list"
@@ -103,16 +104,22 @@ const List = (props: {
       <For each={SHORTCUTS}>{(shortcut) =>
         <span onClick={ () => {
           // Switch to the playlist indicated by the shortcut
+          // provided that the target exists
           // Each hidden span element is given a shortcut in `controls.ts`
-          batch( () => {
-            props.setActiveSource(shortcut.activeSource)
-            props.setListIndex(shortcut.listIndex)
-            props.setPlayingIdx(-1)
-            props.setCurrentList([] as Track[])
-            setShow(true)
-          })
-          localStorage.setItem(ACTIVE_LIST_KEY, shortcut.activeSource.toFixed())
-          localStorage.setItem(LIST_INDEX_KEY,  shortcut.listIndex.toFixed())
+
+          if (SOURCE_LISTS[shortcut.activeSource].length > shortcut.listIndex) {
+            batch( () => {
+              props.setActiveSource(shortcut.activeSource)
+              props.setListIndex(shortcut.listIndex)
+              props.setPlayingIdx(-1)
+              props.setCurrentList([] as Track[])
+              setShow(true)
+            })
+            localStorage.setItem(ACTIVE_LIST_KEY, shortcut.activeSource.toFixed())
+            localStorage.setItem(LIST_INDEX_KEY,  shortcut.listIndex.toFixed())
+          } else {
+            Err("Shortcut target unavailable", shortcut)
+          }
         }}/>
       }
       </For>
