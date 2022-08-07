@@ -79,10 +79,15 @@ func TranslateIndexToFilename(next http.Handler) http.Handler {
 		filename :=
 			album_id_to_filename(album_index, TranslateTilde(CONFIG.ALBUM_DIR+"/"+album))
 
-		// Update the request path and forward the request to the `FileServer`
-		r.URL.Path = album+"/"+filename
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		next.ServeHTTP(w, r)
+		if filename != "" {
+			// Update the request path and forward the request to the `FileServer`
+			r.URL.Path = album+"/"+filename
+			Debug("Translated "+idx+" -> "+r.URL.Path)
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			next.ServeHTTP(w, r)
+		} else {
+			Err("Failed to translate '"+r.URL.Path+"' into a filename")
+		}
 	})
 }
 
