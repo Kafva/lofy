@@ -6,7 +6,7 @@ const DEBUG = true
 /** Custom shortcuts for switching to particular playlists/albums */
 const SHORTCUTS: Shortcut[] = [
   { key: "z", activeSource: SourceType.LocalPlaylist, listIndex: 0 },
-  { key: "Z", activeSource: SourceType.LocalPlaylist, listIndex: 1 },
+  { key: "Z", activeSource: SourceType.LocalPlaylist, listIndex: 2 },
   { key: "m", activeSource: SourceType.YouTube,       listIndex: 5 }
 ]
 
