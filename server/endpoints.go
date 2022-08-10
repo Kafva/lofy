@@ -203,7 +203,7 @@ func GetArtwork(w http.ResponseWriter, r *http.Request){
 			).Output()
 
 			if err != nil {
-				Err(err)
+				Err("Failed to retrieve artwork for "+track_path+": ", err)
 			} else {
 				w.Header().Set("Content-Type","image/"+codec_name)
 				w.Write(cover)
@@ -344,6 +344,7 @@ func ffprobe(path string) ([]byte,error) {
 		).Output()
 }
 
+
 // Create a `Track` struct for the given file
 // and send it back to the caller over the `c` channel
 func get_file_metadata(path string, id int, c chan LocalTrack) {
@@ -353,9 +354,15 @@ func get_file_metadata(path string, id int, c chan LocalTrack) {
 		data_str := string(data)
     c <- LocalTrack {
 			Track: Track {
-				Title:    gjson.Get(data_str, "format.tags.title").String(),
-				Artist:   gjson.Get(data_str, "format.tags.artist").String(),
-				Album:    gjson.Get(data_str, "format.tags.album").String(),
+				Title:  get_json_fallback(data_str,
+					"format.tags.title",  "streams.0.tags.Title",
+				),
+				Artist: get_json_fallback(data_str,
+					"format.tags.artist", "streams.0.tags.Artist",
+				),
+				Album:  get_json_fallback(data_str,
+					"format.tags.album",  "streams.0.tags.Album",
+				),
 				Duration: int(gjson.Get(data_str, "format.duration").Float()),
 			},
 			AlbumFS: filepath.Base(filepath.Dir(path)),
@@ -367,6 +374,16 @@ func get_file_metadata(path string, id int, c chan LocalTrack) {
 		track.Title = "ERROR reading: " + filepath.Base(path)
     c <- track
   }
+}
+
+// Fetch a string value from JSON blob and fallback to a different path
+// if a null value was returned
+func get_json_fallback(data string, path string, fallback_path string) string {
+	val := gjson.Get(data, path).String()
+	if val == "" {
+		val = gjson.Get(data, fallback_path).String()
+	}
+	return val
 }
 
 // Translate an album ID into a filename, the translation assumes

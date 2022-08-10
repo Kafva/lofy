@@ -50,7 +50,7 @@ func main(){
 	serverLocation := CONFIG.ADDR+":"+strconv.Itoa(CONFIG.PORT)
 
 	if CONFIG.USE_TLS {
-		Debug("Listening on 'https://"+serverLocation+"'...")
+		Info("Listening on 'https://"+serverLocation+"'...")
 		err := http.ListenAndServeTLS(serverLocation,
 			CONFIG.TLS_CERT, 
 			CONFIG.TLS_KEY, nil,
@@ -59,7 +59,7 @@ func main(){
 				Die("ListenAndServeTLS", err)
 		}
 	} else {
-		Debug("Listening on 'http://"+serverLocation+"'...")
+		Info("Listening on 'http://"+serverLocation+"'...")
 		http.ListenAndServe(serverLocation, nil)
 	}
 

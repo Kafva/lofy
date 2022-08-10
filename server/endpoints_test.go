@@ -23,7 +23,7 @@ func Test_fetch_yt_playlist(t *testing.T) {
 
 func Test_get_file_metadata(t *testing.T){
   c := make(chan LocalTrack, 1)
-  //go get_file_metadata("/Users/jonas/Music/JB/01 Mark My Words.m4a", c)
+  //go get_file_metadata("/Users/jonas/Music/JB/01 Mark My Words.m4a", 0, c)
   go get_file_metadata("../server/.tests/2/track.m4a", 0, c)
   track_info := <- c
 
