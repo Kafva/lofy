@@ -18,6 +18,11 @@ func Die(strs ... interface{}) {
   log.Fatal(strs ...)
 }
 
+func Info(strs ... interface{}) {
+	logPrefix("32", "INFO")
+	log.Println(strs ...)
+}
+
 func Debug(strs ... interface{}) {
   if CONFIG.DEBUG {
     logPrefix("34", "DEBUG")
