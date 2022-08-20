@@ -37,7 +37,7 @@ are taken from the `?v` parameter of a YouTube URL and playlist
 IDs are taken from the `?list` parameter.
 
 Configuration options for the client, e.g. custom shortcuts, are specified
-directly in the source code of [client/config.ts](/client/config.ts). 
+directly in the source code of [client/config.ts](/client/config.ts).
 Refer to this file for the default keybindings.
 
 ## Development
@@ -55,6 +55,7 @@ For automatic rebuilds of the server and client during development use:
 * Blank spaces in a `m3u` file do _not_ need to be escaped
 * [Autoplay restrictions](https://developer.mozilla.org/en-US/docs/Web/Media/Autoplay_guide#autoplay_availability) will prevent the application from immediately playing tracks in some setups.
 * Audio files are expected to have a non-empty `title` in their metadata.
+* Browser proxies, e.g. [SwitchyOmega](https://github.com/FelisCatus/SwitchyOmega) can prevent YouTube resources from being loaded. To resolve this, set `*.googlevideos.com` as an exception that bypasses the proxy.
 
 ## Future work
 YouTube-dl has support for many other sources and it should not be too difficult
