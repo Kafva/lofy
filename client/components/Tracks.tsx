@@ -1,4 +1,4 @@
-import '../scss/Tracks.module.scss';
+import styles from '../scss/Tracks.module.scss';
 import { Index, Show } from 'solid-js';
 import { TRACK_HISTORY } from '../global';
 import { Track, SourceType, YtTrack } from '../types';
@@ -36,7 +36,7 @@ const TrackItem = (props: {
         }}
         classList={{selected:  props.trackIdx == props.playingIdx }}>
         <span classList={{
-          amp: props.trackIdx == props.playingIdx && props.isPlaying
+          [styles.amp]: props.trackIdx == props.playingIdx && props.isPlaying
         }}/>
         {props.track.Title}
       </td>

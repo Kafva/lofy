@@ -7,7 +7,7 @@ const DEBUG = true
 const SHORTCUTS: Shortcut[] = [
   { key: "z", activeSource: SourceType.LocalPlaylist, listIndex: 0 },
   { key: "Z", activeSource: SourceType.LocalPlaylist, listIndex: 2 },
-  { key: "m", activeSource: SourceType.YouTube,       listIndex: 5 }
+  { key: "m", activeSource: SourceType.YouTube,       listIndex: 26 }
 ]
 
 class Config {
