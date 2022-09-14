@@ -7,14 +7,14 @@ nav {
    top: 0;
    left: 0;
    text-align: center;
-   
+
    width: 100%;
    min-width: 50%;
 
    display: grid;
 
-   @include vars.mobile { 
-    font-size: vars.$mobile_font_size + 2; 
+   @include vars.mobile {
+    font-size: vars.$mobile_font_size + 2;
    }
 
    // Top container with controls
@@ -22,11 +22,15 @@ nav {
      grid-row: 1;
      grid-column: 1;
      height: fit-content;
-      
+
      span {
        display: inline-block;
        width: fit-content;
        margin: 5px;
+     }
+     // Extra spacing for the first three buttons
+     span[role="button"]:nth-child(-n+3) {
+       padding: 0 5px 0 5px;
      }
      span.seperator {
          margin: 5px 15px 5px 15px;
@@ -45,5 +49,5 @@ nav {
      span.track_name {
       @include vars.limit-width(20em, 7em, fit-content, inline-grid);
      }
-   } 
+   }
 }
