@@ -28,6 +28,11 @@ class Config {
   // ... without <Shift>
   static readonly pausePlayKey = ' ';
 
+  /**
+  * Jump to the currently playing track
+  */
+  static readonly gotoCurrentKey = 'å';
+
   // ... with <Shift>
   static readonly previousTrackKey = 'ArrowLeft';
   static readonly nextTrackKey = 'ArrowRight';
@@ -43,11 +48,6 @@ class Config {
   *  https://github.com/spicetify/spicetify-cli/blob/master/Extensions/fullAppDisplay.js
   */
   static readonly coverKey = 'F';
-
-  /**
-  * Jump to the currently playing track
-  */
-  static readonly gotoCurrentKey = 'å';
 }
 
 export { DEBUG, SHORTCUTS }
