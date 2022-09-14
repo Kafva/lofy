@@ -20,7 +20,7 @@ func main(){
 		if err != nil {
 			Die(err)
 		}
-		err = json.Unmarshal(f, &CONFIG)	
+		err = json.Unmarshal(f, &CONFIG)
 		if err != nil {
 			Die(err)
 		}
@@ -52,7 +52,7 @@ func main(){
 	if CONFIG.USE_TLS {
 		Info("Listening on 'https://"+serverLocation+"'...")
 		err := http.ListenAndServeTLS(serverLocation,
-			CONFIG.TLS_CERT, 
+			CONFIG.TLS_CERT,
 			CONFIG.TLS_KEY, nil,
 		)
 		if err != nil {

@@ -52,7 +52,8 @@ For automatic rebuilds of the server and client during development use:
 ./live.sh $config
 ```
 ## Quirks
-* Blank spaces in a `m3u` file do _not_ need to be escaped
+* Blank spaces in a `m3u` file do _not_ need to be escaped.
+* _'~'_ is allowed when specifying paths inside of playlists.
 * [Autoplay restrictions](https://developer.mozilla.org/en-US/docs/Web/Media/Autoplay_guide#autoplay_availability) will prevent the application from immediately playing tracks in some setups.
 * Audio files are expected to have a non-empty `title` in their metadata.
 * Browser proxies, e.g. [SwitchyOmega](https://github.com/FelisCatus/SwitchyOmega) can prevent YouTube resources from being loaded. To resolve this, set `*.googlevideos.com` as an exception that bypasses the proxy.
