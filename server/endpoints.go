@@ -273,7 +273,7 @@ func get_track_paths_from_playlist(path string, track_paths *[]string) bool {
 			line := strings.TrimSpace(scanner.Text())
 			if !strings.HasPrefix("#", line) && len(line)!=0 {
 				// Skip empty and '#' lines in a playlist
-				*track_paths = append(*track_paths, line)
+				*track_paths = append(*track_paths, TranslateTilde(line))
 			}
 		}
 		return true
@@ -343,7 +343,6 @@ func ffprobe(path string) ([]byte,error) {
 			"json", "-show_format", "-show_streams", path,
 		).Output()
 }
-
 
 // Create a `Track` struct for the given file
 // and send it back to the caller over the `c` channel

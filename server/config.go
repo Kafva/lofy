@@ -14,7 +14,7 @@ type Config struct {
 
   // Album directory names cannot exceed 60 characters and cannot
   // contain 'special' characters, see `ALBUM_NAME_REGEX`
-  ALBUM_DIR string   
+  ALBUM_DIR string
 
   // Local playlists are given as `.m3u` files
   // i.e. a newline seperated list of absolute filepaths.
@@ -27,8 +27,8 @@ type Config struct {
   //	SINGLE|MULTI; <Display name>; <Youtube video|playlist ID>
   //
   // Leading and trailing whitespace are ignored
-  // YouTube video IDs are taken from the `?v` parameter of 
-  // a YouTube URL (SINGLE) and playlist IDs are taken from 
+  // YouTube video IDs are taken from the `?v` parameter of
+  // a YouTube URL (SINGLE) and playlist IDs are taken from
   // the `?list` parameter (MULTI).
   YT_PLAYLIST_FILE string
 
@@ -42,7 +42,7 @@ type Config struct {
   // Path to `ffmpeg` binary
   FFMPEG_BIN  string
   // Path to `ffprobe` binary
-  FFPROBE_BIN  string 
+  FFPROBE_BIN  string
 }
 
 func DefaultConfig() Config {
@@ -92,7 +92,7 @@ const MAX_TRACKS = 1000;
 // Pagination threshold for track metadata
 const ITEMS_PER_REQ = 30;
 
-// Restrict origins that content can be loaded from using 
+// Restrict origins that content can be loaded from using
 // Content-Security-Policy headers.
 var CSP_VALUES = [...]string{
 	"connect-src 'self';",
