@@ -201,6 +201,16 @@ const Player = (props: {
           <Cover track={props.track} coverSource={coverSource()}/>
 
           <span role="button"
+            class="nf nf-fae-wind"
+            onClick={ () => {
+              const percent = props.playingIdx / props.trackCount
+              const fullHeight = document.body.scrollHeight
+              const scrollTo = Math.floor(percent*fullHeight) - window.innerHeight/2
+              window.scroll(0,Math.max(0,scrollTo))
+            }}
+          />
+
+          <span role="button"
             class={shuffle() ? "nf nf-mdi-shuffle_variant" :
               "nf nf-mdi-shuffle_disabled"
             }

@@ -62,6 +62,9 @@ const HandleKeyboardEvent = (e:KeyboardEvent) => {
     case Config.pausePlayKey:
       queryClick("span.nf-fa-pause,span.nf-fa-play")
       break;
+    case Config.gotoCurrentKey:
+      queryClick("span.nf-fae-wind")
+      break;
     default:
       handleShortcut(e)
     }
