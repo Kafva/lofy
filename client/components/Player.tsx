@@ -158,7 +158,7 @@ const Player = (props: {
   })
 
   onMount( () => {
-    // Initalise the <audio> with the desired default volume
+    // Initialise the <audio> with the desired default volume
     audio     = GetHTMLElement<HTMLAudioElement>("audio")
     audio.volume = volume()
   })
