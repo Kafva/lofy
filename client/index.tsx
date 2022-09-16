@@ -9,11 +9,8 @@ SetupMediaHandlers()
 
 render(() => <App/>, document.getElementById('root') as HTMLElement);
 
-// Using a Uint8Array for the frequency data requires the min/max decibel
-// value to be in a sane range, otherwise everything is zeroed out.
-//  https://stackoverflow.com/a/14678000/9033629
 let analyser: AnalyserNode;
-let frequencyData: Float32Array;
+let frequencyData: Uint8Array;
 
 // https://developer.mozilla.org/en-US/docs/Web/API/AudioNode
 // Source nodes:      0  inputs, 1+ outputs
@@ -34,8 +31,11 @@ window.onload = () => {
     srcNode = audioCtx.createMediaElementSource(audio!)
 
     // Create an analyser which can read the frequency data of the node
+    //  maxDecibels: -30
+    //  minDecibels: -100
     analyser = audioCtx.createAnalyser();
-    frequencyData = new Float32Array(analyser.frequencyBinCount)
+
+    frequencyData = new Uint8Array(analyser.frequencyBinCount)
 
     // Set the OUTPUT of the `srcNode` to the INPUT of the analyser...
     srcNode.connect(analyser)
@@ -50,7 +50,8 @@ window.onload = () => {
 
 setInterval( () => {
   if (analyser) {
-    analyser.getFloatFrequencyData(frequencyData)
-    console.log("AAAAAAAA", frequencyData)
+    // Note: the array will be zeroed out if the audio is muted.
+    analyser.getByteFrequencyData(frequencyData)
+    console.log("AAAAAAAA", analyser, frequencyData)
   }
 }, 4000)
