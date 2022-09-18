@@ -8,14 +8,3 @@ window.addEventListener("keydown", HandleKeyboardEvent);
 SetupMediaHandlers()
 
 render(() => <App/>, document.getElementById('root') as HTMLElement);
-
-
-
-//window.onload = () => {
-//  setTimeout(()=>{
-//    console.log("Created context for", audio!.src)
-//  }, 4000)
-//}
-
-//setInterval( () => {
-//}, 4000)
