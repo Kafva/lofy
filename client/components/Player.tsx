@@ -55,30 +55,6 @@ const setNextTrack = (
   setPlayingIdx(newIndex)
 }
 
-//const drawAmp = (analyser: AnalyserNode, canvas: HTMLCanvasElement) => {
-//  //requestAnimationFrame( () => {
-//
-//  //});
-//
-//  //analyser.getByteFrequencyData(dataArray);
-//
-//  //canvasCtx.fillStyle = "rgb(0, 0, 0)";
-//  //canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
-//
-//  //const barWidth = (WIDTH / bufferLength) * 2.5;
-//  //let barHeight;
-//  //let x = 0;
-//
-//  //for (let i = 0; i < bufferLength; i++) {
-//  //  barHeight = dataArray[i];
-//
-//  //  canvasCtx.fillStyle = `rgb(${barHeight + 100}, 50, 50)`;
-//  //  canvasCtx.fillRect(x, HEIGHT - barHeight / 2, barWidth, barHeight / 2);
-//
-//  //  x += barWidth + 1;
-//  //}
-//}
-
 /**
 * Holds the actual <audio> element used to play a track
 * and all the buttons for controlling playback
@@ -217,8 +193,8 @@ const Player = (props: {
     // the audio context destination
     analyser.connect(audioCtx.destination)
 
-    //canvas = GetHTMLElement<HTMLCanvasElement>("canvas");
-    //canvasCtx = canvas.getContext("2d")!;
+    canvas = GetHTMLElement<HTMLCanvasElement>("canvas");
+    canvasCtx = canvas.getContext("2d")!;
   })
 
   return (<>
@@ -230,21 +206,21 @@ const Player = (props: {
         if (audio.currentTime <= props.track.Duration) {
           setCurrentTime(audio.currentTime)
         }
-        //if (analyser) {
-        //  // Note: the array will be zeroed out if the audio is muted.
-        //  // The array will contain 1024 values [0-255], each index
-        //  // represents the decibel value for a specific Hz value
-        //  // The frequencies are spread linerarly from
-        //  //  0 Hz to [sample rate / 2] Hz
-        //  //
-        //  // The <canvas> will visualise these values with bars of differing height
-        //  analyser.getByteFrequencyData(frequencyData)
-        //  //Log("Frequency data", frequencyData)
+        if (analyser) {
+          // Note: the array will be zeroed out if the audio is muted.
+          // The array will contain 1024 values [0-255], each index
+          // represents the decibel value for a specific Hz value
+          // The frequencies are spread linerarly from
+          //  0 Hz to [sample rate / 2] Hz
+          //
+          // The <canvas> will visualise these values with bars of differing height
+          analyser.getByteFrequencyData(frequencyData)
+          //Log("Frequency data", frequencyData)
 
-        //  canvasCtx.clearRect(0,0,400,200);
-        //  canvasCtx.fillStyle = "rgb(110, 133, 211)"
-        //  canvasCtx.fillRect( Math.random()*200 ,20,20,50);
-        //}
+          canvasCtx.clearRect(0,0,400,200);
+          canvasCtx.fillStyle = "rgb(110, 133, 211)"
+          canvasCtx.fillRect( Math.random()*200 ,20,20,50);
+        }
       }}
       onLoadedData={ () => {
         // Resume playback if needed
@@ -269,6 +245,8 @@ const Player = (props: {
       }}
     />
 
+
+    <canvas/>
 
     <Portal>
       <nav>
