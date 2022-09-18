@@ -1,11 +1,5 @@
 @use "vars";
 
-canvas {
-  width: 400px;
-  height: 200px;
-  background-color: white;
-}
-
 nav {
    z-index: vars.$nav_z;
    background-color: vars.$nav_bg;
