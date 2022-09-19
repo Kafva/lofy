@@ -62,7 +62,6 @@ func main(){
 		Info("Listening on 'http://"+serverLocation+"'...")
 		http.ListenAndServe(serverLocation, nil)
 	}
-
 }
 
 func redirect_to_app(w http.ResponseWriter, r *http.Request) {
