@@ -46,8 +46,10 @@ class Config {
   * Show a fullscreen view of the cover for the currently playing track
   * Inspired by:
   *  https://github.com/spicetify/spicetify-cli/blob/master/Extensions/fullAppDisplay.js
+  * The `coverKey` will toggle the view and the `exitKey` will deactivate it
   */
   static readonly coverKey = 'F';
+  static readonly exitKey = 'q';
 }
 
 export { DEBUG, SHORTCUTS }
