@@ -4,6 +4,7 @@ import { GetHTMLElement } from '../util';
 
 const SAMPLES_PER_BAR = 2**5
 const BAR_WIDTH  = 0.9*SAMPLES_PER_BAR;
+const TICK_STEP = 2**3
 
 const makeEven = (a:number) => a % 2 == 0 ? a : Math.max(a - 1, 2);
 
@@ -21,6 +22,9 @@ const Pulse = () => {
       // needs to be explicitly set for X/Y coordinates to behave as intended
       canvas.height = makeEven(0.9*document.body.clientHeight);
       canvas.width  = makeEven(document.body.clientWidth);
+      const TICKS = Array.from(
+        {length: canvas.height/TICK_STEP}, (_, idx:number) => idx*TICK_STEP
+      )
 
       // Note: the array will be zeroed out if the audio is muted.
       // The array will contain 1024 values [0-255], each index
@@ -36,13 +40,18 @@ const Pulse = () => {
       for (let i = SAMPLES_PER_BAR; i < frequencyData.length; i+=SAMPLES_PER_BAR) {
         // We could use the average across the relevant samples but the overhead
         // of a more precise result is not neccessary for our use case
-        let barHeight = Math.floor(frequencyData[i]/255 * canvas.height)/2
 
-        canvasCtx.fillRect(i, 0.5*canvas.height, BAR_WIDTH, barHeight);
+        // To avoid excessive flickering height of each bar will vary in ticks of 
+        // BAR_TICKS pixels instead of being pixel perfect.
+        //const barHeight = Math.floor(frequencyData[i]/255 * canvas.height)/2
+        const tickIdx = Math.floor(frequencyData[i]/255 * canvas.height/TICK_STEP)
+
+
+        canvasCtx.fillRect(i, 0.5*canvas.height, BAR_WIDTH, TICKS[tickIdx]);
 
         // Mirror image
         canvasCtx
-          .fillRect(canvas.width - i, 0.5*canvas.height, BAR_WIDTH, -1*barHeight);
+          .fillRect(canvas.width - i, 0.5*canvas.height, BAR_WIDTH, -1*TICKS[tickIdx]);
       }
     }
     requestAnimationFrame(draw)
