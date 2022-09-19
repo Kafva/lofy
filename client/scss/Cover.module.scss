@@ -10,7 +10,7 @@
 }
 
 div.cover {
-  z-index: vars.$cover_z;
+  z-index: vars.$cover_bg_z;
   background-color: vars.$body_bg;
   @extend %cover-pos;
 
@@ -26,6 +26,7 @@ div.cover {
     filter: brightness(50%);
   }
   div:nth-child(3) { // Cover image and title
+    z-index: vars.$cover_z;
     position: fixed;
 
     // Center the container
@@ -43,7 +44,6 @@ div.cover {
       // See `components/Player.tsx`
       border-radius: 5%;
       object-fit: none;
-      z-index: vars.$img_z;
     }
     p {
       font-size: 34px;
