@@ -15,7 +15,7 @@ div.cover {
   @extend %cover-pos;
 
 
-  div:nth-child(1) { // Blurred background
+  div.bg { // Blurred background
     @extend %cover-pos;
     background-repeat: no-repeat;
     background-position: center;
@@ -25,7 +25,7 @@ div.cover {
     // Lower the brightness to ensure that white text is readable
     filter: brightness(50%);
   }
-  div:nth-child(3) { // Cover image and title
+  div.fg { // Cover image and title
     z-index: vars.$cover_z;
     position: fixed;
 
