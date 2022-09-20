@@ -10,6 +10,8 @@ const makeEven = (a:number) => a % 2 == 0 ? a : Math.max(a - 1, 2);
 
 const Pulse = () => {
   let audio: HTMLAudioElement;
+  let audioCtx: AudioContext;
+  let srcNode: MediaElementAudioSourceNode;
   let analyser: AnalyserNode;
   let frequencyData: Uint8Array;
   let canvas: HTMLCanvasElement;
@@ -70,10 +72,10 @@ const Pulse = () => {
     // node1.connect(node2)
 
     // Initialise audio context for sound visualisation
-    const audioCtx = new window.AudioContext();
+    audioCtx = new window.AudioContext();
 
     // Create a SRC node (1 output no input) for the <audio>
-    const srcNode = audioCtx.createMediaElementSource(audio)
+    srcNode = audioCtx.createMediaElementSource(audio)
 
     // Create an analyser which can read the frequency data of the node
     //  maxDecibels: -30
