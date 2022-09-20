@@ -164,7 +164,7 @@ const Player = (props: {
   })
 
   return (<>
-    <audio hidden autoplay preload="auto"
+    <audio hidden autoplay preload="auto" crossorigin="anonymous"
       src={ audioSrc() || "" }
       onTimeUpdate= {() => {
         // Update the `currentTime` every second based on the current time
