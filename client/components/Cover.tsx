@@ -69,9 +69,9 @@ const Cover = (props: {
     />
     <Portal>
       <div hidden class={styles.cover}>
-        <div/>
+        <div class={styles.bg}/>
         <Pulse/>
-        <div>
+        <div class={styles.fg}>
           <img src={props.coverSource} onLoad={()=>{
             // Maintain the original dimensions of images smaller than 600x600
             // and scale down larger images
