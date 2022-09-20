@@ -5,6 +5,8 @@ import (
 	"flag"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"os/exec"
 	"strconv"
 
 	. "github.com/Kafva/lofy/server"
@@ -46,6 +48,30 @@ func main(){
   // Local files
   http.HandleFunc("/meta/", GetLocalMetadata)
   http.HandleFunc("/art/", GetArtwork)
+
+  // Launch mitmdump
+  if CONFIG.MITM_PORT != -1 {
+    mitm_port := strconv.Itoa(CONFIG.MITM_PORT)
+
+    proxy := exec.Command(CONFIG.MITMDUMP_BIN,
+      "--listen-host", "127.0.0.1",
+      "--ssl-insecure", "--listen-port", mitm_port,
+      "--script", "cors.py", "~d googlevideos.com",
+    )
+    proxy.Env = os.Environ()
+    proxy.Env = append(proxy.Env,
+      "CORS=https://lofy:"+strconv.Itoa(CONFIG.PORT),
+    )
+    if CONFIG.MITM_DEBUG {
+      proxy.Stdout = os.Stdout
+      proxy.Stderr = os.Stderr
+    }
+    Info("Starting "+CONFIG.MITMDUMP_BIN+" at "+mitm_port+"...")
+
+    if err := proxy.Start(); err != nil {
+      Die(err)
+    }
+  }
 
 	serverLocation := CONFIG.ADDR+":"+strconv.Itoa(CONFIG.PORT)
 
