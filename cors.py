@@ -3,15 +3,14 @@ Audio connected to a `MediaElementAudioSourceNode` needs to be
 served with valid CORS settings.
 *.googlevideos.com does not provide this by default.
 
-    mitmproxy --ssl-insecure --intercept "~d googlevideos.com"  --scripts cors.py
-
+    pip3.10 install --user mitmproxy
+    CORS=https://lofy:20111 mitmdump --ssl-insecure --intercept "~d googlevideos.com"  --scripts cors.py
 """
+import os
 
 class AddHeader:
     def response(self, flow):
-        flow.response.headers["Access-Control-Allow-Origin"] = \
-            "https://lofy:20111"
-
+        flow.response.headers["access-control-allow-origin"] = \
+            os.environ["CORS"]
 
 addons = [AddHeader()]
-

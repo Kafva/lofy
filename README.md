@@ -5,6 +5,8 @@ The server has two core dependencies which must be installed:
 * [ffmpeg](https://ffmpeg.org/): For parsing metadata of local files.
 
 The client uses [solidjs](https://www.solidjs.com/).
+For the audio visualiser to work with YouTube also requires [mitmproxy](https://github.com/mitmproxy/mitmproxy)
+to circumvent the CORS configuration for `*.googlevideos.com`.
 
 ## Setup
 Build the frontend
@@ -57,6 +59,7 @@ For automatic rebuilds of the server and client during development use:
 * [Autoplay restrictions](https://developer.mozilla.org/en-US/docs/Web/Media/Autoplay_guide#autoplay_availability) will prevent the application from immediately playing tracks in some setups.
 * Audio files are expected to have a non-empty `title` in their metadata.
 * Browser proxies, e.g. [SwitchyOmega](https://github.com/FelisCatus/SwitchyOmega) can prevent YouTube resources from being loaded. To resolve this, set `*.googlevideos.com` as an exception that bypasses the proxy.
+* For the audio visualiser to work for YouTube, `*.googlevideos.com` requests should be routed through `mitmproxy`.
 
 ## Future work
 YouTube-dl has support for many other sources and it should not be too difficult
