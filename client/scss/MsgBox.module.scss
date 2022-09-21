@@ -1,0 +1,27 @@
+@use "vars";
+
+div.msgbox {
+  z-index: vars.$msgbox_z;
+  position: fixed;
+  left: calc(100% - 144px - 20px);
+  top: 1%;
+
+  visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 144px;
+  height: 74px;
+
+  p {
+    font-size: 14px;
+    width: 90px;
+    height: 54px;
+  }
+
+  border-radius: 5%;
+  color: vars.$fg_white;
+  background-color: vars.$sidebar_bg;
+  border: 1px solid vars.$accent;
+}

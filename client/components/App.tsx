@@ -1,11 +1,16 @@
 import styles from '../scss/App.module.scss';
-import { createSignal, Index, createResource, createEffect, Show } from 'solid-js';
+import { createSignal, Index, createResource, createEffect, Show }
+  from 'solid-js';
 import List from './List';
 import Tracks from './Tracks';
 import Player from './Player';
-import { ACTIVE_LIST_KEY, LIST_INDEX_KEY, SOURCE_LISTS, SOURCE_TYPES } from '../global'
+import { MsgBox } from './MsgBox';
+import { ACTIVE_LIST_KEY, LIST_INDEX_KEY, SOURCE_LISTS, SOURCE_TYPES,
+  VISUALISER_KEY }
+  from '../global'
 import { FetchTracks } from '../fetch';
 import { SourceType, EmptyTrack, Track, ActiveTuple } from '../types';
+import { Log } from '../util';
 
 const App = () => {
   // Restore values from a previous session if possible
@@ -20,6 +25,10 @@ const App = () => {
     prevActiveSource = 0
     prevListIndex = 0
   }
+
+  Log("Visualiser: " + (localStorage.getItem(VISUALISER_KEY) != null ?
+    "active" : "inactive")
+  )
 
   // Flag to determine the active media list
   const [activeSource,setActiveSource] = createSignal(prevActiveSource)
@@ -75,6 +84,7 @@ const App = () => {
   // the lists are not going to change so it is therefore preferable
   // to use <Index> in this case.
   return (<>
+    <MsgBox/>
     <div class={styles.sidebar}>
       <Index each={SOURCE_TYPES}>{(listType) =>
         // We can pass the setter function to a child as in `props`

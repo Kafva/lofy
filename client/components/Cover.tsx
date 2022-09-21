@@ -2,9 +2,9 @@ import styles from '../scss/Cover.module.scss';
 import { createEffect, onMount, Show } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import { Track } from '../types';
+import { VISUALISER_KEY } from '../global';
 import { Log, GetHTMLElement } from '../util';
 import Pulse from './Pulse';
-import Config from '../config';
 
 /**
 * The `navigator` API generally works even if the `sizes` and `type`
@@ -60,6 +60,7 @@ const Cover = (props: {
   // update the `src` field from `getAudioSource()`
   return (<>
     <span role="button" class="nf nf-mdi-creation"
+      style={{display: "none"}}
       onClick={ () => {
         const cover =
             document.querySelector(`.${styles.cover}`) as HTMLDivElement
@@ -71,7 +72,7 @@ const Cover = (props: {
     <Portal>
       <div hidden class={styles.cover}>
         <div class={styles.bg}/>
-        <Show when={Config.enableVisualiser}>
+        <Show when={localStorage.getItem(VISUALISER_KEY) != null}>
           <Pulse/>
         </Show>
         <div class={styles.fg}>

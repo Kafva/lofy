@@ -73,6 +73,9 @@ const HandleKeyboardEvent = (e:KeyboardEvent) => {
         queryClick("span.nf-mdi-creation")
       }
       break;
+    case Config.toggleVisualiser:
+      queryClick("span.nf-oct-graph")
+      break;
     default:
       handleShortcut(e)
     }

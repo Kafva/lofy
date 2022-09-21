@@ -11,12 +11,6 @@ const SHORTCUTS: Shortcut[] = [
 ]
 
 class Config {
-  /**
-  * Toggle the visualiser in the fullscreen view.
-  * This feature requires additional configuration to work with YouTube.
-  */
-  static readonly enableVisualiser = true;
-
   static readonly shuffleDefaultOn = true;
   static readonly volumeStep = 0.05;
   static readonly defaultVolume = 0.8;
@@ -38,6 +32,12 @@ class Config {
   * Jump to the currently playing track
   */
   static readonly gotoCurrentKey = 'å';
+
+  /**
+  * Toggle the visualiser in the fullscreen view.
+  * This feature requires additional configuration to work with YouTube.
+  */
+  static readonly toggleVisualiser = 'v';
 
   // ... with <Shift>
   static readonly previousTrackKey = 'ArrowLeft';
