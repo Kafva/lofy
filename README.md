@@ -6,7 +6,7 @@ The server has two core dependencies which must be installed:
 
 The client uses [solidjs](https://www.solidjs.com/).
 
--![No image...](https://i.imgur.com/S7F5MPF.gif)
+![](/examples/visuals.gif)
 
 ## Setup
 Build the frontend
