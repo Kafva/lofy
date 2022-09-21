@@ -15,7 +15,7 @@ class Config {
   * Toggle the visualiser in the fullscreen view.
   * This feature requires additional configuration to work with YouTube.
   */
-  static readonly enableVisualiser = false;
+  static readonly enableVisualiser = true;
 
   static readonly shuffleDefaultOn = true;
   static readonly volumeStep = 0.05;
