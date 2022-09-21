@@ -1,8 +1,10 @@
 import styles from '../scss/Cover.module.scss';
-import { createEffect, onMount } from 'solid-js';
+import { createEffect, onMount, Show } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import { Track } from '../types';
+import { VISUALISER_KEY } from '../global';
 import { Log, GetHTMLElement } from '../util';
+import Pulse from './Pulse';
 
 /**
 * The `navigator` API generally works even if the `sizes` and `type`
@@ -47,7 +49,7 @@ const Cover = (props: {
   })
 
   onMount( () => {
-    img      = GetHTMLElement<HTMLImageElement>(`.${styles.cover} > div > img`)
+    img = GetHTMLElement<HTMLImageElement>(`.${styles.cover} > div > img`)
     bkg = GetHTMLElement<HTMLDivElement>(`.${styles.cover} > div:first-child`)
   })
 
@@ -58,8 +60,9 @@ const Cover = (props: {
   // update the `src` field from `getAudioSource()`
   return (<>
     <span role="button" class="nf nf-mdi-creation"
+      style={{display: "none"}}
       onClick={ () => {
-        const cover = 
+        const cover =
             document.querySelector(`.${styles.cover}`) as HTMLDivElement
         if (cover !== undefined) {
           cover.hidden = !cover.hidden
@@ -68,8 +71,11 @@ const Cover = (props: {
     />
     <Portal>
       <div hidden class={styles.cover}>
-        <div/>
-        <div>
+        <div class={styles.bg}/>
+        <Show when={localStorage.getItem(VISUALISER_KEY) != null}>
+          <Pulse/>
+        </Show>
+        <div class={styles.fg}>
           <img src={props.coverSource} onLoad={()=>{
             // Maintain the original dimensions of images smaller than 600x600
             // and scale down larger images

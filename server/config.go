@@ -24,7 +24,7 @@ type Config struct {
 
   // A file with a list of YouTube playlits/videos on the following format:
   //
-  //	SINGLE|MULTI; <Display name>; <Youtube video|playlist ID>
+  //  SINGLE|MULTI; <Display name>; <Youtube video|playlist ID>
   //
   // Leading and trailing whitespace are ignored
   // YouTube video IDs are taken from the `?v` parameter of
@@ -95,10 +95,10 @@ const ITEMS_PER_REQ = 30;
 // Restrict origins that content can be loaded from using
 // Content-Security-Policy headers.
 var CSP_VALUES = [...]string{
-	"connect-src 'self';",
-	"font-src 'self';",
-	"img-src 'self' https://*.ytimg.com;",
-	"media-src 'self' https://*.googlevideo.com;",
+  "connect-src 'self';",
+  "font-src 'self';",
+  "img-src 'self' https://*.ytimg.com;",
+  "media-src 'self' https://*.googlevideo.com;",
 }
 
 // Alternatively, `sddefault.jpg`
@@ -108,14 +108,14 @@ const YT_THUMBNAIL_FILENAME = "maxresdefault.jpg"
 const YT_VIDEO_ID_LENGTH = 11
 
 // Allowed characters for:
-//		the `<video id>` parameter to `/yturl`
-//		the subcommand parameter to `/meta`
-//		the `<playlist id>` parameter for `/meta`
+//    the `<video id>` parameter to `/yturl`
+//    the subcommand parameter to `/meta`
+//    the `<playlist id>` parameter for `/meta`
 const ALLOWED_STRS = "^(?i)[-_0-9A-Z]{1,60}$";
 
 // Allowed characters for album names to:
-//		the `<name>` parameter of `/meta`
-//		the `<album>` parameter of `/art`
+//    the `<name>` parameter of `/meta`
+//    the `<album>` parameter of `/art`
 const ALBUM_NAME_REGEX = "^(?i)[ -_0-9A-Z]{1,60}$";
 
 // Codec stream types that will be used to extract cover art

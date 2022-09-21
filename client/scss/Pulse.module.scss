@@ -1,0 +1,18 @@
+@use "vars";
+
+:export { // Values accessible from JS imports
+  white:   vars.$fg_white;
+  body:    vars.$body_bg;
+}
+
+canvas {
+  z-index: vars.$pulse_z;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0; padding: 0; border: 0; outline: 0;
+  background-color: transparent;
+}
+

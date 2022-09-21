@@ -1,34 +1,35 @@
 {
-	"root": true,
-	"env": {
-		"browser": true,
-		"es2021": true
-	},
-	"extends": [
-		"eslint:recommended",
+  "root": true,
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": [
+    "eslint:recommended",
     "plugin:solid/recommended",
-		"plugin:@typescript-eslint/eslint-recommended",
-		"plugin:@typescript-eslint/recommended"
-	],
-	"parser": "@typescript-eslint/parser",
-	"parserOptions": {
-		"ecmaFeatures": {
-			"jsx": true
-		},
-		"ecmaVersion": 12,
-		"sourceType": "module"
-	},
-	"settings": {
-		"react": {
-			"version": "detect"
-		}
-	},
-	"plugins": ["solid", "@typescript-eslint"],
-	"rules": {
-		"prefer-arrow-callback": "warn",
-		"prefer-const": "warn",
-		"indent": ["error", 2],
-		"@typescript-eslint/no-explicit-any": "off",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
+  "plugins": ["solid", "@typescript-eslint"],
+  "rules": {
+    "prefer-arrow-callback": "warn",
+    "prefer-const": "warn",
+    "no-case-declarations": "off",
+    "indent": ["error", 2],
+    "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-assertion": "off"
-	}
+  }
 }

@@ -7,4 +7,4 @@ import App from './components/App';
 window.addEventListener("keydown", HandleKeyboardEvent);
 SetupMediaHandlers()
 
-render(() => <App />, document.getElementById('root') as HTMLElement);
+render(() => <App/>, document.getElementById('root') as HTMLElement);

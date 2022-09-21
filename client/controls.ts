@@ -65,6 +65,17 @@ const HandleKeyboardEvent = (e:KeyboardEvent) => {
     case Config.gotoCurrentKey:
       queryClick("span.nf-fae-wind")
       break;
+    case Config.exitKey:
+      // Only trigger if the parent to the <Pulse/> element is visible.
+      const canvas = document.querySelector("canvas");
+      if (canvas != null && canvas.parentElement != null &&
+          !canvas.parentElement.hidden) {
+        queryClick("span.nf-mdi-creation")
+      }
+      break;
+    case Config.toggleVisualiser:
+      queryClick("span.nf-oct-graph")
+      break;
     default:
       handleShortcut(e)
     }

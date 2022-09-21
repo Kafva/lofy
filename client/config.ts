@@ -33,6 +33,12 @@ class Config {
   */
   static readonly gotoCurrentKey = 'å';
 
+  /**
+  * Toggle the visualiser in the fullscreen view.
+  * This feature requires additional configuration to work with YouTube.
+  */
+  static readonly toggleVisualiser = 'v';
+
   // ... with <Shift>
   static readonly previousTrackKey = 'ArrowLeft';
   static readonly nextTrackKey = 'ArrowRight';
@@ -46,8 +52,10 @@ class Config {
   * Show a fullscreen view of the cover for the currently playing track
   * Inspired by:
   *  https://github.com/spicetify/spicetify-cli/blob/master/Extensions/fullAppDisplay.js
+  * The `coverKey` will toggle the view and the `exitKey` will deactivate it
   */
   static readonly coverKey = 'F';
+  static readonly exitKey = 'q';
 }
 
 export { DEBUG, SHORTCUTS }
