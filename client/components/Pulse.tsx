@@ -62,7 +62,8 @@ const Pulse = () => {
   }
 
   onMount(() => {
-    audio     = GetHTMLElement<HTMLAudioElement>("audio")
+    audio = GetHTMLElement<HTMLAudioElement>("audio")
+    audio.crossOrigin = "anonymous"
     // https://developer.mozilla.org/en-US/docs/Web/API/AudioNode
     // Source nodes:      0  inputs, 1+ outputs
     // Destination nodes: 1+ inputs, 0  outputs

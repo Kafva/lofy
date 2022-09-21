@@ -62,6 +62,8 @@ pip3.10 install --user mitmproxy
 mitmdump --ssl-insecure --listen-host 127.0.0.1 --listen-port 20112 --scripts cors.py "~d googlevideo.com"
 ```
 
+This approach has issues for videos longer than ~ 10 minutes.
+
 ## Quirks
 * Blank spaces in a `m3u` file do _not_ need to be escaped.
 * _'~'_ is allowed when specifying paths inside of playlists.
