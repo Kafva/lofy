@@ -5,8 +5,6 @@ The server has two core dependencies which must be installed:
 * [ffmpeg](https://ffmpeg.org/): For parsing metadata of local files.
 
 The client uses [solidjs](https://www.solidjs.com/).
-For the audio visualiser to work with YouTube also requires [mitmproxy](https://github.com/mitmproxy/mitmproxy)
-to circumvent the CORS configuration for `*.googlevideos.com`.
 
 ## Setup
 Build the frontend
@@ -53,13 +51,23 @@ For automatic rebuilds of the server and client during development use:
 ```bash
 ./live.sh $config
 ```
+
+## Using the audio visualiser with YouTube
+The `AudioContext` API can break when sources that serve content with a strict CORS policy, like `*.googlevideo.com`, are used.
+For the audio visualiser to work with YouTube therefore requires a workaround that modifies the CORS header of each response.
+This can be accomplished using [mitmproxy](https://github.com/mitmproxy/mitmproxy) and a browser proxy like [SwitchyOmega](https://github.com/FelisCatus/SwitchyOmega) that supports "auto-switching".
+
+```bash
+pip3.10 install --user mitmproxy
+mitmdump --ssl-insecure --listen-host 127.0.0.1 --listen-port 20112 --scripts cors.py "~d googlevideo.com"
+```
+
 ## Quirks
 * Blank spaces in a `m3u` file do _not_ need to be escaped.
 * _'~'_ is allowed when specifying paths inside of playlists.
 * [Autoplay restrictions](https://developer.mozilla.org/en-US/docs/Web/Media/Autoplay_guide#autoplay_availability) will prevent the application from immediately playing tracks in some setups.
 * Audio files are expected to have a non-empty `title` in their metadata.
-* Browser proxies, e.g. [SwitchyOmega](https://github.com/FelisCatus/SwitchyOmega) can prevent YouTube resources from being loaded. To resolve this, set `*.googlevideos.com` as an exception that bypasses the proxy.
-* For the audio visualiser to work for YouTube, `*.googlevideos.com` requests should be routed through `mitmproxy`.
+* Browser proxies can prevent YouTube resources from being loaded. To resolve this, set `*.googlevideo.com` as an exception that bypasses the proxy.
 
 ## Future work
 YouTube-dl has support for many other sources and it should not be too difficult

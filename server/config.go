@@ -7,8 +7,6 @@ type Config struct {
   ADDR string
   // Port to listen on
   PORT int
-  // Port for mitmproxy to listen on
-  MITM_PORT int
   // Path to TLS key
   TLS_KEY string
   // Path to TLS certificate
@@ -36,8 +34,6 @@ type Config struct {
 
   // Toggle debug logging
   DEBUG bool
-	// Toggle debug output of mitmdump
-	MITM_DEBUG bool
   // Toggle color in logs
   LOG_COLOR bool
 
@@ -47,8 +43,6 @@ type Config struct {
   FFMPEG_BIN  string
   // Path to `ffprobe` binary
   FFPROBE_BIN  string
-  // Path to `mitmdump` binary (headless version of `mitmproxy`)
-  MITMDUMP_BIN  string
 }
 
 func DefaultConfig() Config {
@@ -56,7 +50,6 @@ func DefaultConfig() Config {
     USE_TLS: true,
     ADDR: "127.0.0.1",
     PORT: 20111,
-    MITM_PORT: -1, // Disabled by default
     TLS_KEY:  "./tls/server.key",
     TLS_CERT: "./tls/server.crt",
     PLAYLIST_DIR:  "~/Music/.playlists",
@@ -64,13 +57,11 @@ func DefaultConfig() Config {
     YT_PLAYLIST_FILE: "~/Music/.playlists/yt",
 
     DEBUG: true,
-		MITM_DEBUG: false,
     LOG_COLOR: true,
 
     YTDL_BIN: "yt-dlp",
     FFMPEG_BIN: "ffmpeg",
     FFPROBE_BIN: "ffprobe",
-    MITMDUMP_BIN: "mitmdump",
   }
 }
 
