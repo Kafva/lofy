@@ -2,9 +2,10 @@ import styles from '../scss/Player.module.scss';
 import { createEffect, createSignal, onMount, untrack } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import Config from '../config';
-import { TRACK_HISTORY, WORKER } from '../global';
+import { TRACK_HISTORY, VISUALISER_KEY, WORKER } from '../global';
 import { Track, LocalTrack, YtTrack, SourceType } from '../types';
 import { Log, FmtTime, Err, GetHTMLElement } from '../util';
+import { Msg } from './MsgBox';
 import Cover from './Cover';
 import ProgressBar from './ProgressBar';
 import Volume from './Volume';
@@ -75,6 +76,9 @@ const Player = (props: {
 }) => {
   let audio: HTMLAudioElement;
 
+  const [visualiser,setVisualiser] = createSignal(
+    localStorage.getItem(VISUALISER_KEY) != null
+  )
   const [volume,setVolume] = createSignal(Config.defaultVolume)
   const [currentTime,setCurrentTime] = createSignal(0)
 
@@ -203,6 +207,7 @@ const Player = (props: {
 
           <span role="button"
             class="nf nf-fae-wind"
+            style={{display: "none"}}
             onClick={ () => {
               const percent = props.playingIdx / props.trackCount
               const fullHeight = document.body.scrollHeight
@@ -210,11 +215,33 @@ const Player = (props: {
               window.scroll(0,Math.max(0,scrollTo))
             }}
           />
-
+          <span role="button"
+            class="nf nf-oct-graph"
+            style={{color: visualiser() ?
+              styles.accent :
+              styles.white
+            }}
+            onClick={ () => {
+              if (!visualiser()){
+                localStorage.setItem(VISUALISER_KEY, "true")
+              } else {
+                localStorage.removeItem(VISUALISER_KEY)
+              }
+              setVisualiser(!visualiser())
+              Msg("Refresh to " +
+                  (visualiser() ? "activate" : "deactivate") +
+                  " visualiser.", 6000
+              );
+            }}
+          />
           <span role="button"
             class={shuffle() ? "nf nf-mdi-shuffle_variant" :
               "nf nf-mdi-shuffle_disabled"
             }
+            style={{color: shuffle() ?
+              styles.accent :
+              styles.white
+            }}
             onClick={ () => {
               setShuffle(!shuffle())
             }}
