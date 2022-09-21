@@ -1,9 +1,10 @@
 import styles from '../scss/Cover.module.scss';
-import { createEffect, onMount } from 'solid-js';
+import { createEffect, onMount, Show } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import { Track } from '../types';
 import { Log, GetHTMLElement } from '../util';
 import Pulse from './Pulse';
+import Config from '../config';
 
 /**
 * The `navigator` API generally works even if the `sizes` and `type`
@@ -70,7 +71,9 @@ const Cover = (props: {
     <Portal>
       <div hidden class={styles.cover}>
         <div class={styles.bg}/>
-        <Pulse/>
+        <Show when={Config.enableVisualiser}>
+          <Pulse/>
+        </Show>
         <div class={styles.fg}>
           <img src={props.coverSource} onLoad={()=>{
             // Maintain the original dimensions of images smaller than 600x600
