@@ -191,6 +191,7 @@ const Player = (props: {
 
         // Ensure that the play-button state is toggled
         props.setIsPlaying(true)
+        document.title = `lofy — ${props.track.Title}`
       }}
       onEnded={ () => {
         setNextTrack(props.trackCount,
@@ -230,7 +231,7 @@ const Player = (props: {
               setVisualiser(!visualiser())
               Msg("Refresh to " +
                   (visualiser() ? "activate" : "deactivate") +
-                  " visualiser.", 6000
+                  " visualiser", 6000
               );
             }}
           />

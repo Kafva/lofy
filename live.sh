@@ -8,5 +8,5 @@ find . \
   -path ./node_modules -prune -o \
   -name "*.go" -o -name "*.ts" -o -name "*.tsx" -o -name "*.html" -o \
   -name "*.scss" |entr -n -s \
-  "echo 'Rebuilding...'; pkill -x lofy;pkill -x mitmdump; rm -rf dist && vite build &&
+  "echo 'Rebuilding...'; pkill -x lofy; rm -rf dist && vite build &&
    go build && ./lofy -c $1 &"
