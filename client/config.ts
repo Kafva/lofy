@@ -47,6 +47,8 @@ class Config {
   static readonly seekBackKey = 'H';
   static readonly seekForwardKey = 'L';
   static readonly shuffleKey = 'S';
+  // ... with <Control>
+  static readonly toggleSidebarKey = 'n'
 
   /**
   * Show a fullscreen view of the cover for the currently playing track

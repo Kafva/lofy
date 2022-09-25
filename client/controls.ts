@@ -1,4 +1,5 @@
 import Config, { SHORTCUTS } from './config';
+import styles from './scss/App.module.scss'
 
 const queryClick = (selector: string) => {
   const span = document.querySelector(selector) as HTMLSpanElement
@@ -57,6 +58,21 @@ const HandleKeyboardEvent = (e:KeyboardEvent) => {
     default:
       handleShortcut(e)
     }
+  } else if (e.ctrlKey) {
+    switch (e.key) {
+    case Config.toggleSidebarKey:
+      const selector = `div.${styles.sidebar}`
+      const sidebar = document
+        .querySelector(selector) as HTMLDivElement;
+      if (sidebar){
+        sidebar.style.visibility = sidebar.style.visibility == 'hidden' ?
+          'visible' : 'hidden';
+      } else {
+        throw `No element found matching '${selector}'`
+      }
+      break;
+    }
+
   } else { // Unprefixed bindings
     switch (e.key) {
     case Config.pausePlayKey:
