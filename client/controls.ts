@@ -1,5 +1,6 @@
 import Config, { SHORTCUTS } from './config';
-import styles from './scss/App.module.scss'
+import appStyles from './scss/App.module.scss'
+import coverStyles from './scss/Cover.module.scss'
 
 const queryClick = (selector: string) => {
   const span = document.querySelector(selector) as HTMLSpanElement
@@ -61,7 +62,7 @@ const HandleKeyboardEvent = (e:KeyboardEvent) => {
   } else if (e.ctrlKey) {
     switch (e.key) {
     case Config.toggleSidebarKey:
-      const selector = `div.${styles.sidebar}`
+      const selector = `div.${appStyles.sidebar}`
       const sidebar = document
         .querySelector(selector) as HTMLDivElement;
       if (sidebar){
@@ -82,10 +83,9 @@ const HandleKeyboardEvent = (e:KeyboardEvent) => {
       queryClick("span.nf-fae-wind")
       break;
     case Config.exitKey:
-      // Only trigger if the parent to the <Pulse/> element is visible.
-      const canvas = document.querySelector("canvas");
-      if (canvas != null && canvas.parentElement != null &&
-          !canvas.parentElement.hidden) {
+      const cover = // Only trigger if the outer <Cover/> div is visible
+        document.querySelector(`div.${coverStyles.cover}`) as HTMLDivElement;
+      if (cover != null && !cover.hidden) {
         queryClick("span.nf-mdi-creation")
       }
       break;
