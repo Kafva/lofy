@@ -5,13 +5,15 @@
     src: url('JetBrains\ Mono\ Regular\ Nerd\ Font\ Complete.ttf'); 
 }
 
-body {
+* {
   // Hide scrollbar
   scrollbar-width: none; // Firefox
   *::-webkit-scrollbar { // Chrome
     display: none;
   }
+}
 
+body {
   font-family: "JetBrains", "Arial";
   background-color: vars.$body_bg;
   color: vars.$fg_white;
