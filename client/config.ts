@@ -37,7 +37,7 @@ class Config {
   * Toggle the visualiser in the fullscreen view.
   * This feature requires additional configuration to work with YouTube.
   */
-  static readonly toggleVisualiser = 'v';
+  static readonly toggleVisualiser = 'w';
 
   // ... with <Shift>
   static readonly previousTrackKey = 'ArrowLeft';
