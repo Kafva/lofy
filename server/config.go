@@ -94,12 +94,8 @@ const ITEMS_PER_REQ = 30;
 
 // Restrict origins that content can be loaded from using
 // Content-Security-Policy headers.
-var CSP_VALUES = [...]string{
-  "connect-src 'self';",
-  "font-src 'self';",
-  "img-src 'self' https://*.ytimg.com;",
-  "media-src 'self' https://*.googlevideo.com;",
-}
+var CSP_VALUE =
+  "connect-src 'self'; font-src 'self'; img-src 'self' https://*.ytimg.com; media-src 'self' https://*.googlevideo.com;"
 
 // Alternatively, `sddefault.jpg`
 const YT_THUMBNAIL_FILENAME = "maxresdefault.jpg"
