@@ -7,10 +7,10 @@ import Player from './Player';
 import { MsgBox } from './MsgBox';
 import { ACTIVE_LIST_KEY, LIST_INDEX_KEY, SOURCE_LISTS, SOURCE_TYPES,
   VISUALISER_KEY }
-  from '../global'
-import { FetchTracks } from '../fetch';
-import { SourceType, EmptyTrack, Track, ActiveTuple } from '../types';
-import { Log } from '../util';
+  from '../ts/global'
+import { FetchTracks } from '../ts/fetch';
+import { SourceType, EmptyTrack, Track, ActiveTuple } from '../ts/types';
+import { Log } from '../ts/util';
 
 const App = () => {
   // Restore values from a previous session if possible

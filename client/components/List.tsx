@@ -1,11 +1,11 @@
 import styles from '../scss/List.module.scss';
 import { batch, createSignal, Index, Show, For } from 'solid-js';
-import { SHORTCUTS } from '../config'
+import { SHORTCUTS } from '../ts/config'
 import {
   ACTIVE_LIST_KEY, LIST_INDEX_KEY, SOURCE_LISTS, SOURCE_TITLE_CLASSES
-} from '../global'
-import { SourceType, Track } from '../types';
-import { Err } from '../util';
+} from '../ts/global'
+import { SourceType, Track } from '../ts/types';
+import { Err } from '../ts/util';
 
 const getYtLink = (item: HTMLLIElement): string => {
   const ytParam = item.getAttribute('data-single') == "true" ? "v" : "list"

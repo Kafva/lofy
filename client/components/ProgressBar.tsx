@@ -1,7 +1,7 @@
 import styles from '../scss/ProgressBar.module.scss';
 import { onMount } from 'solid-js';
-import { Track } from '../types';
-import { GetHTMLElement } from '../util';
+import { Track } from '../ts/types';
+import { GetHTMLElement } from '../ts/util';
 
 /** Seek in the <audio> based on the X coordinate of a mouse event */
 const seekToPercent = (audio:HTMLAudioElement, e:MouseEvent) => {

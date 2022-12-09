@@ -1,6 +1,6 @@
 import Config, { SHORTCUTS } from './config';
-import appStyles from './scss/App.module.scss'
-import coverStyles from './scss/Cover.module.scss'
+import appStyles from '../scss/App.module.scss'
+import coverStyles from '../scss/Cover.module.scss'
 
 const queryClick = (selector: string) => {
   const span = document.querySelector(selector) as HTMLSpanElement

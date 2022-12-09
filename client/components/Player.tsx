@@ -1,10 +1,10 @@
 import styles from '../scss/Player.module.scss';
 import { createEffect, createSignal, onMount, untrack } from 'solid-js';
 import { Portal } from 'solid-js/web';
-import Config from '../config';
-import { TRACK_HISTORY, VISUALISER_KEY, WORKER } from '../global';
-import { Track, LocalTrack, YtTrack, SourceType } from '../types';
-import { Log, FmtTime, Err, GetHTMLElement } from '../util';
+import Config from '../ts/config';
+import { TRACK_HISTORY, VISUALISER_KEY, WORKER } from '../ts/global';
+import { Track, LocalTrack, YtTrack, SourceType } from '../ts/types';
+import { Log, FmtTime, Err, GetHTMLElement } from '../ts/util';
 import { Msg } from './MsgBox';
 import Cover from './Cover';
 import ProgressBar from './ProgressBar';

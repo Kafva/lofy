@@ -1,8 +1,8 @@
 import styles from '../scss/Tracks.module.scss';
 import { Index, Show } from 'solid-js';
-import { TRACK_HISTORY } from '../global';
-import { Track, SourceType, YtTrack } from '../types';
-import { FmtTime, Log } from '../util';
+import { TRACK_HISTORY } from '../ts/global';
+import { Track, SourceType, YtTrack } from '../ts/types';
+import { FmtTime, Log } from '../ts/util';
 
 const TrackColumn = (props: {
   text: string,

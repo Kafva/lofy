@@ -1,6 +1,6 @@
 import { Portal } from "solid-js/web";
 import styles from '../scss/MsgBox.module.scss';
-import { GetHTMLElement } from "../util";
+import { GetHTMLElement } from "../ts/util";
 
 const Msg = (text: string, timeout: number) => {
   const msg = GetHTMLElement<HTMLDivElement>(`div.${styles.msgbox}`);

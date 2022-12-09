@@ -1,6 +1,6 @@
 import styles from '../scss/Pulse.module.scss';
 import { onMount } from 'solid-js';
-import { GetHTMLElement } from '../util';
+import { GetHTMLElement } from '../ts/util';
 
 const SAMPLES_PER_BAR = 2**5
 const BAR_WIDTH  = 0.9*SAMPLES_PER_BAR;

@@ -1,6 +1,6 @@
 import { onMount, Setter } from 'solid-js';
-import Config from '../config';
-import { GetHTMLElement } from '../util';
+import Config from '../ts/config';
+import { GetHTMLElement } from '../ts/util';
 
 const changeVolume = (
   newVolume: number,

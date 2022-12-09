@@ -1,9 +1,9 @@
 import styles from '../scss/Cover.module.scss';
 import { createEffect, onMount, Show } from 'solid-js';
 import { Portal } from 'solid-js/web';
-import { Track } from '../types';
-import { VISUALISER_KEY } from '../global';
-import { Log, GetHTMLElement } from '../util';
+import { Track } from '../ts/types';
+import { VISUALISER_KEY } from '../ts/global';
+import { Log, GetHTMLElement } from '../ts/util';
 import Pulse from './Pulse';
 
 /**
