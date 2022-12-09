@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Web player for local files and YouTube playlists/videos",
   "scripts": {
-    "build": "vite build"
+    "lint": "eslint client/{components,ts}/*.{ts,tsx}"
   },
   "license": "MIT",
   "devDependencies": {

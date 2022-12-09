@@ -30,7 +30,7 @@ const List = (props: {
   setPlayingIdx: (arg0: number) => any
 }) => {
   // Determines if the currently selected list should be collapsed or open
-  const [show,setShow] = createSignal(true)
+  const [show,setShow] = createSignal(false)
 
   // Note that `item` needs to be called when using <Index> and `i` needs
   // to be called for <For> components.
@@ -44,47 +44,34 @@ const List = (props: {
       }}
       onClick={() => {
         // Only react to clicks if the list has at least one item
-        if (SOURCE_LISTS[props.listType].length != 0){
-          // Collapse or open the list if the currently selected list
-          // is pressed anew
-          if (props.listType == props.activeSource){
-            setShow(!show());
-          } else {
-            // To avoid intermediary states we batch the updates to:
-            //  The selected medialist,
-            //  The selected playlist/album
-            // batch() will combine several signal changes into one re-render.
-            batch( () => {
-              props.setActiveSource(props.listType)
-              props.setListIndex(0)
-              // Setting this to zero without waiting for `FetchTracks`
-              // can cause the 0th track of the previous list to start playing
-              // The index is explicitly set to zero by the <App> once
-              // `FetchTracks` completes
-              props.setPlayingIdx(-1)
-              props.setCurrentList([] as Track[])
-              setShow(true)
-            })
-            localStorage.setItem(ACTIVE_LIST_KEY, props.activeSource.toFixed(0))
-            localStorage.setItem(LIST_INDEX_KEY,  props.listIndex.toFixed(0))
-          }
+        if (SOURCE_LISTS[props.listType].length != 0) {
+          // Open the list if it is closed and close it if it is open
+          setShow(!show());
         }
       }}/>
-    <Show when={props.activeSource == props.listType && show()}>
+    <Show when={show()}>
       <ul>
         <Index each={SOURCE_LISTS[props.listType]}>{ (item,i) =>
           <li role="menuitem"
             onClick={ () => {
+              // To avoid intermediary states we batch the updates to:
+              //  The selected medialist,
+              //  The selected playlist/album
+              // batch() will combine several signal changes into one re-render.
               batch( () => {
+                props.setActiveSource(props.listType)
                 props.setListIndex(i)
                 props.setPlayingIdx(-1)
                 props.setCurrentList([] as Track[])
               })
+              localStorage.setItem(ACTIVE_LIST_KEY, props.activeSource.toFixed(0))
               localStorage.setItem(LIST_INDEX_KEY, i.toString())
             }}
             data-id={item().getAttribute('data-id')}>
             <span title={item().innerHTML}
-              classList={{selected:  props.listIndex == i}}>
+              classList={{selected:  
+                (props.listIndex == i && props.listType == props.activeSource)}}
+            >
               {item().innerHTML}
             </span>
             <Show when={props.listType == SourceType.YouTube}>

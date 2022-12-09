@@ -87,7 +87,7 @@ const App = () => {
     <MsgBox/>
     <div class={styles.sidebar}>
       <Index each={SOURCE_TYPES}>{(listType) =>
-        // We can pass the setter function to a child as in `props`
+        // We can pass the setter function to a child in `props`
         <List
           listType={listType()}
 

@@ -11,8 +11,7 @@ const queryClick = (selector: string) => {
   }
 }
 
-/** Click elements under `#shortcuts` based on the configured `SHORTCUTS` object
-*/
+/** Click elements under `#shortcuts` based on the configured `SHORTCUTS` object */
 const handleShortcut = (e:KeyboardEvent) => {
   for (let i=0; i < SHORTCUTS.length; i++){
     if (e.key == SHORTCUTS[i].key){
