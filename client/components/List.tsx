@@ -63,9 +63,6 @@ const List = (props: {
                 props.setListIndex(i)
                 props.setPlayingIdx(-1)
                 props.setCurrentList([] as Track[])
-                // The active source could be hidden if the click was
-                // triggered by a shortcut
-                setShow(true)
               })
               localStorage.setItem(ACTIVE_LIST_KEY, props.activeSource.toFixed(0))
               localStorage.setItem(LIST_INDEX_KEY, i.toString())
@@ -81,7 +78,7 @@ const List = (props: {
               <a
                 class="nf nf-mdi-link"
                 target="_blank"
-                href={ getYtLink(item()) }
+                href={getYtLink(item())}
               />
             </Show>
           </li>
@@ -103,8 +100,8 @@ const List = (props: {
               props.setListIndex(shortcut.listIndex)
               props.setPlayingIdx(-1)
               props.setCurrentList([] as Track[])
-              setShow(true)
             })
+            setShow(true)
             localStorage.setItem(ACTIVE_LIST_KEY, shortcut.activeSource.toFixed())
             localStorage.setItem(LIST_INDEX_KEY,  shortcut.listIndex.toFixed())
           } else {

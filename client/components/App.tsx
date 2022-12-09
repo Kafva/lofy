@@ -54,7 +54,7 @@ const App = () => {
   const [isPlaying,setIsPlaying] = createSignal(true)
 
   // Derived signals for the current track and track count
-  const currentTrack = ():Track => {
+  const currentTrack = (): Track => {
     const curr = currentList();
     if (curr !== undefined && curr[playingIdx()] !== undefined) {
       return curr[playingIdx()]
