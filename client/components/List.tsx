@@ -63,6 +63,9 @@ const List = (props: {
                 props.setListIndex(i)
                 props.setPlayingIdx(-1)
                 props.setCurrentList([] as Track[])
+                // The active source could be hidden if the click was
+                // triggered by a shortcut
+                setShow(true)
               })
               localStorage.setItem(ACTIVE_LIST_KEY, props.activeSource.toFixed(0))
               localStorage.setItem(LIST_INDEX_KEY, i.toString())

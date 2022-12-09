@@ -6,20 +6,20 @@ The server has two core dependencies which must be installed:
 
 The client uses [solidjs](https://www.solidjs.com/).
 
-![](/examples/visuals.gif)
+![](/misc/visuals.gif)
 
 ## Setup
 Build the frontend
 ```bash
 npm i -g vite pnpm
-pnpm install && vite build
+pnpm install && ./scripts/genfont.sh && vite build
 ```
 The output of the build process is placed under `./dist`.
 
 ### Configuration
 The server is built and ran with
 ```bash
-go build && ./lofy -c examples/lofy.json
+go build && ./lofy -c misc/lofy.example.json
 ```
 The configuration file format is described in [server/config.go](
 /server/config.go)
@@ -39,7 +39,7 @@ are taken from the `?v` parameter of a YouTube URL and playlist
 IDs are taken from the `?list` parameter.
 
 Configuration options for the client, e.g. custom shortcuts, are specified
-directly in the source code of [client/config.ts](/client/config.ts).
+directly in the source code of [client/ts/config.ts](/client/ts/config.ts).
 Refer to this file for the default keybindings.
 
 ## Development
@@ -51,7 +51,7 @@ go test -v --run get_albums ./server
 ```
 For automatic rebuilds of the server and client during development use:
 ```bash
-./live.sh $config
+./scripts/live.sh $config
 ```
 
 ## Using the audio visualiser with YouTube
@@ -61,7 +61,8 @@ This can be accomplished using [mitmproxy](https://github.com/mitmproxy/mitmprox
 
 ```bash
 pip3.10 install --user mitmproxy
-mitmdump --ssl-insecure --listen-host 127.0.0.1 --listen-port 20112 --scripts cors.py "~d googlevideo.com"
+mitmdump --ssl-insecure --listen-host 127.0.0.1 --listen-port 20112 \
+  --scripts scripts/cors.py "~d googlevideo.com"
 ```
 
 This approach has issues for videos longer than ~ 10 minutes.

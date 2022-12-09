@@ -1,9 +1,7 @@
 @use "vars";
 
-@font-face {
-    font-family: "JetBrains";
-    src: url('JetBrains\ Mono\ Regular\ Nerd\ Font\ Complete.ttf'); 
-}
+// Definition for JetBrains-NF
+@import "../nerd-fonts.min.css";
 
 * {
   // Hide scrollbar
@@ -14,7 +12,7 @@
 }
 
 body {
-  font-family: "JetBrains", "Arial";
+  font-family: "JetBrains-NF", "Arial";
   background-color: vars.$body_bg;
   color: vars.$fg_white;
   margin: 0; padding: 0; border: 0; outline: 0;

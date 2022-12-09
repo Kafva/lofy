@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "description": "Web player for local files and YouTube playlists/videos",
   "scripts": {
-    "lint": "eslint client/{components,ts}/*.{ts,tsx}"
+    "lint": "eslint client/{components/*.tsx,ts/*.ts,index.tsx}"
   },
-  "license": "MIT",
+  "license": "The Unlicense",
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.30.7",
     "@typescript-eslint/parser": "^5.30.7",
