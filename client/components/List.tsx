@@ -67,7 +67,7 @@ const List = (props: {
             }}
             data-id={item().getAttribute('data-id')}>
             <span title={item().innerHTML}
-              classList={{selected:  
+              classList={{selected:
                 (props.listIndex == i && props.listType == props.activeSource)}}
             >
               {item().innerHTML}

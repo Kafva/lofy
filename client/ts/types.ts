@@ -35,13 +35,13 @@ interface Track {
 
 interface LocalTrack extends Track {
   AlbumFS: string
-	AlbumId: number
+  AlbumId: number
 }
 
 interface YtTrack extends Track {
   TrackId: string
-	AudioUrl: string
-	ArtworkUrl: string
+  AudioUrl: string
+  ArtworkUrl: string
 }
 
 const EmptyTrack = (): Track =>  {

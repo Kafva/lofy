@@ -85,7 +85,7 @@ This approach has issues for videos longer than ~ 10 minutes.
 * Browser proxies can prevent YouTube resources from being loaded. To resolve
   this, set `*.googlevideo.com` as an exception that bypasses the proxy.
 
-## Future work 
+## Future work
 YouTube-dl has support for many other sources and it should not be too
 difficult to integrate e.g. Soundcloud.
 

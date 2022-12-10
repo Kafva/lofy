@@ -1,10 +1,10 @@
 package server
 
 import (
-	"io/fs"
-	"log"
-	"os"
-	"strings"
+  "io/fs"
+  "log"
+  "os"
+  "strings"
 )
 
 func TranslateTilde(path string) string {
@@ -19,8 +19,8 @@ func Die(strs ... interface{}) {
 }
 
 func Info(strs ... interface{}) {
-	logPrefix("32", "INFO")
-	log.Println(strs ...)
+  logPrefix("32", "INFO")
+  log.Println(strs ...)
 }
 
 func Debug(strs ... interface{}) {
@@ -60,10 +60,10 @@ func FsFilter(entries []fs.DirEntry, isDir bool) []fs.DirEntry {
 }
 
 func Contains(arr []string, target string) int {
-	for i,a := range arr {
-		if a==target {
-			return i
-		}
-	}
-	return -1
+  for i,a := range arr {
+    if a==target {
+      return i
+    }
+  }
+  return -1
 }

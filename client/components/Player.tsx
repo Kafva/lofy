@@ -80,7 +80,7 @@ const Player = (props: {
     localStorage.getItem(LocalStorageKeys.visualiser) != null
   )
   const savedVolume = parseFloat(
-    localStorage.getItem(LocalStorageKeys.volume) || 
+    localStorage.getItem(LocalStorageKeys.volume) ||
     Config.defaultVolume.toFixed(3)
   )
 

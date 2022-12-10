@@ -19,12 +19,12 @@ const ProgressBar = (props: {
   })
 
   return (<>
-    <div class={styles.background} 
+    <div class={styles.background}
       onClick={(e:MouseEvent) => seekToPercent(audio,e)}/>
-    <div class={styles.fill} 
+    <div class={styles.fill}
       onClick={(e:MouseEvent) => seekToPercent(audio,e)}
       style={{
-        "width": 
+        "width":
                 `${Math.floor(105*(props.currentTime/props.track.Duration))}%`
       }}
     />
