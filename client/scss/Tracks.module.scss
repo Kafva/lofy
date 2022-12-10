@@ -49,7 +49,7 @@ table {
     &:nth-child(1) { // Title
       @include vars.limit-width(14%, 18em);
       border-bottom: vars.$default_bottom_border;
-      &:hover { color: vars.$accent; }
+      &:hover { color: vars.$lilac; }
     }
     &:nth-child(2) { // Album
       @include vars.limit-width(14%, 18em);
@@ -71,7 +71,7 @@ table {
     }
     &:nth-child(5) { // Youtube link
       @include vars.limit-width(1.5em);
-      a:hover { color: vars.$accent; }
+      a:hover { color: vars.$lilac; }
       @include vars.mobile { display: none };
     }
   }

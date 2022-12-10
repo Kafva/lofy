@@ -12,7 +12,7 @@ $font_size: 14px;
 $mobile_font_size: 10px;
 
 //== Color scheme ==
-$accent:     #6e85d3;
+$lilac:     #6e85d3;
 
 $body_bg:    #23283d;
 $nav_bg:     #1e2233;
@@ -22,7 +22,7 @@ $fg_white:   #f5e4f3;
 $fg_grey:    #8e9297;
 
 //== Selection highlighting ==//
-$hl_bottom_border:      1px solid $accent;
+$hl_bottom_border:      1px solid $lilac;
 
 // Setting the border to 'none' causes flickering when
 // the visibility of the `hl_border` changes
@@ -33,7 +33,8 @@ $row_height: 20px;
 
 //== Progress bar ==//
 $progress_bar_height: 6px;
-$progress_bar_gradient: linear-gradient(90deg, #de95c3 93%, transparent 100%);
+$pink: #de95c3;
+$progress_bar_gradient: linear-gradient(90deg, $pink 93%, transparent 100%);
 $progress_bar_default: #6a7294;
 
 //== Z-indices ==//

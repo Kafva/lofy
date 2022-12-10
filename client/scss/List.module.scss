@@ -7,8 +7,8 @@ h3 {
   font-size: 1.17em;
   padding: $item_padding;
   padding-top: 5px;
-  border-bottom: 1px solid rgba(vars.$accent, 0.5);
-  &:hover { color: vars.$accent; }
+  border-bottom: 1px solid rgba(vars.$lilac, 0.5);
+  &:hover { color: vars.$lilac; }
   &.disabled {
     cursor: not-allowed;
     color: vars.$fg_grey
@@ -42,7 +42,7 @@ ul {
       border-bottom: vars.$default_bottom_border;
       &:hover {
         border-bottom: vars.$hl_bottom_border;
-        color: vars.$accent;
+        color: vars.$lilac;
       }
     }
     a { // Yt link
@@ -50,7 +50,7 @@ ul {
       grid-column: 2;
       margin-left: 0.5em;
       padding-left: 0.5em;
-      &:hover { color: vars.$accent; }
+      &:hover { color: vars.$lilac; }
       @include vars.mobile { display: none }
     }
   }

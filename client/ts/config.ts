@@ -1,15 +1,5 @@
 import { SourceType, SourceShortcut } from './types';
 
-/** Toggles `console.log()` output */
-const DEBUG = true
-
-/** Shortcuts for opening/closing the source lists */
-const SOURCE_SHORTCUTS: SourceShortcut[] = [
-  { key: "z", sourceType: SourceType.LocalPlaylist },
-  { key: "Z", sourceType: SourceType.LocalAlbum    },
-  { key: "m", sourceType: SourceType.YouTube       }
-]
-
 class Config {
   static readonly shuffleDefaultOn = true;
   static readonly volumeStep = 0.05;
@@ -63,6 +53,16 @@ class Config {
   static readonly coverKey = 'F';
   static readonly exitKey = 'q';
 }
+
+/** Toggles `console.log()` output */
+const DEBUG = true
+
+/** Shortcuts for opening/closing the source lists */
+const SOURCE_SHORTCUTS: SourceShortcut[] = [
+  { key: "z", sourceType: SourceType.LocalPlaylist },
+  { key: "Z", sourceType: SourceType.LocalAlbum    },
+  { key: "m", sourceType: SourceType.YouTube       }
+]
 
 export { DEBUG, SOURCE_SHORTCUTS }
 export default Config;

@@ -2,7 +2,7 @@
 
 :export { // Values accessible from JS imports
   white:   vars.$fg_white;
-  accent:  vars.$accent;
+  lilac:  vars.$lilac;
 }
 
 nav {
@@ -33,8 +33,8 @@ nav {
        width: fit-content;
        margin: 5px;
      }
-     // Extra spacing for the first three buttons
-     span[role="button"]:nth-child(-n+3) {
+     // Extra spacing for the first four buttons
+     span[role="button"]:nth-child(-n+4) {
        padding: 0 5px 0 5px;
      }
      span.seperator {

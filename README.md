@@ -1,11 +1,11 @@
 # <img width=30px height=30px src="https://i.imgur.com/4OCZymB.png">&nbsp;&nbsp; lofy
-This project provides a basic web player for local files and YouTube
-playlists/videos. The server has two core dependencies which must be installed:
+A web player for local files and YouTube playlists/videos. 
+The server has two core dependencies which must be installed:
 * [yt-dlp](https://github.com/yt-dlp/yt-dlp): For fetching metadata from
   YouTube and deriving audio stream URLs.
 * [ffmpeg](https://ffmpeg.org/): For parsing metadata of local files.
 
-The client uses [solidjs](https://www.solidjs.com/).
+The client is built with [solidjs](https://www.solidjs.com/).
 
 ![](/misc/visuals.gif)
 

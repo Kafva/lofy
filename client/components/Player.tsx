@@ -230,7 +230,7 @@ const Player = (props: {
           <span role="button"
             class="nf nf-oct-graph"
             style={{color: visualiser() ?
-              styles.accent :
+              styles.lilac :
               styles.white
             }}
             onClick={ () => {
@@ -242,7 +242,7 @@ const Player = (props: {
               setVisualiser(!visualiser())
               Msg("Refresh to " +
                   (visualiser() ? "activate" : "deactivate") +
-                  " visualiser", 6000
+                  " the visualiser.", "nf-mdi-refresh", 6000
               );
             }}
           />
@@ -251,7 +251,7 @@ const Player = (props: {
               "nf nf-mdi-shuffle_disabled"
             }
             style={{color: shuffle() ?
-              styles.accent :
+              styles.lilac :
               styles.white
             }}
             onClick={ () => {
@@ -263,7 +263,7 @@ const Player = (props: {
               "nf nf-mdi-repeat"
             }
             style={{color: singleRepeat() ?
-              styles.accent :
+              styles.lilac :
               styles.white
             }}
             onClick={() => {

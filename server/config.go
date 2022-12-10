@@ -90,7 +90,7 @@ const MAX_PLAYLIST_CNT = 255;
 const MAX_TRACKS = 1000;
 
 // Pagination threshold for track metadata
-const ITEMS_PER_REQ = 30;
+const ITEMS_PER_REQ = 40;
 
 // Restrict origins that content can be loaded from using
 // Content-Security-Policy headers.
