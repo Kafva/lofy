@@ -48,8 +48,9 @@ class Config {
   static readonly seekBackKey = 'H';
   static readonly seekForwardKey = 'L';
   static readonly shuffleKey = 'S';
-  static readonly sidebarScrollDown = 'J';
-  static readonly sidebarScrollUp = 'K';
+  static readonly sidebarScrollDownKey = 'J';
+  static readonly sidebarScrollUpKey = 'K';
+  static readonly singleRepeatKey = 'R';
   // ... with <Control>
   static readonly toggleSidebarKey = 'n'
 

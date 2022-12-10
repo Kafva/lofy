@@ -62,11 +62,14 @@ const HandleKeyboardEvent = (e:KeyboardEvent) => {
     case Config.coverKey:
       queryClick("span.nf-mdi-creation")
       break;
-    case Config.sidebarScrollDown:
+    case Config.sidebarScrollDownKey:
       sideBarScroll(Config.sidebarScrollStepPercent)
       break;
-    case Config.sidebarScrollUp:
+    case Config.sidebarScrollUpKey:
       sideBarScroll(-1*Config.sidebarScrollStepPercent)
+      break;
+    case Config.singleRepeatKey:
+      queryClick("span.nf-mdi-repeat,span.nf-mdi-repeat_once")
       break;
     default:
       sourceShortcuts(e)

@@ -8,6 +8,7 @@
 
 .sidebar {
   z-index: vars.$sidebar_z;
+  scroll-behavior: smooth;
   position: fixed;
   overflow-y: scroll;
   left: 0;

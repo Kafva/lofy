@@ -89,6 +89,7 @@ const Player = (props: {
 
   const [shuffle,setShuffle] = createSignal(Config.shuffleDefaultOn)
   const [coverSource,setCoverSource] = createSignal("")
+  const [singleRepeat, setSingleRepeat] = createSignal(false)
 
   const [audioSrc, setAudioSrc] = createSignal("")
 
@@ -199,10 +200,15 @@ const Player = (props: {
         document.title = `lofy — ${props.track.Title}`
       }}
       onEnded={ () => {
-        setNextTrack(props.trackCount,
-          props.setPlayingIdx, props.playingIdx, shuffle()
-        )
-        setCurrentTime(0)
+        if (singleRepeat() || props.trackCount == 1) {
+          setCurrentTime(0)
+          audio.play()
+        } else {
+          setNextTrack(props.trackCount,
+            props.setPlayingIdx, props.playingIdx, shuffle()
+          )
+          setCurrentTime(0)
+        }
       }}
     />
 
@@ -252,27 +258,45 @@ const Player = (props: {
               setShuffle(!shuffle())
             }}
           />
+          <span role="button"
+            class={singleRepeat() ? "nf nf-mdi-repeat_once" :
+              "nf nf-mdi-repeat"
+            }
+            style={{color: singleRepeat() ?
+              styles.accent :
+              styles.white
+            }}
+            onClick={() => {
+              setSingleRepeat(!singleRepeat())
+            }}
+          />
 
           <span class={styles.seperator}/>
 
           <span role="button"
             class="nf nf-mdi-skip_previous"
             onClick={ () => {
-              // Seek skipping for long tracks
-              if (props.track.Duration >= 60*Config.sameTrackSkipMin) {
-                const newTime =
-                  audio.currentTime - 60*Config.sameTrackSeekStepMin
-                if (newTime > 0){
-                  audio.currentTime = newTime
-                }
+              if (singleRepeat()) {
+                audio.currentTime = 0
+                props.setIsPlaying(true)
+                audio.play()
               } else {
-                const prevIndex = TRACK_HISTORY.pop();
-                Log("TRACK_HISTORY", TRACK_HISTORY, "(popped)", prevIndex)
+                // Seek skipping for long tracks
+                if (props.track.Duration >= 60*Config.sameTrackSkipMin) {
+                  const newTime =
+                    audio.currentTime - 60*Config.sameTrackSeekStepMin
+                  if (newTime > 0){
+                    audio.currentTime = newTime
+                  }
+                } else {
+                  const prevIndex = TRACK_HISTORY.pop();
+                  Log("TRACK_HISTORY", TRACK_HISTORY, "(popped)", prevIndex)
 
-                if (prevIndex != null) {
-                  props.setPlayingIdx(prevIndex)
-                  setCurrentTime(0)
-                  props.setIsPlaying(true)
+                  if (prevIndex != null) {
+                    props.setPlayingIdx(prevIndex)
+                    setCurrentTime(0)
+                    props.setIsPlaying(true)
+                  }
                 }
               }
             }}
@@ -291,20 +315,26 @@ const Player = (props: {
           <span role="button"
             class="nf nf-mdi-skip_next"
             onClick={ () => {
-              // For long tracks we skip ahead `Config.seekStepMin` minutes
-              // instead of moving to the next track
-              if (props.track.Duration >= 60*Config.sameTrackSkipMin) {
-                const newTime =
-                  audio.currentTime + 60*Config.sameTrackSeekStepMin
-                if (newTime <= audio.duration){
-                  audio.currentTime = newTime
-                }
-              } else {
-                setNextTrack(props.trackCount,
-                  props.setPlayingIdx, props.playingIdx, shuffle()
-                )
-                setCurrentTime(0)
+              if (singleRepeat()) {
+                audio.currentTime = 0
                 props.setIsPlaying(true)
+                audio.play()
+              } else {
+                // For long tracks we skip ahead `Config.seekStepMin` minutes
+                // instead of moving to the next track
+                if (props.track.Duration >= 60*Config.sameTrackSkipMin) {
+                  const newTime =
+                    audio.currentTime + 60*Config.sameTrackSeekStepMin
+                  if (newTime <= audio.duration){
+                    audio.currentTime = newTime
+                  }
+                } else {
+                  setNextTrack(props.trackCount,
+                    props.setPlayingIdx, props.playingIdx, shuffle()
+                  )
+                  setCurrentTime(0)
+                  props.setIsPlaying(true)
+                }
               }
             }}
           />
