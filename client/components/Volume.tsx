@@ -1,5 +1,6 @@
 import { onMount, Setter } from 'solid-js';
 import Config from '../ts/config';
+import { LocalStorageKeys } from '../ts/types';
 import { GetHTMLElement } from '../ts/util';
 
 const changeVolume = (
@@ -10,6 +11,7 @@ const changeVolume = (
   if (0.0 <= rounded && rounded <= 1.0) {
     setVolume(rounded)
     audio.volume = rounded
+    localStorage.setItem(LocalStorageKeys.volume, rounded.toFixed(3))
   }
 }
 

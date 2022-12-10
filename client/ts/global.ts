@@ -17,13 +17,6 @@ import {
 */
 const TRACK_HISTORY: number[] = []
 
-/** Creating this array programmatically is not necessary */
-const SOURCE_TYPES = Object.freeze([
-  SourceType.LocalPlaylist,
-  SourceType.LocalAlbum,
-  SourceType.YouTube
-])
-
 /**
 * Note: each of the <ol> lists that we want to render
 * already exist in the DOM when we recieve `index.html` from the server.
@@ -60,14 +53,9 @@ const SOURCE_TITLE_CLASSES = Object.freeze({
   [SourceType.YouTube]:      "nf nf-mdi-youtube_play"
 })
 
-// Names of keys in localStorage
-const ACTIVE_LIST_KEY = "activeSource"
-const LIST_INDEX_KEY  = "listIndex"
-const VISUALISER_KEY  = "visualiser"
 
 export {
-  SOURCE_LISTS, SOURCE_TYPES, PLAYLIST_ORDER, TRACK_HISTORY,
-  SOURCE_TITLE_CLASSES, ACTIVE_LIST_KEY, LIST_INDEX_KEY, VISUALISER_KEY,
-  WORKER
+  SOURCE_LISTS, PLAYLIST_ORDER, TRACK_HISTORY,
+  SOURCE_TITLE_CLASSES, WORKER
 }
 

@@ -2,8 +2,8 @@ import styles from '../scss/Player.module.scss';
 import { createEffect, createSignal, onMount, untrack } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import Config from '../ts/config';
-import { TRACK_HISTORY, VISUALISER_KEY, WORKER } from '../ts/global';
-import { Track, LocalTrack, YtTrack, SourceType } from '../ts/types';
+import { TRACK_HISTORY, WORKER } from '../ts/global';
+import { Track, LocalTrack, YtTrack, SourceType, LocalStorageKeys } from '../ts/types';
 import { Log, FmtTime, Err, GetHTMLElement } from '../ts/util';
 import { Msg } from './MsgBox';
 import Cover from './Cover';
@@ -77,9 +77,14 @@ const Player = (props: {
   let audio: HTMLAudioElement;
 
   const [visualiser,setVisualiser] = createSignal(
-    localStorage.getItem(VISUALISER_KEY) != null
+    localStorage.getItem(LocalStorageKeys.visualiser) != null
   )
-  const [volume,setVolume] = createSignal(Config.defaultVolume)
+  const savedVolume = parseFloat(
+    localStorage.getItem(LocalStorageKeys.volume) || 
+    Config.defaultVolume.toFixed(3)
+  )
+
+  const [volume,setVolume] = createSignal(savedVolume)
   const [currentTime,setCurrentTime] = createSignal(0)
 
   const [shuffle,setShuffle] = createSignal(Config.shuffleDefaultOn)
@@ -224,9 +229,9 @@ const Player = (props: {
             }}
             onClick={ () => {
               if (!visualiser()){
-                localStorage.setItem(VISUALISER_KEY, "true")
+                localStorage.setItem(LocalStorageKeys.visualiser, "true")
               } else {
-                localStorage.removeItem(VISUALISER_KEY)
+                localStorage.removeItem(LocalStorageKeys.visualiser)
               }
               setVisualiser(!visualiser())
               Msg("Refresh to " +

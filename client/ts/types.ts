@@ -2,6 +2,14 @@ enum SourceType {
   LocalPlaylist = 0, LocalAlbum = 1, YouTube = 2
 }
 
+// Names of keys in localStorage
+enum LocalStorageKeys {
+  activeSource = "activeSource",
+  listIndex  = "listIndex",
+  visualiser  = "visualiser",
+  volume = "volume"
+}
+
 interface Shortcut {
   key: string
   activeSource: SourceType
@@ -43,4 +51,4 @@ const EmptyTrack = (): Track =>  {
 export type {
   PlaylistEntry, Track, LocalTrack, YtTrack, ActiveTuple, Shortcut
 }
-export { EmptyTrack, SourceType }
+export { EmptyTrack, SourceType, LocalStorageKeys }

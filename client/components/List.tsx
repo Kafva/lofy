@@ -1,10 +1,8 @@
 import styles from '../scss/List.module.scss';
 import { batch, createSignal, Index, Show, For } from 'solid-js';
 import { SHORTCUTS } from '../ts/config'
-import {
-  ACTIVE_LIST_KEY, LIST_INDEX_KEY, SOURCE_LISTS, SOURCE_TITLE_CLASSES
-} from '../ts/global'
-import { SourceType, Track } from '../ts/types';
+import { SOURCE_LISTS, SOURCE_TITLE_CLASSES} from '../ts/global'
+import { LocalStorageKeys, SourceType, Track } from '../ts/types';
 import { Err } from '../ts/util';
 
 const getYtLink = (item: HTMLLIElement): string => {
@@ -64,8 +62,8 @@ const List = (props: {
                 props.setPlayingIdx(-1)
                 props.setCurrentList([] as Track[])
               })
-              localStorage.setItem(ACTIVE_LIST_KEY, props.activeSource.toFixed(0))
-              localStorage.setItem(LIST_INDEX_KEY, i.toString())
+              localStorage.setItem(LocalStorageKeys.activeSource, props.activeSource.toFixed(0))
+              localStorage.setItem(LocalStorageKeys.listIndex, i.toString())
             }}
             data-id={item().getAttribute('data-id')}>
             <span title={item().innerHTML}
@@ -102,8 +100,8 @@ const List = (props: {
               props.setCurrentList([] as Track[])
             })
             setShow(true)
-            localStorage.setItem(ACTIVE_LIST_KEY, shortcut.activeSource.toFixed())
-            localStorage.setItem(LIST_INDEX_KEY,  shortcut.listIndex.toFixed())
+            localStorage.setItem(LocalStorageKeys.activeSource, shortcut.activeSource.toFixed())
+            localStorage.setItem(LocalStorageKeys.listIndex,  shortcut.listIndex.toFixed())
           } else {
             Err("Shortcut target unavailable", shortcut)
           }

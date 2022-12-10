@@ -1,8 +1,7 @@
 import styles from '../scss/Cover.module.scss';
 import { createEffect, onMount, Show } from 'solid-js';
 import { Portal } from 'solid-js/web';
-import { Track } from '../ts/types';
-import { VISUALISER_KEY } from '../ts/global';
+import { LocalStorageKeys, Track } from '../ts/types';
 import { Log, GetHTMLElement } from '../ts/util';
 import Pulse from './Pulse';
 
@@ -72,7 +71,7 @@ const Cover = (props: {
     <Portal>
       <div hidden class={styles.cover}>
         <div class={styles.bg}/>
-        <Show when={localStorage.getItem(VISUALISER_KEY) != null}>
+        <Show when={localStorage.getItem(LocalStorageKeys.visualiser) != null}>
           <Pulse/>
         </Show>
         <div class={styles.fg}>

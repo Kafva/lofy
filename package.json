@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Web player for local files and YouTube playlists/videos",
   "scripts": {
-    "lint": "eslint client/{components/*.tsx,ts/*.ts,index.tsx}"
+    "lint": "./scripts/lint.sh"
   },
   "license": "The Unlicense",
   "devDependencies": {
