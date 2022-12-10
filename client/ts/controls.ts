@@ -1,4 +1,4 @@
-import Config, { SHORTCUTS } from './config';
+import Config, { SOURCE_SHORTCUTS } from './config';
 import appStyles from '../scss/App.module.scss'
 import coverStyles from '../scss/Cover.module.scss'
 
@@ -11,11 +11,18 @@ const queryClick = (selector: string) => {
   }
 }
 
-/** Click elements under `#shortcuts` based on the configured `SHORTCUTS` object */
-const handleShortcut = (e:KeyboardEvent) => {
-  for (let i=0; i < SHORTCUTS.length; i++){
-    if (e.key == SHORTCUTS[i].key){
-      queryClick(`#shortcuts > span:nth-child(${i+1})`)
+/** Toggle the visibility of a source list */
+const sourceShortcuts = (e:KeyboardEvent) => {
+  for (let i=0; i < SOURCE_SHORTCUTS.length; i++){
+    if (e.key == SOURCE_SHORTCUTS[i].key){
+      const sidebarIdx = SOURCE_SHORTCUTS[i].sourceType
+      const sidebarHeaders = document.querySelectorAll(`.${appStyles.sidebar} > h3`)
+
+      if (sidebarIdx < sidebarHeaders.length) {
+        (sidebarHeaders[sidebarIdx] as HTMLElement).click()
+      } else {
+        console.error(`Shortcut sourceType is out of range: ${sidebarIdx}`)
+      }
       break;
     }
   }
@@ -55,8 +62,14 @@ const HandleKeyboardEvent = (e:KeyboardEvent) => {
     case Config.coverKey:
       queryClick("span.nf-mdi-creation")
       break;
+    case Config.sidebarScrollDown:
+      sideBarScroll(Config.sidebarScrollStepPercent)
+      break;
+    case Config.sidebarScrollUp:
+      sideBarScroll(-1*Config.sidebarScrollStepPercent)
+      break;
     default:
-      handleShortcut(e)
+      sourceShortcuts(e)
     }
   } else if (e.ctrlKey) {
     switch (e.key) {
@@ -92,9 +105,15 @@ const HandleKeyboardEvent = (e:KeyboardEvent) => {
       queryClick("span.nf-oct-graph")
       break;
     default:
-      handleShortcut(e)
+      sourceShortcuts(e)
     }
   }
+}
+
+const sideBarScroll = (yPercent: number) => {
+  const sidebar = document.querySelector(`.${appStyles.sidebar}`) as HTMLElement
+  sidebar.focus()
+  sidebar.scrollBy(0,Math.round(yPercent*sidebar.clientHeight))
 }
 
 /** Hook up the media keys to interact with the UI through virtual click events

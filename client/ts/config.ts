@@ -1,13 +1,13 @@
-import { SourceType, Shortcut } from './types';
+import { SourceType, SourceShortcut } from './types';
 
 /** Toggles `console.log()` output */
 const DEBUG = true
 
-/** Custom shortcuts for switching to particular playlists/albums */
-const SHORTCUTS: Shortcut[] = [
-  { key: "z", activeSource: SourceType.LocalPlaylist, listIndex: 0 },
-  { key: "Z", activeSource: SourceType.LocalPlaylist, listIndex: 2 },
-  { key: "m", activeSource: SourceType.YouTube,       listIndex: 0 }
+/** Shortcuts for opening/closing the source lists */
+const SOURCE_SHORTCUTS: SourceShortcut[] = [
+  { key: "z", sourceType: SourceType.LocalPlaylist },
+  { key: "Z", sourceType: SourceType.LocalAlbum    },
+  { key: "m", sourceType: SourceType.YouTube       }
 ]
 
 class Config {
@@ -15,6 +15,7 @@ class Config {
   static readonly volumeStep = 0.05;
   static readonly defaultVolume = 0.8;
   static readonly seekStepSec = 5;
+  static readonly sidebarScrollStepPercent = 0.1;
 
   /**
   * If a video has a duration equal or above this threshold, the
@@ -47,6 +48,8 @@ class Config {
   static readonly seekBackKey = 'H';
   static readonly seekForwardKey = 'L';
   static readonly shuffleKey = 'S';
+  static readonly sidebarScrollDown = 'J';
+  static readonly sidebarScrollUp = 'K';
   // ... with <Control>
   static readonly toggleSidebarKey = 'n'
 
@@ -60,5 +63,5 @@ class Config {
   static readonly exitKey = 'q';
 }
 
-export { DEBUG, SHORTCUTS }
+export { DEBUG, SOURCE_SHORTCUTS }
 export default Config;

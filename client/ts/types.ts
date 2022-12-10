@@ -10,10 +10,9 @@ enum LocalStorageKeys {
   volume = "volume"
 }
 
-interface Shortcut {
+interface SourceShortcut {
   key: string
-  activeSource: SourceType
-  listIndex: number
+  sourceType: SourceType
 }
 
 interface ActiveTuple {
@@ -49,6 +48,6 @@ const EmptyTrack = (): Track =>  {
 }
 
 export type {
-  PlaylistEntry, Track, LocalTrack, YtTrack, ActiveTuple, Shortcut
+  PlaylistEntry, Track, LocalTrack, YtTrack, ActiveTuple, SourceShortcut
 }
 export { EmptyTrack, SourceType, LocalStorageKeys }

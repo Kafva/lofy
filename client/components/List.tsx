@@ -1,9 +1,7 @@
 import styles from '../scss/List.module.scss';
-import { batch, createSignal, Index, Show, For } from 'solid-js';
-import { SHORTCUTS } from '../ts/config'
+import { batch, createSignal, Index, Show } from 'solid-js';
 import { SOURCE_LISTS, SOURCE_TITLE_CLASSES} from '../ts/global'
 import { LocalStorageKeys, SourceType, Track } from '../ts/types';
-import { Err } from '../ts/util';
 
 const getYtLink = (item: HTMLLIElement): string => {
   const ytParam = item.getAttribute('data-single') == "true" ? "v" : "list"
@@ -43,7 +41,6 @@ const List = (props: {
       onClick={() => {
         // Only react to clicks if the list has at least one item
         if (SOURCE_LISTS[props.listType].length != 0) {
-          // Open the list if it is closed and close it if it is open
           setShow(!show());
         }
       }}/>
@@ -56,7 +53,7 @@ const List = (props: {
               //  The selected medialist,
               //  The selected playlist/album
               // batch() will combine several signal changes into one re-render.
-              batch( () => {
+              batch(() => {
                 props.setActiveSource(props.listType)
                 props.setListIndex(i)
                 props.setPlayingIdx(-1)
@@ -84,32 +81,6 @@ const List = (props: {
         </Index>
       </ul>
     </Show>
-
-    <div hidden id="shortcuts">
-      <For each={SHORTCUTS}>{(shortcut) =>
-        <span onClick={ () => {
-          // Switch to the playlist indicated by the shortcut
-          // provided that the target exists
-          // Each hidden span element is given a shortcut in `controls.ts`
-
-          if (SOURCE_LISTS[shortcut.activeSource].length > shortcut.listIndex) {
-            batch( () => {
-              props.setActiveSource(shortcut.activeSource)
-              props.setListIndex(shortcut.listIndex)
-              props.setPlayingIdx(-1)
-              props.setCurrentList([] as Track[])
-            })
-            setShow(true)
-            localStorage.setItem(LocalStorageKeys.activeSource, shortcut.activeSource.toFixed())
-            localStorage.setItem(LocalStorageKeys.listIndex,  shortcut.listIndex.toFixed())
-          } else {
-            Err("Shortcut target unavailable", shortcut)
-          }
-        }}/>
-      }
-      </For>
-    </div>
-
   </>);
 };
 
