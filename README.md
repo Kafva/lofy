@@ -5,7 +5,7 @@ The server has two core dependencies which must be installed:
   YouTube and deriving audio stream URLs.
 * [ffmpeg](https://ffmpeg.org/): For parsing metadata of local files.
 
-The client is built with [solidjs](https://www.solidjs.com/).
+The client uses [solidjs](https://www.solidjs.com/).
 
 ![](/misc/visuals.gif)
 

@@ -115,8 +115,10 @@ const HandleKeyboardEvent = (e:KeyboardEvent) => {
 
 const sideBarScroll = (yPercent: number) => {
   const sidebar = document.querySelector(`.${appStyles.sidebar}`) as HTMLElement
-  sidebar.focus()
   sidebar.scrollBy(0,Math.round(yPercent*sidebar.clientHeight))
+  // Do not keep focus on the bar, regular j/k in Vimium will start
+  // interacting with this otherwisea.
+  sidebar.blur()
 }
 
 /** Hook up the media keys to interact with the UI through virtual click events
