@@ -1,5 +1,5 @@
 # <img width=30px height=30px src="https://i.imgur.com/4OCZymB.png">&nbsp;&nbsp; lofy
-A web player for local files and YouTube playlists/videos. 
+A web player for local files and YouTube playlists/videos.
 The server has two core dependencies which must be installed:
 * [yt-dlp](https://github.com/yt-dlp/yt-dlp): For fetching metadata from
   YouTube and deriving audio stream URLs.

@@ -1,0 +1,75 @@
+@use "vars";
+
+$width: 20%;
+$horizontal_margin: 10px;
+$loading_duration: 0.5s;
+$bar_width: 18px;
+
+@keyframes loading-bars1 {
+  0% {
+    height: 30%;
+  }
+  50% {
+    height: 50%;
+  }
+  100% {
+    height: 90%;
+  }
+}
+@keyframes loading-bars2 {
+  0% {
+    height: 10%;
+  }
+  50% {
+    height: 60%;
+  }
+  100% {
+    height: 80%;
+  }
+}
+@keyframes loading-bars3 {
+  0% {
+    height: 90%;
+  }
+  50% {
+    height: 70%;
+  }
+  100% {
+    height: 30%;
+  }
+}
+
+div.loading {
+  text-align: center;
+  position: fixed;
+  left: calc(50% - ($width/2));
+  top: 15%;
+
+  display: grid;
+  grid-template-columns: repeat(5, $bar_width);
+  column-gap: 15px;
+  align-items: center;
+  justify-content: center;
+
+  height: 70px;
+  width: $width;
+
+  span {
+    height: 100%;
+    width: $bar_width;
+
+    background-color: vars.$fg_white;
+    opacity: 1.0;
+
+    &:nth-child(1),&:nth-child(5) {
+      animation: loading-bars1 $loading_duration alternate infinite;
+    }
+    &:nth-child(2),&:nth-child(4) {
+      animation: loading-bars2 $loading_duration alternate infinite;
+    }
+    &:nth-child(3) {
+      animation: loading-bars3 $loading_duration alternate infinite;
+    }
+  }
+
+}

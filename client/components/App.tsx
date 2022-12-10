@@ -1,9 +1,10 @@
 import styles from '../scss/App.module.scss';
-import { createSignal, Index, createResource, createEffect, Show }
+import { createSignal, Index, createResource, createEffect, Show, Suspense }
   from 'solid-js';
 import List from './List';
 import Tracks from './Tracks';
 import Player from './Player';
+import Loading from './Loading';
 import { MsgBox } from './MsgBox';
 import { SOURCE_LISTS, } from '../ts/global'
 import { FetchTracks } from '../ts/fetch';
@@ -106,14 +107,16 @@ const App = () => {
     <Show when={SOURCE_LISTS[activeSource()].length > 0}
       fallback={<p class={styles.unavail}>No data available for current source</p>}
     >
-      <Tracks
-        activeSource={activeSource()}
-        currentList={currentList() || [] as Track[]}
+      <Suspense fallback={<Loading/>}>
+        <Tracks
+          activeSource={activeSource()}
+          currentList={currentList() || [] as Track[]}
 
-        playingIdx={playingIdx()}
-        setPlayingIdx={(s:number)=>setPlayingIdx(s)}
-        isPlaying={isPlaying()}
-      />
+          playingIdx={playingIdx()}
+          setPlayingIdx={(s:number)=>setPlayingIdx(s)}
+          isPlaying={isPlaying()}
+        />
+      </Suspense>
 
       <Player
         track={currentTrack()}
