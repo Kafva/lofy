@@ -1,78 +1,86 @@
 import styles from '../scss/Tracks.module.scss';
-import { Index, Show } from 'solid-js';
+import { For, Show } from 'solid-js';
 import { TRACK_HISTORY } from '../ts/global';
-import { Track, SourceType, YtTrack } from '../ts/types';
+import { Track } from '../ts/types';
+import type { YtTrack } from '../ts/types';
 import { FmtTime, Log } from '../ts/util';
 
-const TrackColumn = (props: {
-  text: string,
-  trackIdx: number,
-  playingIdx: number
-}) => {
-  return (
-    <td title={props.text}
-      classList={{selected: props.trackIdx == props.playingIdx }}>
-      {props.text}
-    </td>
-  )
-}
-
-const TrackItem = (props: {
-  track: Track,
-  trackIdx: number,
-  playingIdx: number,
-  setPlayingIdx: (arg0: number) => any,
-  isPlaying: boolean
-}) => {
-  return (
-    <tr>
-      <td role="menuitem"
-        title={props.track.Title}
-        onClick={ () => {
-          TRACK_HISTORY.push(props.playingIdx)
-          Log("TRACK_HISTORY", TRACK_HISTORY)
-
-          props.setPlayingIdx(props.trackIdx)
-        }}
-        classList={{selected:  props.trackIdx == props.playingIdx }}>
-        <span classList={{
-          [styles.amp]: props.trackIdx == props.playingIdx && props.isPlaying
-        }}/>
-        {props.track.Title}
-      </td>
-      <TrackColumn text={props.track.Album}
-        trackIdx={props.trackIdx} playingIdx={props.playingIdx}
-      />
-      <TrackColumn text={props.track.Artist}
-        trackIdx={props.trackIdx} playingIdx={props.playingIdx}
-      />
-      <TrackColumn text={FmtTime(props.track.Duration)}
-        trackIdx={props.trackIdx} playingIdx={props.playingIdx}
-      />
-      <td>
-        <Show when={"TrackId" in props.track}>
-          <a
-            data-id={(props.track as YtTrack).TrackId}
-            class="nf nf-mdi-link"
-            target="_blank"
-            href={
-              `https://youtube.com/watch?v=${(props.track as YtTrack).TrackId}`
-            }
-          />
-        </Show>
-      </td>
-    </tr>);
-};
-
-
 const Tracks = (props: {
-  activeSource: SourceType,
   currentList: Track[],
-
   playingIdx: number,
   setPlayingIdx: (arg0: number) => any,
   isPlaying: boolean
 }) => {
+  //<TrackItem track={item()}
+  //  trackIdx={i}
+  //  playingIdx={props.playingIdx}
+  //  setPlayingIdx={props.setPlayingIdx}
+  //  isPlaying={props.isPlaying}
+  ///>
+  
+  //<div>{item().Title} - {i}</div>
+
+  //  //onClick={ () => {
+  //  //  TRACK_HISTORY.push(props.playingIdx)
+  //  //  Log("TRACK_HISTORY", TRACK_HISTORY)
+  //
+  //  //  props.setPlayingIdx(props.trackIdx)
+  //  //}}
+  
+  //<Show when={"TrackId" in item()}>
+  //  <td>
+  //    <a
+  //      data-id={(item() as YtTrack).TrackId}
+  //      class="nf nf-mdi-link"
+  //      target="_blank"
+  //      href={
+  //        `https://youtube.com/watch?v=${(item() as YtTrack).TrackId}`
+  //      }
+  //    />
+  //  </td>
+  //</Show>
+
+  //<td classList={{[styles.hidden]: !props.isYt}}>
+  //  <a
+  //    data-id={(item() as YtTrack).TrackId}
+  //    class="nf nf-mdi-link"
+  //    target="_blank"
+  //    href={
+  //      `https://youtube.com/watch?v=${(item() as YtTrack).TrackId}`
+  //    }
+  //  />
+  //</td>
+
+  //  <div>{item().Title} - {i}</div>
+  
+  // Using THIS  without click listener or suspense works!!
+  //  <div>{item().Title} - {i}</div>
+  //
+  //    <tr>
+  //      <td role="menuitem"
+  //        title={item().Title}
+  //        classList={{selected:  i == props.playingIdx }}>
+  //        <span classList={{
+  //          [styles.amp]: i == props.playingIdx && props.isPlaying
+  //        }}/>
+  //        {item().Title}
+  //      </td>
+
+  //      <td title={item().Album}>{item().Album}</td>
+  //      <td title={item().Artist}>{item().Artist}</td>
+  //      <td>{FmtTime(item().Duration)}</td>
+  //    </tr>
+
+  // <For each={props.currentList}>{(item: Track) =>
+  //   //  <div>{item().Title} - {i}</div>
+  //   <tr>
+  //     <td role="menuitem" title={item.Title}>
+  //       {item.Title}
+  //     </td>
+  //   </tr>
+  // }
+  // </For>
+
   return (<>
     <table>
       <thead>
@@ -83,15 +91,41 @@ const Tracks = (props: {
         <th/>
       </thead>
       <tbody>
-        <Index each={props.currentList}>{(item,i) =>
-          <TrackItem track={item()}
-            trackIdx={i}
-            playingIdx={props.playingIdx}
-            setPlayingIdx={props.setPlayingIdx}
-            isPlaying={props.isPlaying}
-          />
+        <For each={props.currentList}>{(item: Track, i) =>
+          <tr>
+            <td role="menuitem"
+              title={item.Title}
+              onClick={ () => {
+                TRACK_HISTORY.push(props.playingIdx)
+                Log("TRACK_HISTORY", TRACK_HISTORY)
+            
+                props.setPlayingIdx(i())
+              }}
+              classList={{selected:  i() == props.playingIdx }}>
+              <span classList={{
+                [styles.amp]: i() == props.playingIdx && props.isPlaying
+              }}/>
+              {item.Title}
+            </td>
+
+            <td title={item.Album}>{item.Album}</td>
+            <td title={item.Artist}>{item.Artist}</td>
+            <td>{FmtTime(item.Duration)}</td>
+            <Show when={"TrackId" in item}>
+              <td>
+                <a
+                  data-id={(item as YtTrack).TrackId}
+                  class="nf nf-mdi-link"
+                  target="_blank"
+                  href={
+                    `https://youtube.com/watch?v=${(item as YtTrack).TrackId}`
+                  }
+                />
+              </td>
+            </Show>
+          </tr>
         }
-        </Index>
+        </For>
       </tbody>
     </table>
   </>);

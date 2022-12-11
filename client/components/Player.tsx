@@ -116,7 +116,7 @@ const Player = (props: {
         audioLoc = y.TrackId;
       }
 
-      if (audioLoc!="") {
+      if (audioLoc != "") {
         if (props.activeSource != SourceType.YouTube) {
           // Update the `audioSrc`
           Log(`Setting audio source: '${props.track.Title}' - '${audioLoc}'`)
@@ -211,7 +211,6 @@ const Player = (props: {
         }
       }}
     />
-
     <Portal>
       <nav>
         <div>

@@ -6,7 +6,7 @@ const SAMPLES_PER_BAR = 2**5
 const BAR_WIDTH  = 0.9*SAMPLES_PER_BAR;
 const FPS = 60;
 
-const makeEven = (a:number) => a % 2 == 0 ? a : Math.max(a - 1, 2);
+const makeEven = (a:number) => a % 2 == 0 ? a : Math.max(a - 1, 0);
 
 const Pulse = () => {
   let audio: HTMLAudioElement;
@@ -18,6 +18,8 @@ const Pulse = () => {
   let canvasCtx: CanvasRenderingContext2D;
   let frequencyCnt: number;
   let lastDrawMS: number;
+  let drawnFrames: number;
+  let nextSecond: number;
 
   const draw = () => {
     if (analyser) {
@@ -25,8 +27,10 @@ const Pulse = () => {
       // 5 FPS ~ 5/1000 frames per millisecond
       // To render at 5 FPS we need to draw 5 frames over 1000 ms
       //
-      // I.e. we need to re-draw every (1000/5) milliseconds
-      if (Date.now() >= lastDrawMS + (1000/FPS)) {
+      // I.e. we need to re-draw every 200th (1000/5) milliseconds
+      //
+      
+      if (performance.now() >= (lastDrawMS + (1000/FPS)) && drawnFrames < FPS) {
         // Note: the array will be zeroed out if the audio is muted.
         // The array will contain 1024 values [0-255], each index
         // represents the decibel value for a specific Hz value
@@ -35,14 +39,17 @@ const Pulse = () => {
         //
         // The <canvas> will visualise these values with bars of differing HEIGHT
 
+        // Clear the previously set width and height
+        canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+        canvasCtx.fillStyle = styles.white;
+
+        // TODO only set this initially and onresize
         // The 'width' and 'height' of a canvas
         // needs to be explicitly set for X/Y coordinates to behave as intended
-        canvas.height = makeEven(0.9*document.body.clientHeight);
         canvas.width  = makeEven(document.body.clientWidth);
+        canvas.height = makeEven(0.9*document.body.clientHeight);
 
         analyser.getByteFrequencyData(frequencyData)
-        canvasCtx.clearRect(0,0,canvas.width,canvas.height);
-        canvasCtx.fillStyle = styles.white;
 
         for (let i = SAMPLES_PER_BAR; i < frequencyData.length; i+=SAMPLES_PER_BAR) {
           // We could use the average across the relevant samples but the overhead
@@ -52,10 +59,14 @@ const Pulse = () => {
           canvasCtx.fillRect(i, 0.5*canvas.height, BAR_WIDTH, barHeight);
 
           // Mirror image
-          canvasCtx
-            .fillRect(canvas.width - i, 0.5*canvas.height, BAR_WIDTH, -1*barHeight);
+          canvasCtx.fillRect(canvas.width - i, 0.5*canvas.height, BAR_WIDTH, -1*barHeight);
         }
-        lastDrawMS = Date.now()
+        lastDrawMS = performance.now()
+        //drawnFrames++;
+      } 
+      else if (performance.now() >= nextSecond) {
+        lastDrawMS = performance.now()
+        drawnFrames = 0;
       }
     }
     requestAnimationFrame(draw)
@@ -95,7 +106,11 @@ const Pulse = () => {
     canvas = GetHTMLElement<HTMLCanvasElement>("canvas");
     canvasCtx = canvas.getContext("2d")!;
 
-    lastDrawMS = Date.now();
+    
+    lastDrawMS = performance.now();
+    nextSecond = performance.now() + 1000;
+    drawnFrames = 0;
+
     draw();
   })
 

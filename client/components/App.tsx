@@ -26,7 +26,9 @@ const App = () => {
   }
 
   // Iterable over source types (enum)
-  const sourceTypes = [ SourceType.LocalPlaylist, SourceType.LocalAlbum, SourceType.YouTube ]
+  const sourceTypes = [
+    SourceType.LocalPlaylist, SourceType.LocalAlbum, SourceType.YouTube
+  ]
 
   // Flag to determine the active media list
   const [activeSource,setActiveSource] = createSignal(prevActiveSource)
@@ -80,6 +82,9 @@ const App = () => {
   Log("Visualiser: " + (localStorage.getItem(LocalStorageKeys.visualiser) != null ?
     "active" : "inactive")
   )
+  //<Suspense fallback={<Loading/>}>
+  //</Suspense>
+
 
   // Unlike <For>, <Index> components will not be re-rendered
   // if the underlying data in an array changes
@@ -107,16 +112,12 @@ const App = () => {
     <Show when={SOURCE_LISTS[activeSource()].length > 0}
       fallback={<p class={styles.unavail}>No data available for current source</p>}
     >
-      <Suspense fallback={<Loading/>}>
-        <Tracks
-          activeSource={activeSource()}
-          currentList={currentList() || [] as Track[]}
-
-          playingIdx={playingIdx()}
-          setPlayingIdx={(s:number)=>setPlayingIdx(s)}
-          isPlaying={isPlaying()}
-        />
-      </Suspense>
+      <Tracks
+        currentList={currentList() || [] as Track[]}
+        playingIdx={playingIdx()}
+        setPlayingIdx={(s:number)=>setPlayingIdx(s)}
+        isPlaying={isPlaying()}
+      />
 
       <Player
         track={currentTrack()}
