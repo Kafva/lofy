@@ -6,7 +6,7 @@ import { GetHTMLElement } from '../ts/util';
 /** Seek in the <audio> based on the X coordinate of a mouse event */
 const seekToPercent = (audio:HTMLAudioElement, e:MouseEvent) => {
   if (e.pageX !== undefined) {
-    audio.currentTime = (e.pageX / document.body.clientWidth)*audio.duration
+    audio.currentTime = (e.pageX / document.documentElement.clientWidth)*audio.duration
   }
 }
 const ProgressBar = (props: {

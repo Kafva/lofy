@@ -5,6 +5,8 @@ import { LocalStorageKeys, Track } from '../ts/types';
 import { Log, GetHTMLElement } from '../ts/util';
 import Pulse from './Pulse';
 
+const makeEven = (a:number) => a % 2 == 0 ? a : Math.max(a - 1, 0);
+
 /**
 * The `navigator` API generally works even if the `sizes` and `type`
 * are set to default values.
@@ -30,6 +32,7 @@ const Cover = (props: {
 }) => {
   let img: HTMLImageElement;
   let bkg: HTMLDivElement;
+  const pulseIsActive = localStorage.getItem(LocalStorageKeys.visualiser) != null
 
   // `createEffect()` is triggered whenever a reactive component that is called
   // within the body changes, `coverSource` in this case.
@@ -65,13 +68,19 @@ const Cover = (props: {
             document.querySelector(`.${styles.cover}`) as HTMLDivElement
         if (cover !== undefined) {
           cover.hidden = !cover.hidden
+          if (pulseIsActive) {
+            const canvas = document.querySelector("canvas")!
+            canvas.width  = makeEven(document.documentElement.clientWidth);
+            canvas.height = makeEven(0.9*document.documentElement.clientHeight);
+            Log(canvas)
+          }
         }
       }}
     />
     <Portal>
       <div hidden class={styles.cover}>
         <div class={styles.bg}/>
-        <Show when={localStorage.getItem(LocalStorageKeys.visualiser) != null}>
+        <Show when={pulseIsActive}>
           <Pulse/>
         </Show>
         <div class={styles.fg}>

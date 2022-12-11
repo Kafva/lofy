@@ -220,6 +220,7 @@ const Player = (props: {
             class="nf nf-fae-wind"
             style={{display: "none"}}
             onClick={ () => {
+              // Scroll to currently playing track
               const percent = props.playingIdx / props.trackCount
               const fullHeight = document.body.scrollHeight
               const scrollTo = Math.floor(percent*fullHeight) - window.innerHeight/2

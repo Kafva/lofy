@@ -87,7 +87,7 @@ const MAX_ALBUM_CNT = 255;
 const MAX_PLAYLIST_CNT = 255;
 
 // Maximum number of tracks for a playlist or album
-const MAX_TRACKS = 1000;
+const MAX_TRACKS = 1024;
 
 // Pagination threshold for track metadata
 const ITEMS_PER_REQ = 32;

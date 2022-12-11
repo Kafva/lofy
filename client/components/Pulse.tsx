@@ -4,7 +4,7 @@ import { GetHTMLElement, Log } from '../ts/util';
 
 const SAMPLES_PER_BAR = 2**5
 const BAR_WIDTH  = 0.9*SAMPLES_PER_BAR;
-const FPS = 30;
+const FPS = 40;
 
 const makeEven = (a:number) => a % 2 == 0 ? a : Math.max(a - 1, 0);
 
@@ -22,16 +22,19 @@ const Pulse = () => {
   let nextSecond: number;
   let prevSecond: number;
 
-  const draw = () => {
+  const draw = (now: DOMHighResTimeStamp) => {
     if (analyser) {
       // Example:
       // 5 FPS ~ 5/1000 frames per millisecond
       // To render at 5 FPS we need to draw 5 frames over 1000 ms
       //
       // I.e. we need to re-draw every 200th (1000/5) milliseconds
-      const now = performance.now()
+      //
+      // Depending on how much other stuff is going on... the browser can
+      // schedule all thes updates to occur during the first 60/200 milliseconds
+      // rather than spreading them out evenly...
 
-      if (now >= (lastDrawMS + (1000/FPS)) && drawnFrames < FPS) {
+      if (now >= (lastDrawMS + (1000/FPS)) ) {
         // Note: the array will be zeroed out if the audio is muted.
         // The array will contain 1024 values [0-255], each index
         // represents the decibel value for a specific Hz value
@@ -40,10 +43,6 @@ const Pulse = () => {
         //
         // The <canvas> will visualise these values with bars of differing HEIGHT
 
-        // The 'width' and 'height' of a canvas
-        // needs to be explicitly set for X/Y coordinates to behave as intended
-        canvas.width  = makeEven(document.body.clientWidth);
-        canvas.height = makeEven(0.9*document.body.clientHeight);
 
         analyser.getByteFrequencyData(frequencyData)
         canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
@@ -63,13 +62,15 @@ const Pulse = () => {
         drawnFrames++;
         if (drawnFrames == FPS) {
           Log(`Done drawing ${FPS} frames: ${(lastDrawMS - prevSecond) / 1000} s`)
+          drawnFrames = 0;
+          prevSecond = lastDrawMS;
         }
       }
-      else if (drawnFrames == FPS && now >= nextSecond) {
-        prevSecond = performance.now()
-        nextSecond = prevSecond + 1000;
-        drawnFrames = 0;
-      }
+      //else if (drawnFrames == FPS && now >= nextSecond) {
+      //  prevSecond = performance.now()
+      //  nextSecond = prevSecond + 1000;
+      //  drawnFrames = 0;
+      //}
     }
     requestAnimationFrame(draw)
   }
@@ -108,15 +109,23 @@ const Pulse = () => {
     canvas = GetHTMLElement<HTMLCanvasElement>("canvas");
     canvasCtx = canvas.getContext("2d")!;
 
+    // The 'width' and 'height' of a canvas
+    // needs to be explicitly set for X/Y coordinates to behave as intended
+    //canvas.width  = makeEven(document.body.clientWidth);
+    //canvas.height = makeEven(0.9*document.body.clientHeight);
+
     lastDrawMS = performance.now();
     prevSecond = lastDrawMS;
     nextSecond = prevSecond + 1000;
     drawnFrames = 0;
 
-    draw();
+    draw(lastDrawMS);
   })
 
-  return <canvas/>;
+  return <canvas 
+    width={makeEven(document.documentElement.clientWidth)} 
+    height={makeEven(0.9*document.documentElement.clientHeight)}
+  />;
 };
 
 export default Pulse
