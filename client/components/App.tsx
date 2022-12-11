@@ -82,9 +82,6 @@ const App = () => {
   Log("Visualiser: " + (localStorage.getItem(LocalStorageKeys.visualiser) != null ?
     "active" : "inactive")
   )
-  //<Suspense fallback={<Loading/>}>
-  //</Suspense>
-
 
   // Unlike <For>, <Index> components will not be re-rendered
   // if the underlying data in an array changes
@@ -112,12 +109,14 @@ const App = () => {
     <Show when={SOURCE_LISTS[activeSource()].length > 0}
       fallback={<p class={styles.unavail}>No data available for current source</p>}
     >
-      <Tracks
-        currentList={currentList() || [] as Track[]}
-        playingIdx={playingIdx()}
-        setPlayingIdx={(s:number)=>setPlayingIdx(s)}
-        isPlaying={isPlaying()}
-      />
+      <Suspense fallback={<Loading/>}>
+        <Tracks
+          currentList={currentList() || [] as Track[]}
+          playingIdx={playingIdx()}
+          setPlayingIdx={(s:number)=>setPlayingIdx(s)}
+          isPlaying={isPlaying()}
+        />
+      </Suspense>
 
       <Player
         track={currentTrack()}

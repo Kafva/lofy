@@ -1,10 +1,10 @@
 import styles from '../scss/Pulse.module.scss';
 import { onMount } from 'solid-js';
-import { GetHTMLElement } from '../ts/util';
+import { GetHTMLElement, Log } from '../ts/util';
 
 const SAMPLES_PER_BAR = 2**5
 const BAR_WIDTH  = 0.9*SAMPLES_PER_BAR;
-const FPS = 60;
+const FPS = 30;
 
 const makeEven = (a:number) => a % 2 == 0 ? a : Math.max(a - 1, 0);
 
@@ -20,6 +20,7 @@ const Pulse = () => {
   let lastDrawMS: number;
   let drawnFrames: number;
   let nextSecond: number;
+  let prevSecond: number;
 
   const draw = () => {
     if (analyser) {
@@ -28,9 +29,9 @@ const Pulse = () => {
       // To render at 5 FPS we need to draw 5 frames over 1000 ms
       //
       // I.e. we need to re-draw every 200th (1000/5) milliseconds
-      //
+      const now = performance.now()
 
-      if (performance.now() >= (lastDrawMS + (1000/FPS)) && drawnFrames < FPS) {
+      if (now >= (lastDrawMS + (1000/FPS)) && drawnFrames < FPS) {
         // Note: the array will be zeroed out if the audio is muted.
         // The array will contain 1024 values [0-255], each index
         // represents the decibel value for a specific Hz value
@@ -59,12 +60,16 @@ const Pulse = () => {
           canvasCtx.fillRect(canvas.width - i, 0.5*canvas.height, BAR_WIDTH, -1*barHeight);
         }
         lastDrawMS = performance.now()
-        //drawnFrames++;
+        drawnFrames++;
+        if (drawnFrames == FPS) {
+          Log(`Done drawing ${FPS} frames: ${(lastDrawMS - prevSecond) / 1000} s`)
+        }
       }
-      //else if (performance.now() >= nextSecond) {
-      //  lastDrawMS = performance.now()
-      //  drawnFrames = 0;
-      //}
+      else if (drawnFrames == FPS && now >= nextSecond) {
+        prevSecond = performance.now()
+        nextSecond = prevSecond + 1000;
+        drawnFrames = 0;
+      }
     }
     requestAnimationFrame(draw)
   }
@@ -103,14 +108,13 @@ const Pulse = () => {
     canvas = GetHTMLElement<HTMLCanvasElement>("canvas");
     canvasCtx = canvas.getContext("2d")!;
 
-
     lastDrawMS = performance.now();
-    nextSecond = performance.now() + 1000;
+    prevSecond = lastDrawMS;
+    nextSecond = prevSecond + 1000;
     drawnFrames = 0;
 
     draw();
   })
-
 
   return <canvas/>;
 };
