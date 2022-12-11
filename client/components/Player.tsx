@@ -4,7 +4,7 @@ import { Portal } from 'solid-js/web';
 import Config from '../ts/config';
 import { TRACK_HISTORY, WORKER } from '../ts/global';
 import { Track, LocalTrack, YtTrack, SourceType, LocalStorageKeys } from '../ts/types';
-import { Log, FmtTime, Err, GetHTMLElement } from '../ts/util';
+import { Log, FmtTime, Err } from '../ts/util';
 import { Msg } from './MsgBox';
 import Cover from './Cover';
 import ProgressBar from './ProgressBar';
@@ -167,14 +167,13 @@ const Player = (props: {
     }
   })
 
-  onMount( () => {
+  onMount(() => {
     // Initialise the <audio> with the desired default volume
-    audio     = GetHTMLElement<HTMLAudioElement>("audio")
     audio.volume = volume()
   })
 
   return (<>
-    <audio hidden autoplay preload="auto"
+    <audio hidden autoplay preload="auto" ref={audio!}
       src={ audioSrc() || "" }
       onTimeUpdate= {() => {
         // Update the `currentTime` every second based on the current time

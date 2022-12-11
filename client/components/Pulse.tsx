@@ -34,7 +34,7 @@ const Pulse = () => {
       // schedule all thes updates to occur during the first 60/200 milliseconds
       // rather than spreading them out evenly...
 
-      if (now >= (lastDrawMS + (1000/FPS)) ) {
+      if (now >= (lastDrawMS + (1000/FPS))) {
         // Note: the array will be zeroed out if the audio is muted.
         // The array will contain 1024 values [0-255], each index
         // represents the decibel value for a specific Hz value
@@ -42,8 +42,6 @@ const Pulse = () => {
         //  0 Hz to [sample rate / 2] Hz
         //
         // The <canvas> will visualise these values with bars of differing HEIGHT
-
-
         analyser.getByteFrequencyData(frequencyData)
         canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
         canvasCtx.fillStyle = styles.white;
@@ -106,13 +104,7 @@ const Pulse = () => {
     // the audio context destination
     analyser.connect(audioCtx.destination)
 
-    canvas = GetHTMLElement<HTMLCanvasElement>("canvas");
     canvasCtx = canvas.getContext("2d")!;
-
-    // The 'width' and 'height' of a canvas
-    // needs to be explicitly set for X/Y coordinates to behave as intended
-    //canvas.width  = makeEven(document.body.clientWidth);
-    //canvas.height = makeEven(0.9*document.body.clientHeight);
 
     lastDrawMS = performance.now();
     prevSecond = lastDrawMS;
@@ -123,6 +115,7 @@ const Pulse = () => {
   })
 
   return <canvas 
+    ref={canvas!}
     width={makeEven(document.documentElement.clientWidth)} 
     height={makeEven(0.9*document.documentElement.clientHeight)}
   />;

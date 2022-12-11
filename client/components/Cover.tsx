@@ -1,11 +1,9 @@
 import styles from '../scss/Cover.module.scss';
-import { createEffect, onMount, Show } from 'solid-js';
+import { createEffect, Show } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import { LocalStorageKeys, Track } from '../ts/types';
-import { Log, GetHTMLElement } from '../ts/util';
+import { Log } from '../ts/util';
 import Pulse from './Pulse';
-
-const makeEven = (a:number) => a % 2 == 0 ? a : Math.max(a - 1, 0);
 
 /**
 * The `navigator` API generally works even if the `sizes` and `type`
@@ -50,11 +48,6 @@ const Cover = (props: {
     }
   })
 
-  onMount( () => {
-    img = GetHTMLElement<HTMLImageElement>(`.${styles.cover} > div > img`)
-    bkg = GetHTMLElement<HTMLDivElement>(`.${styles.cover} > div:first-child`)
-  })
-
   // <Portal> components will be inserted as direct children of the <body>
   // rather than the #root element
   //
@@ -68,23 +61,17 @@ const Cover = (props: {
             document.querySelector(`.${styles.cover}`) as HTMLDivElement
         if (cover !== undefined) {
           cover.hidden = !cover.hidden
-          if (pulseIsActive) {
-            const canvas = document.querySelector("canvas")!
-            canvas.width  = makeEven(document.documentElement.clientWidth);
-            canvas.height = makeEven(0.9*document.documentElement.clientHeight);
-            Log(canvas)
-          }
         }
       }}
     />
     <Portal>
       <div hidden class={styles.cover}>
-        <div class={styles.bg}/>
+        <div ref={bkg!} class={styles.bg}/>
         <Show when={pulseIsActive}>
           <Pulse/>
         </Show>
         <div class={styles.fg}>
-          <img src={props.coverSource} onLoad={()=>{
+          <img ref={img!} src={props.coverSource} onLoad={()=>{
             // Maintain the original dimensions of images smaller than 600x600
             // and scale down larger images
             img.width  = img.naturalWidth  > 600 ? 600 : img.naturalWidth;
