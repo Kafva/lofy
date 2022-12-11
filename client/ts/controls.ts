@@ -36,6 +36,10 @@ const sourceShortcuts = (e:KeyboardEvent) => {
 *  https://github.com/solidjs-community/solid-primitives/tree/main/packages/keyboard
 */
 const HandleKeyboardEvent = (e:KeyboardEvent) => {
+  // Do not trigger shortcuts when writing inside of an <input/>
+  if ((e.target as HTMLElement).tagName == "input") {
+    return
+  }
   if (e.shiftKey) { // <Shift> bindings
     switch (e.key) {
     case Config.volumeUpKey:
@@ -70,6 +74,13 @@ const HandleKeyboardEvent = (e:KeyboardEvent) => {
       break;
     case Config.singleRepeatKey:
       queryClick("span.nf-mdi-repeat,span.nf-mdi-repeat_once")
+      break;
+    case Config.listSearchKey:
+      const input = document.querySelector('input')
+      if (input) {
+        e.preventDefault()
+        input.focus();
+      }
       break;
     default:
       sourceShortcuts(e)

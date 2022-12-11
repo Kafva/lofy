@@ -1,5 +1,5 @@
 import styles from '../scss/App.module.scss';
-import { createSignal, Index, createResource, createEffect, Show, Suspense }
+import { createSignal, For, createResource, createEffect, Show, Suspense }
   from 'solid-js';
 import List from './List';
 import Tracks from './Tracks';
@@ -10,6 +10,7 @@ import { SOURCE_LISTS, } from '../ts/global'
 import { FetchTracks } from '../ts/fetch';
 import { SourceType, EmptyTrack, Track, ActiveTuple, LocalStorageKeys } from '../ts/types';
 import { Log } from '../ts/util';
+import Search from './Search';
 
 const App = () => {
   // Restore values from a previous session if possible
@@ -47,6 +48,9 @@ const App = () => {
   // Array with all of the tracks in the current list
   const [currentList,{mutate}] = createResource(activeTpl, FetchTracks)
 
+  // Query string for searches among the items in each <List/>
+  const [queryString,setQueryString] = createSignal("")
+
   // The currently playing track in the current list
   const [playingIdx,setPlayingIdx] = createSignal(0)
 
@@ -83,17 +87,15 @@ const App = () => {
     "active" : "inactive")
   )
 
-  // Unlike <For>, <Index> components will not be re-rendered
-  // if the underlying data in an array changes
-  // the lists are not going to change so it is therefore preferable
-  // to use <Index> in this case.
   return (<>
     <MsgBox/>
     <div class={styles.sidebar}>
-      <Index each={sourceTypes}>{(listType) =>
+      <Search setQueryString={(s:string) => setQueryString(s)}/>
+      <For each={sourceTypes}>{(listType: SourceType) =>
         // We can pass the setter function to a child in `props`
         <List
-          listType={listType()}
+          listType={listType}
+          queryString={queryString()}
 
           activeSource={activeSource()}
           setActiveSource={(s:SourceType)=> setActiveSource(s)}
@@ -103,7 +105,7 @@ const App = () => {
           setListIndex={(s:SourceType)=>setListIndex(s)}
           setPlayingIdx={(s:number)=>setPlayingIdx(s)}
         />
-      }</Index>
+      }</For>
     </div>
 
     <Show when={SOURCE_LISTS[activeSource()].length > 0}

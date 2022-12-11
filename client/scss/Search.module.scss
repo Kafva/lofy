@@ -1,0 +1,28 @@
+@use "vars";
+
+input[type="text"] {
+  font-family: inherit;
+  font-size: vars.$font_size;
+  color: vars.$fg_white;
+  background-color: vars.$input_bg;
+  border: 0;
+  outline: 0;
+  border-radius: 5%;
+
+  margin: 20px 5px 0;
+  padding: 10px;
+
+  &:focus {
+    width: calc(vars.$sidebar_width - 20px);
+    @include vars.widescreen {
+      width: calc(vars.$widescreen_sidebar_width - 20px)
+    }
+  }
+
+  width: calc(vars.$sidebar_width - 30px);
+  @include vars.widescreen {
+    width: calc(vars.$widescreen_sidebar_width - 30px)
+  }
+
+  transition: width 0.2s;
+}

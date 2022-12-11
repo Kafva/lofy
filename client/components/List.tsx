@@ -1,5 +1,5 @@
 import styles from '../scss/List.module.scss';
-import { batch, createSignal, For, Show } from 'solid-js';
+import { batch, createEffect, createSignal, For, Show } from 'solid-js';
 import { SOURCE_LISTS, SOURCE_TITLE_CLASSES} from '../ts/global'
 import { LocalStorageKeys, SourceType, Track } from '../ts/types';
 import { Err } from '../ts/util';
@@ -16,6 +16,7 @@ const getYtLink = (item: HTMLLIElement): string => {
 */
 const List = (props: {
   listType: SourceType,
+  queryString: string,
 
   activeSource: SourceType,
   setActiveSource: (arg0: SourceType) => any,
@@ -28,6 +29,17 @@ const List = (props: {
 }) => {
   // Determines if the currently selected list should be collapsed or open
   const [show,setShow] = createSignal(false)
+
+
+  createEffect( () => {
+    // Automatically show the entries of this list if there is a match
+    // from the querystring.
+    if (props.queryString.trim() != "" && SOURCE_LISTS[props.listType].some(s =>
+      s.innerHTML.includes(props.queryString.trim())
+    )) {
+      setShow(true);
+    }
+  })
 
   // Note that `item` needs to be called when using <Index> and `i` needs
   // to be called for <For> components.
@@ -74,25 +86,28 @@ const List = (props: {
         }}
       >
         <For each={SOURCE_LISTS[props.listType]}>{ (item,i) =>
-          <li role="menuitem"
-            data-id={item.getAttribute('data-id')}
-            data-row={i()}
-          >
-            
-            <span title={item.innerHTML}
-              classList={{selected:
-                (props.listIndex == i() && props.listType == props.activeSource)}}
+
+          <Show when={props.queryString.trim() == "" ||
+                      item.innerHTML.includes(props.queryString.trim())}>
+            <li role="menuitem"
+              data-id={item.getAttribute('data-id')}
+              data-row={i()}
             >
-              {item.innerHTML}
-            </span>
-            <Show when={props.listType == SourceType.YouTube}>
-              <a
-                class="nf nf-mdi-link"
-                target="_blank"
-                href={getYtLink(item)}
-              />
-            </Show>
-          </li>
+              <span title={item.innerHTML}
+                classList={{selected:
+                (props.listIndex == i() && props.listType == props.activeSource)}}
+              >
+                {item.innerHTML}
+              </span>
+              <Show when={props.listType == SourceType.YouTube}>
+                <a
+                  class="nf nf-mdi-link"
+                  target="_blank"
+                  href={getYtLink(item)}
+                />
+              </Show>
+            </li>
+          </Show>
         }
         </For>
       </ul>

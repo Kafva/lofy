@@ -18,6 +18,7 @@ class Config {
   // Keyboard shortcuts
   // ... without <Shift>
   static readonly pausePlayKey = ' ';
+  static readonly exitKey = 'q';
 
   /**
   * Jump to the currently playing track
@@ -41,9 +42,6 @@ class Config {
   static readonly sidebarScrollDownKey = 'J';
   static readonly sidebarScrollUpKey = 'K';
   static readonly singleRepeatKey = 'R';
-  // ... with <Control>
-  static readonly toggleSidebarKey = 'n'
-
   /**
   * Show a fullscreen view of the cover for the currently playing track
   * Inspired by:
@@ -51,7 +49,12 @@ class Config {
   * The `coverKey` will toggle the view and the `exitKey` will deactivate it
   */
   static readonly coverKey = 'F';
-  static readonly exitKey = 'q';
+  // To search among the tracks, use Vimium
+  static readonly listSearchKey = '&'
+
+  // ... with <Control>
+  static readonly toggleSidebarKey = 'n'
+
 }
 
 /** Toggles `console.log()` output */
