@@ -12,4 +12,4 @@ retab client/{components/*.tsx,ts/*.ts,index.tsx,scss/*.scss} server/*.go \
   package.json go.mod index.html main.go tsconfig.json vite.config.ts \
   scripts/*.sh README.md misc/lofy.example.json
 
-eslint client/{components/*.tsx,ts/*.ts,index.tsx}
+eslint client/{components/*.tsx,ts/*.ts,index.tsx} $@
