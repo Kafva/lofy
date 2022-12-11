@@ -153,7 +153,7 @@ const FetchTracks = async (
       break;
     }
 
-    // Incrementally fetch media until the last page of data is recieved
+    // Incrementally fetch media until the last page of data is received
     [tracks, lastPage] = await endpointFetch(
       endpoint, mediaName, page, single, source.activeSource
     ) as [Track[],boolean]

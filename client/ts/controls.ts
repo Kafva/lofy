@@ -11,23 +11,6 @@ const queryClick = (selector: string) => {
   }
 }
 
-/** Toggle the visibility of a source list */
-const sourceShortcuts = (e:KeyboardEvent) => {
-  for (let i=0; i < SOURCE_SHORTCUTS.length; i++){
-    if (e.key == SOURCE_SHORTCUTS[i].key){
-      const sidebarIdx = SOURCE_SHORTCUTS[i].sourceType
-      const sidebarHeaders = document.querySelectorAll(`.${appStyles.sidebar} > h3`)
-
-      if (sidebarIdx < sidebarHeaders.length) {
-        (sidebarHeaders[sidebarIdx] as HTMLElement).click()
-      } else {
-        console.error(`Shortcut sourceType is out of range: ${sidebarIdx}`)
-      }
-      break;
-    }
-  }
-}
-
 /**
 * To preserve reactivity we can NOT change the <audio> element directly,
 * we need to do all changes through the reactive API, this can be accomplished
@@ -76,6 +59,10 @@ const HandleKeyboardEvent = (e:KeyboardEvent) => {
       queryClick("span.nf-mdi-repeat,span.nf-mdi-repeat_once")
       break;
     case Config.listSearchKey:
+      // Implcitly unhide the sidebar
+      (document.querySelector("."+appStyles.sidebar) as HTMLDivElement)
+        ?.classList.remove(appStyles.hidden)
+
       const input = document.querySelector('input')
       if (input) {
         e.preventDefault()
@@ -88,14 +75,15 @@ const HandleKeyboardEvent = (e:KeyboardEvent) => {
   } else if (e.ctrlKey) {
     switch (e.key) {
     case Config.toggleSidebarKey:
-      const selector = `div.${appStyles.sidebar}`
-      const sidebar = document
-        .querySelector(selector) as HTMLDivElement;
-      if (sidebar){
-        sidebar.style.visibility = sidebar.style.visibility == 'hidden' ?
-          'visible' : 'hidden';
-      } else {
-        throw `No element found matching '${selector}'`
+      const sidebar = document.querySelector("."+appStyles.sidebar) as HTMLDivElement;
+      if (sidebar) {
+        // The 'hidden' class will change the width and padding,
+        // applying the width transition.
+        if (sidebar.classList.contains(appStyles.hidden)) {
+          sidebar.classList.remove(appStyles.hidden)
+        } else {
+          sidebar.classList.add(appStyles.hidden)
+        }
       }
       break;
     }
@@ -132,8 +120,24 @@ const sideBarScroll = (yPercent: number) => {
   sidebar.blur()
 }
 
-/** Hook up the media keys to interact with the UI through virtual click events
-*/
+/** Toggle the visibility of a source list */
+const sourceShortcuts = (e:KeyboardEvent) => {
+  for (let i=0; i < SOURCE_SHORTCUTS.length; i++){
+    if (e.key == SOURCE_SHORTCUTS[i].key){
+      const sidebarIdx = SOURCE_SHORTCUTS[i].sourceType
+      const sidebarHeaders = document.querySelectorAll(`.${appStyles.sidebar} > h3`)
+
+      if (sidebarIdx < sidebarHeaders.length) {
+        (sidebarHeaders[sidebarIdx] as HTMLElement).click()
+      } else {
+        console.error(`Shortcut sourceType is out of range: ${sidebarIdx}`)
+      }
+      break;
+    }
+  }
+}
+
+/** Hook up the media keys to interact with the UI through virtual click events */
 const SetupMediaHandlers = () => {
   if ('mediaSession' in navigator) {
     navigator.mediaSession.setActionHandler('play', () => {

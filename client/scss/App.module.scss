@@ -25,10 +25,15 @@
   }
 
   height: calc(100% - 40px);
-  padding: 2% 15px 20px 0;
+  padding: vars.$sidebar_top_padding 15px 20px 0;
 
   transition: width 0.2s;
 
   background-color: vars.$sidebar_bg;
+
+  &.hidden {
+    width: 0;
+    padding: vars.$sidebar_top_padding 0 0;
+  }
 }
 

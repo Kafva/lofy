@@ -30,13 +30,15 @@ const List = (props: {
   // Determines if the currently selected list should be collapsed or open
   const [show,setShow] = createSignal(false)
 
+  const shouldShow = (text: string, query: string): boolean =>
+    query.trim() == "" || text.toLowerCase().includes(query.trim().toLowerCase())
+
 
   createEffect( () => {
     // Automatically show the entries of this list if there is a match
     // from the querystring.
-    if (props.queryString.trim() != "" && SOURCE_LISTS[props.listType].some(s =>
-      s.innerHTML.includes(props.queryString.trim())
-    )) {
+    if (SOURCE_LISTS[props.listType]
+      .some(s => shouldShow(s.innerText, props.queryString))) {
       setShow(true);
     }
   })
@@ -86,18 +88,16 @@ const List = (props: {
         }}
       >
         <For each={SOURCE_LISTS[props.listType]}>{ (item,i) =>
-
-          <Show when={props.queryString.trim() == "" ||
-                      item.innerHTML.includes(props.queryString.trim())}>
+          <Show when={shouldShow(item.innerText, props.queryString)}>
             <li role="menuitem"
               data-id={item.getAttribute('data-id')}
               data-row={i()}
             >
-              <span title={item.innerHTML}
+              <span title={item.innerText}
                 classList={{selected:
                 (props.listIndex == i() && props.listType == props.activeSource)}}
               >
-                {item.innerHTML}
+                {item.innerText}
               </span>
               <Show when={props.listType == SourceType.YouTube}>
                 <a
