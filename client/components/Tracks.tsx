@@ -3,72 +3,33 @@ import { For, Show } from 'solid-js';
 import { TRACK_HISTORY } from '../ts/global';
 import { Track } from '../ts/types';
 import type { YtTrack } from '../ts/types';
-import { FmtTime, Log } from '../ts/util';
-//      <For each={props.currentList}>{(item: Track, i) =>
-//        <tr>
-//          <td role="menuitem"
-//            title={item.Title}
-//            onClick={ () => {
-//              TRACK_HISTORY.push(props.playingIdx)
-//              Log("TRACK_HISTORY", TRACK_HISTORY)
-//
-//              props.setPlayingIdx(i())
-//            }}
-//            classList={{selected:  i() == props.playingIdx }}>
-//            <span classList={{
-//              [styles.amp]: i() == props.playingIdx && props.isPlaying
-//            }}/>
-//            {item.Title}
-//          </td>
-//
-//          <td title={item.Album}>{item.Album}</td>
-//          <td title={item.Artist}>{item.Artist}</td>
-//          <td>{FmtTime(item.Duration)}</td>
-//          <Show when={"TrackId" in item}>
-//            <td>
-//              <a
-//                data-id={(item as YtTrack).TrackId}
-//                class="nf nf-mdi-link"
-//                target="_blank"
-//                href={
-//                  `https://youtube.com/watch?v=${(item as YtTrack).TrackId}`
-//                }
-//              />
-//            </td>
-//          </Show>
-//        </tr>
-//      }
-//      </For>
+import { Err, FmtTime, Log } from '../ts/util';
 
-// <span>{FmtTime(item.Duration)}</span>
-
-
-//      <For each={props.currentList}>{(item: Track) =>
-//        <div
-//          //onClick={ () => {
-//          //  TRACK_HISTORY.push(props.playingIdx)
-//          //  Log("TRACK_HISTORY", TRACK_HISTORY)
-//          //  props.setPlayingIdx(i())
-//          //}}
-//          //classList={{selected:  i() == props.playingIdx }}>{item.Title} - {i()}
-//        >
-//
-//          <span>{item.Artist}</span>
-//          <span>{item.Album}</span>
-//
-//        </div>
-//      }
-//      </For>
-
-
-// Using the i() and attributes should be fine!
 const Tracks = (props: {
   currentList: Track[],
   playingIdx: number,
   setPlayingIdx: (arg0: number) => any,
   isPlaying: boolean
 }) => (<>
-  <table>
+  <table
+    onClick={ (e:Event) => {
+      // Single dispatch event listener for all entries in the table
+      const el = e.target as HTMLElement
+
+      // If the click was onto a <td>, the parent will have the data-row
+      const row = el.getAttribute("data-row") != undefined ?
+                  el.getAttribute("data-row") : // eslint-disable-line indent
+                  el.parentElement!.getAttribute("data-row")
+
+      if (row == undefined || isNaN(parseInt(row))) {
+        Err("Missing or invalid data-row on event target and/or parent", e)
+      } else {
+        TRACK_HISTORY.push(props.playingIdx)
+        Log("TRACK_HISTORY", TRACK_HISTORY)
+        props.setPlayingIdx(parseInt(row))
+      }
+    }}
+  >
     <thead>
       <th class="nf nf-mdi-music"/>
       <th class="nf nf-mdi-library_music"/>
@@ -77,6 +38,35 @@ const Tracks = (props: {
       <th/>
     </thead>
     <tbody>
+      <For each={props.currentList}>{(item: Track, i) =>
+        <tr data-row={i()}>
+          <td role="menuitem"
+            title={item.Title}
+            classList={{selected:  i() == props.playingIdx }}>
+            <span classList={{
+              [styles.amp]: i() == props.playingIdx && props.isPlaying
+            }}/>
+            {item.Title}
+          </td>
+
+          <td title={item.Album}>{item.Album}</td>
+          <td title={item.Artist}>{item.Artist}</td>
+          <td>{FmtTime(item.Duration)}</td>
+          <Show when={"TrackId" in item}>
+            <td>
+              <a
+                data-id={(item as YtTrack).TrackId}
+                class="nf nf-mdi-link"
+                target="_blank"
+                href={
+                  `https://youtube.com/watch?v=${(item as YtTrack).TrackId}`
+                }
+              />
+            </td>
+          </Show>
+        </tr>
+      }
+      </For>
     </tbody>
   </table>
 </>)

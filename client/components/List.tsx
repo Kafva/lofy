@@ -1,7 +1,8 @@
 import styles from '../scss/List.module.scss';
-import { batch, createSignal, Index, Show } from 'solid-js';
+import { batch, createSignal, For, Show } from 'solid-js';
 import { SOURCE_LISTS, SOURCE_TITLE_CLASSES} from '../ts/global'
 import { LocalStorageKeys, SourceType, Track } from '../ts/types';
+import { Err } from '../ts/util';
 
 const getYtLink = (item: HTMLLIElement): string => {
   const ytParam = item.getAttribute('data-single') == "true" ? "v" : "list"
@@ -45,40 +46,55 @@ const List = (props: {
         }
       }}/>
     <Show when={show()}>
-      <ul>
-        <Index each={SOURCE_LISTS[props.listType]}>{ (item,i) =>
+      <ul
+        onClick={(e:Event) => { // Single onclick handler for each <ul>
+          const el = e.target as HTMLElement
+
+          // If the click was onto a <span>, the parent will have the data-row
+          const row = el.getAttribute("data-row") != undefined ?
+                      el.getAttribute("data-row") : // eslint-disable-line indent
+                      el.parentElement!.getAttribute("data-row")
+
+          if (row == undefined || isNaN(parseInt(row))) {
+            Err("Missing or invalid data-row on event target and/or parent", e)
+          } else {
+            // To avoid intermediary states we batch the updates to:
+            //  The selected medialist,
+            //  The selected playlist/album
+            // batch() will combine several signal changes into one re-render.
+            batch(() => {
+              props.setActiveSource(props.listType)
+              props.setListIndex(parseInt(row))
+              props.setPlayingIdx(-1)
+              props.setCurrentList([] as Track[])
+            })
+            localStorage.setItem(LocalStorageKeys.activeSource, props.activeSource.toFixed(0))
+            localStorage.setItem(LocalStorageKeys.listIndex, row.toString())
+          }
+        }}
+      >
+        <For each={SOURCE_LISTS[props.listType]}>{ (item,i) =>
           <li role="menuitem"
-            onClick={ () => {
-              // To avoid intermediary states we batch the updates to:
-              //  The selected medialist,
-              //  The selected playlist/album
-              // batch() will combine several signal changes into one re-render.
-              batch(() => {
-                props.setActiveSource(props.listType)
-                props.setListIndex(i)
-                props.setPlayingIdx(-1)
-                props.setCurrentList([] as Track[])
-              })
-              localStorage.setItem(LocalStorageKeys.activeSource, props.activeSource.toFixed(0))
-              localStorage.setItem(LocalStorageKeys.listIndex, i.toString())
-            }}
-            data-id={item().getAttribute('data-id')}>
-            <span title={item().innerHTML}
+            data-id={item.getAttribute('data-id')}
+            data-row={i()}
+          >
+            
+            <span title={item.innerHTML}
               classList={{selected:
-                (props.listIndex == i && props.listType == props.activeSource)}}
+                (props.listIndex == i() && props.listType == props.activeSource)}}
             >
-              {item().innerHTML}
+              {item.innerHTML}
             </span>
             <Show when={props.listType == SourceType.YouTube}>
               <a
                 class="nf nf-mdi-link"
                 target="_blank"
-                href={getYtLink(item())}
+                href={getYtLink(item)}
               />
             </Show>
           </li>
         }
-        </Index>
+        </For>
       </ul>
     </Show>
   </>);

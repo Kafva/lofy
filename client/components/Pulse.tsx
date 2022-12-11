@@ -18,9 +18,8 @@ const Pulse = () => {
   let canvasCtx: CanvasRenderingContext2D;
   let frequencyCnt: number;
   let lastDrawMS: number;
+  let lastCompletedMS: number;
   let drawnFrames: number;
-  let nextSecond: number;
-  let prevSecond: number;
 
   const draw = (now: DOMHighResTimeStamp) => {
     if (analyser) {
@@ -29,11 +28,6 @@ const Pulse = () => {
       // To render at 5 FPS we need to draw 5 frames over 1000 ms
       //
       // I.e. we need to re-draw every 200th (1000/5) milliseconds
-      //
-      // Depending on how much other stuff is going on... the browser can
-      // schedule all thes updates to occur during the first 60/200 milliseconds
-      // rather than spreading them out evenly...
-
       if (now >= (lastDrawMS + (1000/FPS))) {
         // Note: the array will be zeroed out if the audio is muted.
         // The array will contain 1024 values [0-255], each index
@@ -59,16 +53,11 @@ const Pulse = () => {
         lastDrawMS = performance.now()
         drawnFrames++;
         if (drawnFrames == FPS) {
-          Log(`Done drawing ${FPS} frames: ${(lastDrawMS - prevSecond) / 1000} s`)
+          Log(`Done drawing ${FPS} frames: ${(lastDrawMS - lastCompletedMS) / 1000} sec`)
           drawnFrames = 0;
-          prevSecond = lastDrawMS;
+          lastCompletedMS = lastDrawMS;
         }
       }
-      //else if (drawnFrames == FPS && now >= nextSecond) {
-      //  prevSecond = performance.now()
-      //  nextSecond = prevSecond + 1000;
-      //  drawnFrames = 0;
-      //}
     }
     requestAnimationFrame(draw)
   }
@@ -106,17 +95,15 @@ const Pulse = () => {
 
     canvasCtx = canvas.getContext("2d")!;
 
-    lastDrawMS = performance.now();
-    prevSecond = lastDrawMS;
-    nextSecond = prevSecond + 1000;
+    lastCompletedMS = lastDrawMS = performance.now();
     drawnFrames = 0;
 
     draw(lastDrawMS);
   })
 
-  return <canvas 
+  return <canvas
     ref={canvas!}
-    width={makeEven(document.documentElement.clientWidth)} 
+    width={makeEven(document.documentElement.clientWidth)}
     height={makeEven(0.9*document.documentElement.clientHeight)}
   />;
 };
