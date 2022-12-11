@@ -1,5 +1,3 @@
-import { SourceType, SourceShortcut } from './types';
-
 class Config {
   static readonly shuffleDefaultOn = true;
   static readonly volumeStep = 0.05;
@@ -19,6 +17,7 @@ class Config {
   // ... without <Shift>
   static readonly pausePlayKey = ' ';
   static readonly exitKey = 'q';
+  static readonly collapseKey = 'z';
 
   /**
   * Jump to the currently playing track
@@ -60,12 +59,5 @@ class Config {
 /** Toggles `console.log()` output */
 const DEBUG = true
 
-/** Shortcuts for opening/closing the source lists */
-const SOURCE_SHORTCUTS: SourceShortcut[] = [
-  { key: "z", sourceType: SourceType.LocalPlaylist },
-  { key: "Z", sourceType: SourceType.LocalAlbum    },
-  { key: "m", sourceType: SourceType.YouTube       }
-]
-
-export { DEBUG, SOURCE_SHORTCUTS }
+export { DEBUG }
 export default Config;

@@ -3,6 +3,7 @@ package server
 import (
   "bufio"
   "encoding/json"
+  "fmt"
   "net/http"
   "os"
   "os/exec"
@@ -263,18 +264,31 @@ func fetch_yt_playlist(yt_id string, single_track bool) []YtTrack {
     return []YtTrack{}
 }
 
+// Returns false if the playlist can not be opened or contains duplicate entries
 func get_track_paths_from_playlist(path string, track_paths *[]string) bool {
+  names := map[string]interface{} {  }
   f, err := os.Open(path)
   if err == nil {
     defer f.Close()
     scanner := bufio.NewScanner(f)
+    linenr := 1
 
     for scanner.Scan() {
       line := strings.TrimSpace(scanner.Text())
       if !strings.HasPrefix("#", line) && len(line)!=0 {
         // Skip empty and '#' lines in a playlist
-        *track_paths = append(*track_paths, TranslateTilde(line))
+        full_path := TranslateTilde(line)
+        *track_paths = append(*track_paths, full_path)
+
+        if _, ok := names[full_path]; !ok {
+          names[full_path] = true
+        } else {
+          Err("Duplicate entry encountered in playlist at line " +
+               fmt.Sprintf("%d", linenr) + ": '" + full_path + "'")
+          return false
+        }
       }
+      linenr += 1
     }
     return true
   } else {

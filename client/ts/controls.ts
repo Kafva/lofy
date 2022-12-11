@@ -1,6 +1,6 @@
-import Config, { SOURCE_SHORTCUTS } from './config';
 import appStyles from '../scss/App.module.scss'
 import coverStyles from '../scss/Cover.module.scss'
+import Config from './config'
 
 const queryClick = (selector: string) => {
   const span = document.querySelector(selector) as HTMLSpanElement
@@ -69,8 +69,6 @@ const HandleKeyboardEvent = (e:KeyboardEvent) => {
         input.focus();
       }
       break;
-    default:
-      sourceShortcuts(e)
     }
   } else if (e.ctrlKey) {
     switch (e.key) {
@@ -106,8 +104,9 @@ const HandleKeyboardEvent = (e:KeyboardEvent) => {
     case Config.toggleVisualiser:
       queryClick("span.nf-oct-graph")
       break;
-    default:
-      sourceShortcuts(e)
+    case Config.collapseKey:
+      collapseLists()
+      break;
     }
   }
 }
@@ -120,20 +119,25 @@ const sideBarScroll = (yPercent: number) => {
   sidebar.blur()
 }
 
-/** Toggle the visibility of a source list */
-const sourceShortcuts = (e:KeyboardEvent) => {
-  for (let i=0; i < SOURCE_SHORTCUTS.length; i++){
-    if (e.key == SOURCE_SHORTCUTS[i].key){
-      const sidebarIdx = SOURCE_SHORTCUTS[i].sourceType
-      const sidebarHeaders = document.querySelectorAll(`.${appStyles.sidebar} > h3`)
+const collapseLists = () => {
+  const openLists: boolean[] = []
+  const headers = document.querySelectorAll(`.${appStyles.sidebar} > h3`)
+  headers.forEach(e => {
+    const sibling = e.nextSibling as HTMLElement
+    openLists.push(sibling?.tagName.toLowerCase() == 'ul')
+  })
 
-      if (sidebarIdx < sidebarHeaders.length) {
-        (sidebarHeaders[sidebarIdx] as HTMLElement).click()
-      } else {
-        console.error(`Shortcut sourceType is out of range: ${sidebarIdx}`)
+  // Open all lists if all are closed
+  if (openLists.every(l => !l)  ) {
+    headers.forEach( (el) => (el as HTMLElement).click())
+  }
+  // Close all lists if at least one is open
+  else {
+    headers.forEach( (el,i) => {
+      if (openLists[i]) {
+        (el as HTMLElement).click()
       }
-      break;
-    }
+    })
   }
 }
 
