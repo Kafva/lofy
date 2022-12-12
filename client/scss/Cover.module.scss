@@ -14,7 +14,6 @@ div.cover {
   background-color: vars.$body_bg;
   @extend %cover-pos;
 
-
   div.bg { // Blurred background
     @extend %cover-pos;
     background-repeat: no-repeat;

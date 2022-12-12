@@ -53,7 +53,6 @@ class Config {
 
   // ... with <Control>
   static readonly toggleSidebarKey = 'n'
-
 }
 
 /** Toggles `console.log()` output */

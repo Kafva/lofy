@@ -49,7 +49,7 @@ nav {
        // :global() is needed to find raw class names when using CSS modules.
        @include vars.mobile { display: none; }
      }
-     // Limit length of title (the 8th <span>)
+     // Limit length of title
      span.track_name {
       @include vars.limit-width(20em, 7em, fit-content, inline-grid);
      }

@@ -5,14 +5,13 @@ $font_size: 14px;
 $height: $font_size*5;
 
 div.msgbox {
+  @include vars.fixed-centered($width, 20px);
+
   z-index: vars.$msgbox_z;
-  position: fixed;
-  left: calc(50% - $width/2);
+  height: $height;
 
   display: flex;
 
-  width: $width;
-  height: $height;
 
   // Off-screen and transparent by default
   bottom: -3%;

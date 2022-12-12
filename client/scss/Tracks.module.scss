@@ -1,8 +1,7 @@
 @use "vars";
 
 table {
-  margin-top:  4%;
-  margin-bottom: 4%;
+  margin: vars.$table_margin_y 0;
   text-align: center;
 
   // Collapse the borders of rows in the table
@@ -39,7 +38,7 @@ table {
   }
   th,td {
     @include vars.fade-in();
-    height: vars.$row_height;
+    height: vars.$table_row_height;
     margin: 4px 0 5px 0;
 
     text-align: left;
@@ -47,20 +46,20 @@ table {
 
     // Each column needs a min-width for proper alignment
     &:nth-child(1) { // Title
-      @include vars.limit-width(14%, 18em);
+      @include vars.limit-width(vars.$table_name_col_max_width, vars.$table_name_col_min_width);
       border-bottom: vars.$default_bottom_border;
       &:hover { color: vars.$lilac; }
     }
     &:nth-child(2) { // Album
-      @include vars.limit-width(14%, 18em);
+      @include vars.limit-width(vars.$table_name_col_max_width, vars.$table_name_col_min_width);
       border-bottom: vars.$default_bottom_border;
       @include vars.mobile { display: none };
     }
     &:nth-child(3) { // Artist
-      @include vars.limit-width(14%, 18em);
+      @include vars.limit-width(vars.$table_name_col_max_width, vars.$table_name_col_min_width);
       border-bottom: vars.$default_bottom_border;
       display: none;
-      @media (min-width: vars.$widescreen_min_width) { // Only on widescreen
+      @include vars.widescreen {
         display: inline-block;
       }
     }

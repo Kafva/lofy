@@ -6,44 +6,30 @@ $loading_duration: 0.5s;
 $bar_width: 18px;
 $loading_direction: alternate;
 
-@keyframes loadingbar15 {
-  0% {
-    height: 30%;
-  }
-  50% {
-    height: 60%;
-  }
-  100% {
-    height: 90%;
-  }
-}
-@keyframes loadingbar24 {
-  0% {
-    height: 60%;
-  }
-  50% {
-    height: 90%;
-  }
-  100% {
-    height: 60%;
-  }
-}
-@keyframes loadingbar3 {
-  0% {
-    height: 90%;
-  }
-  50% {
-    height: 60%;
-  }
-  100% {
-    height: 30%;
+@mixin loadingbar($name, $from, $mid, $to) {
+  @keyframes loadingbar-#{$name} {
+    0% {
+      height: $from;
+    }
+    50% {
+      height: $mid;
+    }
+    100% {
+      height: $to;
+    }
   }
 }
 
+@include loadingbar("15", 30%, 60%, 90%);
+@include loadingbar("24", 60%, 90%, 60%);
+@include loadingbar("3",  90%, 60%, 30%);
+
 div.loading {
+  @include vars.fixed-centered($width, 20px);
+
+  z-index: vars.$loading_z;
   text-align: center;
-  position: fixed;
-  left: calc(50% - ($width/2));
+  height: 70px;
   top: 15%;
 
   display: grid;
@@ -52,8 +38,6 @@ div.loading {
   align-items: center;
   justify-content: center;
 
-  height: 70px;
-  width: $width;
 
   span {
     height: 100%;
@@ -63,13 +47,13 @@ div.loading {
     background-color: vars.$fg_white;
 
     &:nth-child(1),&:nth-child(5) {
-      animation: loadingbar15 $loading_duration $loading_direction infinite;
+      animation: loadingbar-15 $loading_duration $loading_direction infinite;
     }
     &:nth-child(2),&:nth-child(4) {
-      animation: loadingbar24 $loading_duration $loading_direction infinite;
+      animation: loadingbar-24 $loading_duration $loading_direction infinite;
     }
     &:nth-child(3) {
-      animation: loadingbar3 $loading_duration $loading_direction infinite;
+      animation: loadingbar-3 $loading_duration $loading_direction infinite;
     }
   }
 

@@ -1,14 +1,3 @@
-// @media query cut-off points
-$mobile_min_width: 320px;
-$mobile_max_width: 480px;
-$widescreen_min_width: 1400px;
-
-$mobile_sidebar_width: 8em;
-$sidebar_width: 10em;
-$widescreen_sidebar_width: 15em;
-
-$sidebar_top_padding: 2%;
-
 // Font size for tracks and playlists
 $font_size: 14px;
 $mobile_font_size: 10px;
@@ -19,29 +8,42 @@ $lilac:     #6e85d3;
 $body_bg:    #23283d;
 $nav_bg:     #1e2233;
 $sidebar_bg: #212330;
+$progress_bar_default: #6a7294;
+$pink: #de95c3;
 
 $fg_white:   #f5e4f3;
 $fg_grey:    #8e9297;
 $input_bg:   rgba(47, 52, 63, 0.5);
-
-//== Selection highlighting ==//
 $hl_bottom_border:      1px solid $lilac;
 
 // Setting the border to 'none' causes flickering when
 // the visibility of the `hl_border` changes
 $default_bottom_border: 1px solid rgba(#414040, 0.0);
 
-//== Tracks ==//
-$row_height: 20px;
-
-//== Progress bar ==//
-$progress_bar_height: 6px;
-$pink: #de95c3;
 $progress_bar_gradient: linear-gradient(90deg, $pink 93%, transparent 100%);
-$progress_bar_default: #6a7294;
+
+//== Dimensions ==//
+$mobile_min_width: 320px;
+$mobile_max_width: 480px;
+$mobile_sidebar_width: 8em;
+
+$widescreen_min_width: 1400px;
+$widescreen_sidebar_width: 15em;
+
+$sidebar_width: 10em;
+$sidebar_top_padding: 2%;
+
+$table_margin_y: 4%;
+$table_row_height: 20px;
+$table_name_col_max_width: 14%;
+$table_name_col_min_width: 18em;
+
+$progress_bar_height: 6px;
+
 
 //== Z-indices ==//
-$msgbox_z: 14;
+$msgbox_z: 15;
+$loading_z: 14;
 $cover_z: 13;
 $pulse_z: 12;
 $cover_bg_z: 11;
@@ -73,6 +75,13 @@ $table_z: 7;
     to   { opacity: 1; }
   }
   animation: _fade-in $sec;
+}
+
+// Give an element a fixed position and center it
+@mixin fixed-centered($width, $padding: 0%) {
+  position: fixed;
+  width: $width;
+  left: calc(50% - ($width/2) - $padding);
 }
 
 // Limit text overflow and the width of an element
