@@ -36,6 +36,11 @@ table {
       content: url("amp.gif");
       margin-right: 1em;
   }
+  td {
+    &:nth-child(1) { // Title
+      &:hover { color: vars.$lilac; }
+    }
+  }
   th,td {
     @include vars.fade-in();
     height: vars.$table_row_height;
@@ -48,7 +53,6 @@ table {
     &:nth-child(1) { // Title
       @include vars.limit-width(vars.$table_name_col_max_width, vars.$table_name_col_min_width);
       border-bottom: vars.$default_bottom_border;
-      &:hover { color: vars.$lilac; }
     }
     &:nth-child(2) { // Album
       @include vars.limit-width(vars.$table_name_col_max_width, vars.$table_name_col_min_width);
