@@ -1,11 +1,5 @@
 # <img width=30px height=30px src="https://i.imgur.com/4OCZymB.png">&nbsp;&nbsp; lofy
 A web player for local files and YouTube playlists/videos.
-The server has two core dependencies which must be installed:
-* [yt-dlp](https://github.com/yt-dlp/yt-dlp): For fetching metadata from
-  YouTube and deriving audio stream URLs.
-* [ffmpeg](https://ffmpeg.org/): For parsing metadata of local files.
-
-The client uses [solidjs](https://www.solidjs.com/).
 
 ![](/misc/visuals.gif)
 
@@ -17,14 +11,19 @@ pnpm install && ./scripts/genfont.sh && vite build
 ```
 The output of the build process is placed under `./dist`.
 
-### Configuration
+Install runtime dependencies:
+* [yt-dlp](https://github.com/yt-dlp/yt-dlp): For fetching metadata from
+  YouTube and deriving audio stream URLs.
+* [ffmpeg](https://ffmpeg.org/): For parsing metadata of local files.
+
 The server is built and ran with
 ```bash
 go build && ./lofy -c misc/lofy.example.json
 ```
-The configuration file format is described in [server/config.go](/server/config.go)
+The configuration file format is described in
+[server/config.go](/server/config.go)
 
-### Supported audio sources
+## Supported audio sources
 The application can serve content from three sources:
 
 1. __Local playlists__: Provided as `.m3u` files, i.e. text files with one
@@ -85,8 +84,3 @@ This approach has issues for videos longer than ~ 10 minutes.
 * Browser proxies can prevent YouTube resources from being loaded. To resolve
   this, set `*.googlevideo.com` as an exception that bypasses the proxy.
 * Playlists are not allowed to have duplicate entries.
-
-## Future work
-YouTube-dl has support for many other sources and it should not be too
-difficult to integrate e.g. Soundcloud.
-
