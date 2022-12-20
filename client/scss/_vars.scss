@@ -24,7 +24,6 @@ $progress_bar_gradient: linear-gradient(90deg, $pink 93%, transparent 100%);
 
 //== Dimensions ==//
 // Breakpoints
-$mobile_min_width: 100px;
 $mobile_max_width: 980px;
 $widescreen_min_width: 1400px;
 
@@ -53,7 +52,6 @@ $nav_z: 9;
 //== Mixins ==//
 @mixin mobile() {
   @media
-    (min-width: $mobile_min_width) and
     (max-width: $mobile_max_width) {
     @content;
   }
