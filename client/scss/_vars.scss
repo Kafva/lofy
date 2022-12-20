@@ -1,6 +1,6 @@
 // Font size for tracks and playlists
 $font_size: 14px;
-$mobile_font_size: 10px;
+$mobile_font_size: 18px;
 
 //== Color scheme ==
 $lilac:     #6e85d3;
@@ -23,8 +23,8 @@ $default_bottom_border: 1px solid rgba(#414040, 0.0);
 $progress_bar_gradient: linear-gradient(90deg, $pink 93%, transparent 100%);
 
 //== Dimensions ==//
-$mobile_min_width: 320px;
-$mobile_max_width: 480px;
+$mobile_min_width: 100px;
+$mobile_max_width: 980px;
 $mobile_sidebar_width: 8em;
 
 $widescreen_min_width: 1400px;
