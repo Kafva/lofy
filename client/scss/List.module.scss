@@ -51,7 +51,6 @@ ul {
       margin-left: 0.5em;
       padding-left: 0.5em;
       &:hover { color: vars.$lilac; }
-      @include vars.mobile { display: none }
     }
   }
 }

@@ -1,20 +1,20 @@
-// Font size for tracks and playlists
+//== Font ==
+$font_family: "JetBrains-NF", "Arial";
 $font_size: 14px;
 $mobile_font_size: 18px;
 
 //== Color scheme ==
-$lilac:     #6e85d3;
+$body_bg:                 #23283d;
+$nav_bg:                  #1e2233;
+$sidebar_bg:              #212330;
+$progress_bar_default:    #6a7294;
+$pink:                    #de95c3;
+$lilac:                   #6e85d3;
 
-$body_bg:    #23283d;
-$nav_bg:     #1e2233;
-$sidebar_bg: #212330;
-$progress_bar_default: #6a7294;
-$pink: #de95c3;
-
-$fg_white:   #f5e4f3;
-$fg_grey:    #8e9297;
-$input_bg:   rgba(47, 52, 63, 0.5);
-$hl_bottom_border:      1px solid $lilac;
+$fg_white:                #f5e4f3;
+$fg_grey:                 #8e9297;
+$input_bg:                rgba(47, 52, 63, 0.5);
+$hl_bottom_border:        1px solid $lilac;
 
 // Setting the border to 'none' causes flickering when
 // the visibility of the `hl_border` changes
@@ -23,14 +23,13 @@ $default_bottom_border: 1px solid rgba(#414040, 0.0);
 $progress_bar_gradient: linear-gradient(90deg, $pink 93%, transparent 100%);
 
 //== Dimensions ==//
-
 // Breakpoints
 $mobile_min_width: 100px;
 $mobile_max_width: 980px;
-
 $widescreen_min_width: 1400px;
-$widescreen_sidebar_width: 15em;
 
+// Sidebar (hidden for mobile)
+$widescreen_sidebar_width: 15em;
 $sidebar_width: 10em;
 
 // Top padding for sidebar and <Tracks/>
@@ -39,9 +38,7 @@ $top_spacing: 2%;
 $table_row_height: 20px;
 $table_name_col_max_width: 14%;
 $table_name_col_min_width: 18em;
-
 $progress_bar_height: 6px;
-
 
 //== Z-indices ==//
 $msgbox_z: 15;
@@ -51,8 +48,6 @@ $pulse_z: 12;
 $cover_bg_z: 11;
 $nav_progress_z: 10;
 $nav_z: 9;
-$sidebar_z: 8;
-$table_z: 7;
 
 
 //== Mixins ==//

@@ -2,6 +2,9 @@
 
 table {
   margin: calc(vars.$top_spacing + 10px) 0 0;
+  @include vars.mobile {
+    margin: calc(vars.$top_spacing - 10px) 0 0;
+  }
   text-align: center;
 
   // Collapse the borders of rows in the table
@@ -26,11 +29,6 @@ table {
       }
       content: url("amp.gif");
       margin-right: 1em;
-  }
-  td {
-    &:nth-child(1) { // Title
-      &:hover { color: vars.$lilac; }
-    }
   }
   th,td {
     @include vars.fade-in();
@@ -69,4 +67,11 @@ table {
       @include vars.mobile { display: none };
     }
   }
+  :global(th.nf-mdi-music) { // Hide title icon on mobile
+    @include vars.mobile { display: none; }
+  }
+  td:first-child:hover { // Highlight title on hover
+    color: vars.$lilac;
+  }
+
 }

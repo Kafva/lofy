@@ -1,29 +1,31 @@
 @use "vars";
 
+// == Sidebar ==
 div.sidebar {
-  z-index: vars.$sidebar_z;
   position: fixed;
-  overflow-y: scroll;
   left: 0;
   top: 0;
 
+  overflow-y: scroll;
+
+  background-color: vars.$sidebar_bg;
+  padding: vars.$top_spacing 15px 20px 0;
+
   width: vars.$sidebar_width;
+  height: calc(100% - 40px);
 
   @include vars.widescreen {
     width: vars.$widescreen_sidebar_width;
   }
+
+  // Sidebar is never shown on mobile
   @include vars.mobile {
-    top: 1%;
     visibility: hidden;
   }
 
-  height: calc(100% - 40px);
-  padding: vars.$top_spacing 15px 20px 0;
 
+  // Width transition
   transition: width 0.2s;
-
-  background-color: vars.$sidebar_bg;
-
   &.hidden {
     width: 0;
     padding: vars.$top_spacing 0 0;

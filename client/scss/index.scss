@@ -1,6 +1,6 @@
 @use "vars";
 
-// Definition for JetBrains-NF
+// Definition for 'JetBrains-NF'
 @import "../nerd-fonts.min.css";
 
 * {
@@ -12,7 +12,7 @@
 }
 
 body {
-  font-family: "JetBrains-NF", "Arial";
+  font-family: vars.$font_family;
   background-color: vars.$body_bg;
   color: vars.$fg_white;
   margin: 0; padding: 0; border: 0; outline: 0;
