@@ -350,7 +350,7 @@ const Player = (props: {
               }
             }}
           />
-          <span>{
+          <span class={styles.duration}>{
             `${FmtTime(currentTime())} / ${FmtTime(props.track.Duration)}`
           }</span>
           <span  role="button"

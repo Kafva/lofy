@@ -1,12 +1,6 @@
 @use "vars";
 
-// Error message box
-.unavail {
-  font-size: 18px;
-  color: vars.$fg_grey;
-}
-
-.sidebar {
+div.sidebar {
   z-index: vars.$sidebar_z;
   position: fixed;
   overflow-y: scroll;
@@ -24,7 +18,7 @@
   }
 
   height: calc(100% - 40px);
-  padding: vars.$sidebar_top_padding 15px 20px 0;
+  padding: vars.$top_spacing 15px 20px 0;
 
   transition: width 0.2s;
 
@@ -32,7 +26,13 @@
 
   &.hidden {
     width: 0;
-    padding: vars.$sidebar_top_padding 0 0;
+    padding: vars.$top_spacing 0 0;
   }
+}
+
+// Error message box
+p.unavail {
+  font-size: 18px;
+  color: vars.$fg_grey;
 }
 

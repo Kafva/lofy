@@ -23,17 +23,19 @@ $default_bottom_border: 1px solid rgba(#414040, 0.0);
 $progress_bar_gradient: linear-gradient(90deg, $pink 93%, transparent 100%);
 
 //== Dimensions ==//
+
+// Breakpoints
 $mobile_min_width: 100px;
 $mobile_max_width: 980px;
-$mobile_sidebar_width: 8em;
 
 $widescreen_min_width: 1400px;
 $widescreen_sidebar_width: 15em;
 
 $sidebar_width: 10em;
-$sidebar_top_padding: 2%;
 
-$table_margin_y: 4%;
+// Top padding for sidebar and <Tracks/>
+$top_spacing: 2%;
+
 $table_row_height: 20px;
 $table_name_col_max_width: 14%;
 $table_name_col_min_width: 18em;

@@ -1,7 +1,7 @@
 @use "vars";
 
 table {
-  margin: vars.$table_margin_y 0;
+  margin: calc(vars.$top_spacing + 10px) 0 0;
   text-align: center;
 
   // Collapse the borders of rows in the table
