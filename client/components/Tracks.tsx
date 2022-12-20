@@ -16,10 +16,13 @@ const Tracks = (props: {
       // Single dispatch event listener for all entries in the table
       const el = e.target as HTMLElement
 
-      // If the click was onto a <td>, the parent will have the data-row
-      const row = el.getAttribute("data-row") != undefined ?
-                  el.getAttribute("data-row") : // eslint-disable-line indent
-                  el.parentElement!.getAttribute("data-row")
+      // Only react to clicks on the first <td/>
+      if (el.getAttribute("role") != "menuitem") {
+        return
+      }
+
+      // The parent will have the data-row
+      const row = el.parentElement!.getAttribute("data-row")
 
       if (row == undefined || isNaN(parseInt(row))) {
         Err("Missing or invalid data-row on event target and/or parent", e)
@@ -31,11 +34,15 @@ const Tracks = (props: {
     }}
   >
     <thead>
-      <th class="nf nf-mdi-music"/>
-      <th class="nf nf-mdi-library_music"/>
-      <th class="nf nf-oct-person"/>
-      <th class="nf nf-mdi-timelapse"/>
-      <th/>
+      <tr>
+        <th class="nf nf-mdi-music"/>
+        <th class="nf nf-mdi-library_music"/>
+        <th class="nf nf-oct-person"/>
+        <th class="nf nf-mdi-timelapse"/>
+        <Show when={props.currentList.length > 0 && "TrackId" in props.currentList[0]}>
+          <th/>
+        </Show>
+      </tr>
     </thead>
     <tbody>
       <For each={props.currentList}>{(item: Track, i) =>

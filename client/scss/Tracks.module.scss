@@ -13,17 +13,8 @@ table {
   // Highlight each individual <td> when a <tr> is hovered
   // applying the :hover() effect directly on the <tr> is not
   // preferable since it extends beyond the actual text
-  tbody > tr:hover {
-    td:nth-child(1) { // Title
-      border-bottom: vars.$hl_bottom_border;
-    }
-    td:nth-child(2) { // Album
-      border-bottom: vars.$hl_bottom_border;
-    }
-    td:nth-child(3) { // Artist
-      border-bottom: vars.$hl_bottom_border;
-    }
-    td:nth-child(4) { // Duration
+  tbody > tr:not(first-child):hover {
+    td {
       border-bottom: vars.$hl_bottom_border;
     }
   }

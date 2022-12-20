@@ -13,6 +13,10 @@ nav {
    left: 0;
    text-align: center;
 
+   // Do not display more than one row
+   white-space: nowrap;
+   overflow-x: clip;
+
    width: 100%;
    min-width: 50%;
 
