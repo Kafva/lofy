@@ -29,6 +29,13 @@ div.sidebar {
   &.hidden {
     width: 0;
     padding: vars.$top_spacing 0 0;
+
+    h3,input {
+      // Prevent Vimium from spawning link indicators for
+      // sidebar items when it is hidden
+      cursor: default;
+      visibility: hidden;
+    }
   }
 }
 
