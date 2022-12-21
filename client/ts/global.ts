@@ -1,6 +1,6 @@
 import { SourceType } from './types';
 import {
-  ExtractListsFromTemplate, ExtractPlaylistOrderFromTemplate
+    ExtractListsFromTemplate, ExtractPlaylistOrderFromTemplate
 } from './util';
 
 /**
@@ -23,9 +23,9 @@ const TRACK_HISTORY: number[] = []
 * We extract these values into ararys ONCE and not for every `render()`
 */
 const SOURCE_LISTS = Object.freeze({
-  [SourceType.LocalPlaylist]: ExtractListsFromTemplate("_playlists"),
-  [SourceType.LocalAlbum]:    ExtractListsFromTemplate("_albums"),
-  [SourceType.YouTube]:       ExtractListsFromTemplate("_yt-playlists"),
+    [SourceType.LocalPlaylist]: ExtractListsFromTemplate("_playlists"),
+    [SourceType.LocalAlbum]:    ExtractListsFromTemplate("_albums"),
+    [SourceType.YouTube]:       ExtractListsFromTemplate("_yt-playlists"),
 })
 
 /**
@@ -48,14 +48,14 @@ const WORKER = new Worker(new URL('./worker.ts', import.meta.url))
 const PLAYLIST_ORDER = ExtractPlaylistOrderFromTemplate()
 
 const SOURCE_TITLE_CLASSES = Object.freeze({
-  [SourceType.LocalPlaylist]:"nf nf-mdi-playlist_play",
-  [SourceType.LocalAlbum]:   "nf nf-mdi-album",
-  [SourceType.YouTube]:      "nf nf-mdi-youtube_play"
+    [SourceType.LocalPlaylist]:"nf nf-mdi-playlist_play",
+    [SourceType.LocalAlbum]:   "nf nf-mdi-album",
+    [SourceType.YouTube]:      "nf nf-mdi-youtube_play"
 })
 
 
 export {
-  SOURCE_LISTS, PLAYLIST_ORDER, TRACK_HISTORY,
-  SOURCE_TITLE_CLASSES, WORKER
+    SOURCE_LISTS, PLAYLIST_ORDER, TRACK_HISTORY,
+    SOURCE_TITLE_CLASSES, WORKER
 }
 

@@ -44,10 +44,10 @@ interface YtTrack extends Track {
 }
 
 const EmptyTrack = (): Track =>  {
-  return { Title: "", Artist: "", Album: "", Duration: 0 } as Track;
+    return { Title: "", Artist: "", Album: "", Duration: 0 } as Track;
 }
 
 export type {
-  PlaylistEntry, Track, LocalTrack, YtTrack, ActiveTuple, SourceShortcut
+    PlaylistEntry, Track, LocalTrack, YtTrack, ActiveTuple, SourceShortcut
 }
 export { EmptyTrack, SourceType, LocalStorageKeys }

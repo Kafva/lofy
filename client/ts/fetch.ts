@@ -1,5 +1,5 @@
 import {
-  SourceType, LocalTrack, Track, ActiveTuple, PlaylistEntry
+    SourceType, LocalTrack, Track, ActiveTuple, PlaylistEntry
 } from './types';
 import { SOURCE_LISTS, TRACK_HISTORY, PLAYLIST_ORDER } from './global';
 import { Err, Log } from './util';
@@ -9,37 +9,37 @@ import { Err, Log } from './util';
 * order indicated by a `PlaylistEntry` array from `PLAYLIST_ORDER`
 */
 const sortPlaylist = (unsorted: LocalTrack[], playlistName: string) => {
-  unsorted.sort( (a:LocalTrack,b:LocalTrack) => {
-    const plIndexA = PLAYLIST_ORDER.get(playlistName)!.findIndex(
-      (e:PlaylistEntry) => e.AlbumFS==a.AlbumFS && e.AlbumId == a.AlbumId
-    )
-    const plIndexB = PLAYLIST_ORDER.get(playlistName)!.findIndex(
-      (e:PlaylistEntry) =>
-        e.AlbumFS==b.AlbumFS && e.AlbumId == b.AlbumId
-    )
-    return plIndexA - plIndexB
-  })
+    unsorted.sort( (a:LocalTrack,b:LocalTrack) => {
+        const plIndexA = PLAYLIST_ORDER.get(playlistName)!.findIndex(
+            (e:PlaylistEntry) => e.AlbumFS==a.AlbumFS && e.AlbumId == a.AlbumId
+        )
+        const plIndexB = PLAYLIST_ORDER.get(playlistName)!.findIndex(
+            (e:PlaylistEntry) =>
+                e.AlbumFS==b.AlbumFS && e.AlbumId == b.AlbumId
+        )
+        return plIndexA - plIndexB
+    })
 }
 
 const initFetchCache = (
-  mediaSource: SourceType
+    mediaSource: SourceType
 ): Map<string,[Track[],boolean]> => {
-  let mediaSourceNames: string[] = [];
-  if (mediaSource == SourceType.YouTube) {
-    mediaSourceNames =
+    let mediaSourceNames: string[] = [];
+    if (mediaSource == SourceType.YouTube) {
+        mediaSourceNames =
       SOURCE_LISTS[mediaSource].map( (el:HTMLLIElement) =>
         el.getAttribute("data-id")!.toString())
-  } else {
-    mediaSourceNames =
+    } else {
+        mediaSourceNames =
       SOURCE_LISTS[mediaSource].map( (el:HTMLLIElement) =>
         el.innerHTML!.toString() )
-  }
+    }
 
-  const nameMapping = new Map<string, [Track[],boolean]>()
-  mediaSourceNames.forEach( (el:string) =>
-    nameMapping.set(el, [<Track[]>[],false])
-  )
-  return nameMapping
+    const nameMapping = new Map<string, [Track[],boolean]>()
+    mediaSourceNames.forEach( (el:string) =>
+        nameMapping.set(el, [<Track[]>[],false])
+    )
+    return nameMapping
 }
 
 /**
@@ -47,9 +47,9 @@ const initFetchCache = (
 *   { playlist: { [tracks...], last_page } ... }
 */
 const FETCH_CACHE = {
-  [SourceType.LocalPlaylist]: initFetchCache(SourceType.LocalPlaylist),
-  [SourceType.LocalAlbum]:    initFetchCache(SourceType.LocalAlbum),
-  [SourceType.YouTube]:       initFetchCache(SourceType.YouTube)
+    [SourceType.LocalPlaylist]: initFetchCache(SourceType.LocalPlaylist),
+    [SourceType.LocalAlbum]:    initFetchCache(SourceType.LocalAlbum),
+    [SourceType.YouTube]:       initFetchCache(SourceType.YouTube)
 }
 
 /**
@@ -58,53 +58,53 @@ const FETCH_CACHE = {
 * if there is more data to fetch.
 */
 const endpointFetch = async (
-  endpoint: string,
-  mediaName: string,
-  page: number,
-  single: boolean,
-  typing: SourceType): Promise<[Track[],boolean]> => {
-  const cachedList = FETCH_CACHE[typing].get(mediaName)
+    endpoint: string,
+    mediaName: string,
+    page: number,
+    single: boolean,
+    typing: SourceType): Promise<[Track[],boolean]> => {
+    const cachedList = FETCH_CACHE[typing].get(mediaName)
 
-  if (cachedList!==undefined && cachedList[1]) {
+    if (cachedList!==undefined && cachedList[1]) {
     // Return cached data if the second field, `last_page`, has been set
-    Log(`Returning cached data for ${mediaName}`)
-    return cachedList
-  } else {
-    try {
-      Log(`Fetching page ${page} for ${mediaName}`)
-      const params = endpoint == "yt" ? `single=${single}` : `page=${page}`
+        Log(`Returning cached data for ${mediaName}`)
+        return cachedList
+    } else {
+        try {
+            Log(`Fetching page ${page} for ${mediaName}`)
+            const params = endpoint == "yt" ? `single=${single}` : `page=${page}`
 
-      const data = await
-      (await fetch(
-        `/${endpoint}/${mediaName}?${params}`
-      )).json()
-      if ('tracks' in data && 'last_page' in data) {
-        const tracks = data['tracks']
-        if (endpoint.startsWith("meta")) {
-          // Sort the tracks based on the album id
-          tracks.sort((a:Track,b:Track) =>
-            (a as LocalTrack).AlbumId - (b as LocalTrack).AlbumId
-          )
+            const data = await
+            (await fetch(
+                `/${endpoint}/${mediaName}?${params}`
+            )).json()
+            if ('tracks' in data && 'last_page' in data) {
+                const tracks = data['tracks']
+                if (endpoint.startsWith("meta")) {
+                    // Sort the tracks based on the album id
+                    tracks.sort((a:Track,b:Track) =>
+                        (a as LocalTrack).AlbumId - (b as LocalTrack).AlbumId
+                    )
+                }
+                const lastPage = data['last_page'] as boolean;
+
+                // Append fetched data into the cache
+                const existingValues = FETCH_CACHE[typing].get(mediaName)
+                let joinedValues: Track[] = []
+                if (existingValues !== undefined){
+                    joinedValues = [...existingValues[0], ...tracks]
+                }
+                FETCH_CACHE[typing].set(mediaName, [joinedValues, lastPage])
+
+                return [tracks,lastPage]
+            } else {
+                Err(`Missing JSON key(s) in response: '${endpoint}/${mediaName}'\n`)
+            }
+        } catch (e: any) {
+            Err(`Failed to fetch: '${endpoint}/${mediaName}'\n`, e)
         }
-        const lastPage = data['last_page'] as boolean;
-
-        // Append fetched data into the cache
-        const existingValues = FETCH_CACHE[typing].get(mediaName)
-        let joinedValues: Track[] = []
-        if (existingValues !== undefined){
-          joinedValues = [...existingValues[0], ...tracks]
-        }
-        FETCH_CACHE[typing].set(mediaName, [joinedValues, lastPage])
-
-        return [tracks,lastPage]
-      } else {
-        Err(`Missing JSON key(s) in response: '${endpoint}/${mediaName}'\n`)
-      }
-    } catch (e: any) {
-      Err(`Failed to fetch: '${endpoint}/${mediaName}'\n`, e)
     }
-  }
-  return [<Track[]>[],true]
+    return [<Track[]>[],true]
 }
 
 /**
@@ -113,61 +113,61 @@ const endpointFetch = async (
 *  See: 4d49475a338f214197db91712b8160dd5cac0654
 */
 const FetchTracks = async (
-  source: ActiveTuple
+    source: ActiveTuple
 ): Promise<Track[]> =>  {
-  Log("Change to activeTuple detected...", source)
-  const el = SOURCE_LISTS[source.activeSource][source.listIndex]
+    Log("Change to activeTuple detected...", source)
+    const el = SOURCE_LISTS[source.activeSource][source.listIndex]
 
-  const mediaName = source.activeSource == SourceType.YouTube ?
-    el.getAttribute("data-id") :  el.innerHTML
+    const mediaName = source.activeSource == SourceType.YouTube ?
+        el.getAttribute("data-id") :  el.innerHTML
 
-  if (mediaName == undefined || mediaName == ""){ return [] }
+    if (mediaName == undefined || mediaName == ""){ return [] }
 
-  // Clear the history before fetching new data
-  while(TRACK_HISTORY.length>0){ TRACK_HISTORY.pop(); }
-  const fetched: Track[] = []
+    // Clear the history before fetching new data
+    while(TRACK_HISTORY.length>0){ TRACK_HISTORY.pop(); }
+    const fetched: Track[] = []
 
-  // Set the `?single=boolean` parameter
-  let single = false
-  if  (source.activeSource == SourceType.YouTube) {
-    single = document.querySelector(
-      `#_yt-playlists > li[data-id='${mediaName}']`
-    )?.getAttribute("data-single") == "true"
-  }
-
-  let endpoint = ""
-  let tracks: Track[] = []
-  let page = 1
-  let lastPage = false
-
-  while (!lastPage) {
-    switch (source.activeSource) {
-    case SourceType.LocalPlaylist:
-      endpoint = "meta/playlist"
-      break;
-    case SourceType.LocalAlbum:
-      endpoint = "meta/album"
-      break;
-    case SourceType.YouTube:
-      endpoint = "yt"
-      break;
+    // Set the `?single=boolean` parameter
+    let single = false
+    if  (source.activeSource == SourceType.YouTube) {
+        single = document.querySelector(
+            `#_yt-playlists > li[data-id='${mediaName}']`
+        )?.getAttribute("data-single") == "true"
     }
 
-    // Incrementally fetch media until the last page of data is received
-    [tracks, lastPage] = await endpointFetch(
-      endpoint, mediaName, page, single, source.activeSource
-    ) as [Track[],boolean]
+    let endpoint = ""
+    let tracks: Track[] = []
+    let page = 1
+    let lastPage = false
 
-    fetched.push(...tracks)
-    page++
-  }
+    while (!lastPage) {
+        switch (source.activeSource) {
+        case SourceType.LocalPlaylist:
+            endpoint = "meta/playlist"
+            break;
+        case SourceType.LocalAlbum:
+            endpoint = "meta/album"
+            break;
+        case SourceType.YouTube:
+            endpoint = "yt"
+            break;
+        }
 
-  // Sort the list in accordance with `PLAYLIST_ORDER` if applicable
-  if (source.activeSource == SourceType.LocalPlaylist){
-    sortPlaylist(fetched as LocalTrack[], mediaName)
-  }
-  // Log("FETCH_CACHE", FETCH_CACHE)
-  return fetched
+        // Incrementally fetch media until the last page of data is received
+        [tracks, lastPage] = await endpointFetch(
+            endpoint, mediaName, page, single, source.activeSource
+        ) as [Track[],boolean]
+
+        fetched.push(...tracks)
+        page++
+    }
+
+    // Sort the list in accordance with `PLAYLIST_ORDER` if applicable
+    if (source.activeSource == SourceType.LocalPlaylist){
+        sortPlaylist(fetched as LocalTrack[], mediaName)
+    }
+    // Log("FETCH_CACHE", FETCH_CACHE)
+    return fetched
 }
 
 export {FetchTracks}
