@@ -51,42 +51,42 @@ $nav_z: 9;
 
 //== Mixins ==//
 @mixin mobile() {
-  @media
-    (max-width: $mobile_max_width) {
-    @content;
-  }
+    @media
+        (max-width: $mobile_max_width) {
+        @content;
+    }
 }
 
 @mixin widescreen() {
-  @media
-    (min-width: $widescreen_min_width) {
-    @content;
-  }
+    @media
+        (min-width: $widescreen_min_width) {
+        @content;
+    }
 }
 
 @mixin fade-in($sec: 1.0s) {
-  @keyframes _fade-in {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-  }
-  animation: _fade-in $sec;
+    @keyframes _fade-in {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+    animation: _fade-in $sec;
 }
 
 // Give an element a fixed position and center it
 @mixin fixed-centered($width, $padding: 0%) {
-  position: fixed;
-  width: $width;
-  left: calc(50% - ($width/2) - $padding);
+    position: fixed;
+    width: $width;
+    left: calc(50% - ($width/2) - $padding);
 }
 
 // Limit text overflow and the width of an element
 @mixin limit-width($max-width, $min-width: $max-width, $width: $max-width, $display: inline-block) {
-  display: $display;
-  max-width: $max-width;
-  min-width: $min-width;
-  width: $width;
+    display: $display;
+    max-width: $max-width;
+    min-width: $min-width;
+    width: $width;
 
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }

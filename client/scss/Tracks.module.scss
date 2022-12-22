@@ -1,77 +1,77 @@
 @use "vars";
 
 table {
-  margin: calc(vars.$top_spacing + 10px) 0 0;
-  @include vars.mobile {
-    margin: calc(vars.$top_spacing - 10px) 0 0;
-  }
-  text-align: center;
+    margin: calc(vars.$top_spacing + 10px) 0 0;
+    @include vars.mobile {
+        margin: calc(vars.$top_spacing - 10px) 0 0;
+    }
+    text-align: center;
 
-  // Collapse the borders of rows in the table
-  border-collapse: collapse;
+    // Collapse the borders of rows in the table
+    border-collapse: collapse;
 
-  // Prevent cells from folding
-  white-space: nowrap;
+    // Prevent cells from folding
+    white-space: nowrap;
 
-  // Highlight each individual <td> when a <tr> is hovered
-  // applying the :hover() effect directly on the <tr> is not
-  // preferable since it extends beyond the actual text
-  tbody > tr:not(first-child):hover {
-    td {
-      border-bottom: vars.$hl_bottom_border;
+    // Highlight each individual <td> when a <tr> is hovered
+    // applying the :hover() effect directly on the <tr> is not
+    // preferable since it extends beyond the actual text
+    tbody > tr:not(first-child):hover {
+        td {
+            border-bottom: vars.$hl_bottom_border;
+        }
     }
-  }
-  // Currently playing indicator
-  span.amp {
-      height: vars.$font_size;
-      @include vars.mobile {
-        height: vars.$mobile_font_size;
-      }
-      content: url("amp.gif");
-      margin-right: 1em;
-  }
-  th,td {
-    @include vars.fade-in();
-    height: vars.$table_row_height;
-    margin: 4px 0 5px 0;
+    // Currently playing indicator
+    span.amp {
+        height: vars.$font_size;
+        @include vars.mobile {
+            height: vars.$mobile_font_size;
+        }
+        content: url("amp.gif");
+        margin-right: 1em;
+    }
+    th,td {
+        @include vars.fade-in();
+        height: vars.$table_row_height;
+        margin: 4px 0 5px 0;
 
-    text-align: left;
-    padding-right: 10px;
+        text-align: left;
+        padding-right: 10px;
 
-    // Each column needs a min-width for proper alignment
-    &:nth-child(1) { // Title
-      @include vars.limit-width(vars.$table_name_col_max_width, vars.$table_name_col_min_width);
-      border-bottom: vars.$default_bottom_border;
+        // Each column needs a min-width for proper alignment
+        &:nth-child(1) { // Title
+            @include vars.limit-width(vars.$table_name_col_max_width, vars.$table_name_col_min_width);
+            border-bottom: vars.$default_bottom_border;
+        }
+        &:nth-child(2) { // Album
+            @include vars.limit-width(vars.$table_name_col_max_width, vars.$table_name_col_min_width);
+            border-bottom: vars.$default_bottom_border;
+            @include vars.mobile { display: none };
+        }
+        &:nth-child(3) { // Artist
+            @include vars.limit-width(vars.$table_name_col_max_width, vars.$table_name_col_min_width);
+            border-bottom: vars.$default_bottom_border;
+            display: none;
+            @include vars.widescreen {
+                display: inline-block;
+            }
+        }
+        &:nth-child(4) { // Duration
+            @include vars.limit-width(4.2em);
+            border-bottom: vars.$default_bottom_border;
+            @include vars.mobile { display: none };
+        }
+        &:nth-child(5) { // Youtube link
+            @include vars.limit-width(1.5em);
+            a:hover { color: vars.$lilac; }
+            @include vars.mobile { display: none };
+        }
     }
-    &:nth-child(2) { // Album
-      @include vars.limit-width(vars.$table_name_col_max_width, vars.$table_name_col_min_width);
-      border-bottom: vars.$default_bottom_border;
-      @include vars.mobile { display: none };
+    :global(th.nf-mdi-music) { // Hide title icon on mobile
+        @include vars.mobile { display: none; }
     }
-    &:nth-child(3) { // Artist
-      @include vars.limit-width(vars.$table_name_col_max_width, vars.$table_name_col_min_width);
-      border-bottom: vars.$default_bottom_border;
-      display: none;
-      @include vars.widescreen {
-        display: inline-block;
-      }
+    td:first-child:hover { // Highlight title on hover
+        color: vars.$lilac;
     }
-    &:nth-child(4) { // Duration
-      @include vars.limit-width(4.2em);
-      border-bottom: vars.$default_bottom_border;
-      @include vars.mobile { display: none };
-    }
-    &:nth-child(5) { // Youtube link
-      @include vars.limit-width(1.5em);
-      a:hover { color: vars.$lilac; }
-      @include vars.mobile { display: none };
-    }
-  }
-  :global(th.nf-mdi-music) { // Hide title icon on mobile
-    @include vars.mobile { display: none; }
-  }
-  td:first-child:hover { // Highlight title on hover
-    color: vars.$lilac;
-  }
 
 }

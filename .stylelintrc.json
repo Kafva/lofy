@@ -6,7 +6,7 @@
       }
     ],
     "rules": {
-        "indentation": [4, {"baseIndentLevel": 4}]
+        "indentation": [4, {"baseIndentLevel": 0}]
     }
 }
 

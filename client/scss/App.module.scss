@@ -2,46 +2,46 @@
 
 // == Sidebar ==
 div.sidebar {
-  position: fixed;
-  left: 0;
-  top: 0;
+    position: fixed;
+    left: 0;
+    top: 0;
 
-  overflow-y: scroll;
+    overflow-y: scroll;
 
-  background-color: vars.$sidebar_bg;
-  padding: vars.$top_spacing 15px 20px 0;
+    background-color: vars.$sidebar_bg;
+    padding: vars.$top_spacing 15px 20px 0;
 
-  width: vars.$sidebar_width;
-  height: calc(100% - 40px);
+    width: vars.$sidebar_width;
+    height: calc(100% - 40px);
 
-  @include vars.widescreen {
-    width: vars.$widescreen_sidebar_width;
-  }
-
-  // Sidebar is never shown on mobile
-  @include vars.mobile {
-    visibility: hidden;
-  }
-
-
-  // Width transition
-  transition: width 0.2s;
-  &.hidden {
-    width: 0;
-    padding: vars.$top_spacing 0 0;
-
-    h3,input {
-      // Prevent Vimium from spawning link indicators for
-      // sidebar items when it is hidden
-      cursor: default;
-      visibility: hidden;
+    @include vars.widescreen {
+        width: vars.$widescreen_sidebar_width;
     }
-  }
+
+    // Sidebar is never shown on mobile
+    @include vars.mobile {
+        visibility: hidden;
+    }
+
+
+    // Width transition
+    transition: width 0.2s;
+    &.hidden {
+        width: 0;
+        padding: vars.$top_spacing 0 0;
+
+        h3,input {
+            // Prevent Vimium from spawning link indicators for
+            // sidebar items when it is hidden
+            cursor: default;
+            visibility: hidden;
+        }
+    }
 }
 
 // Error message box
 p.unavail {
-  font-size: 18px;
-  color: vars.$fg_grey;
+    font-size: 18px;
+    color: vars.$fg_grey;
 }
 
