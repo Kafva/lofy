@@ -1,0 +1,15 @@
+{
+    "plugins": [
+        "stylelint-scss"
+    ],
+    "overrides": [
+      {
+        "files": ["**/*.scss"],
+        "customSyntax": "postcss-scss"
+      }
+    ],
+    "rules": {
+        "indentation": [4, {"baseIndentLevel": 4}]
+    }
+}
+
