@@ -1,7 +1,4 @@
 {
-    "plugins": [
-        "stylelint-scss"
-    ],
     "overrides": [
       {
         "files": ["**/*.scss"],
