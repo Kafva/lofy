@@ -24,6 +24,15 @@ func main() {
         if err != nil {
             Die(err)
         }
+
+        CONFIG.YTDL_BIN = TranslateTilde(CONFIG.YTDL_BIN)
+        CONFIG.FFMPEG_BIN = TranslateTilde(CONFIG.FFMPEG_BIN)
+        CONFIG.FFPROBE_BIN = TranslateTilde(CONFIG.FFPROBE_BIN)
+        CONFIG.ALBUM_DIR = TranslateTilde(CONFIG.ALBUM_DIR)
+        CONFIG.PLAYLIST_DIR = TranslateTilde(CONFIG.PLAYLIST_DIR)
+        CONFIG.YT_PLAYLIST_FILE = TranslateTilde(CONFIG.YT_PLAYLIST_FILE)
+        CONFIG.TLS_CERT = TranslateTilde(CONFIG.TLS_CERT)
+        CONFIG.TLS_KEY = TranslateTilde(CONFIG.TLS_KEY)
     }
 
     log.SetFlags(log.Ltime)

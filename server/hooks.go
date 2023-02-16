@@ -98,7 +98,7 @@ func TranslateIndexToFilename(next http.Handler) http.Handler {
 // Return a list of all playlists defined in `YT_PLAYLIST_FILE`
 func get_yt_playlists() []YtPlaylist {
     playlists := make([]YtPlaylist, 0, YT_MAX_PLAYLIST_CNT)
-    f, err := os.Open(TranslateTilde(CONFIG.YT_PLAYLIST_FILE))
+    f, err := os.Open(CONFIG.YT_PLAYLIST_FILE)
     if err == nil {
         defer f.Close()
         scanner := bufio.NewScanner(f)

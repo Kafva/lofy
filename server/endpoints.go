@@ -106,13 +106,13 @@ func GetLocalMetadata(w http.ResponseWriter, r *http.Request) {
     // Populate the `track_paths` slice with data based on the given subcommand
     switch endpoint {
     case "playlist":
-        playlist_path := TranslateTilde(CONFIG.PLAYLIST_DIR) + "/" + name + "." + PLAYLIST_EXT
+        playlist_path := CONFIG.PLAYLIST_DIR + "/" + name + "." + PLAYLIST_EXT
         if !get_track_paths_from_playlist(playlist_path, &track_paths) {
             Warn("Non-existent playlist requested by " + r.RemoteAddr)
             return
         }
     case "album":
-        album_path := TranslateTilde(CONFIG.ALBUM_DIR) + "/" + name
+        album_path := CONFIG.ALBUM_DIR + "/" + name
 
         if entries, err := os.ReadDir(album_path); err == nil {
             // Create a list of all files under the specified album
@@ -188,7 +188,7 @@ func GetArtwork(w http.ResponseWriter, r *http.Request) {
     }
 
     // Translate the album ID to a filename
-    album_path := TranslateTilde(CONFIG.ALBUM_DIR) + "/" + album
+    album_path := CONFIG.ALBUM_DIR + "/" + album
     track_path := album_path + "/" + album_id_to_filename(album_id, album_path)
 
     if track_path != "" {
@@ -263,7 +263,7 @@ func fetch_yt_playlist(yt_id string, single_track bool) []YtTrack {
         }
         return yt_tracks
     } else {
-        Warn("Failed to fetch YouTube metadata: ", yt_id)
+        Warn("Failed to fetch YouTube metadata: ", yt_id, ": ", err)
     }
     return []YtTrack{}
 }
