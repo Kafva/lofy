@@ -4,6 +4,7 @@ import (
     "encoding/json"
     "flag"
     "io/ioutil"
+    "log"
     "net/http"
     "strconv"
 
@@ -24,6 +25,9 @@ func main() {
             Die(err)
         }
     }
+
+    log.SetFlags(log.Ltime)
+    Debugf("CONFIG { %+v }\n", CONFIG)
 
     // Web app resources are mounted at `/app`
     // The entrypoint is `/app/index.html`

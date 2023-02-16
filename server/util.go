@@ -1,9 +1,12 @@
 package server
 
 import (
+    "fmt"
     "io/fs"
     "log"
     "os"
+    "path/filepath"
+    "runtime"
     "strings"
 )
 
@@ -30,6 +33,13 @@ func Debug(strs ...interface{}) {
     }
 }
 
+func Debugf(fmt string, strs ...interface{}) {
+    if CONFIG.DEBUG {
+        logPrefix("34", "DEBUG")
+        log.Printf(fmt, strs...)
+    }
+}
+
 func Warn(args ...interface{}) {
     logPrefix("33", "WARN")
     log.Println(args...)
@@ -41,10 +51,15 @@ func Err(args ...interface{}) {
 }
 
 func logPrefix(color string, label string) {
+    _, file, line, ok := runtime.Caller(2)
+    caller := ""
+    if ok {
+        caller = filepath.Base(file) + ":" + fmt.Sprint(line)
+    }
     if CONFIG.LOG_COLOR {
-        log.SetPrefix("\033[" + color + "m" + label + "\033[0m ")
+        log.SetPrefix("\033[" + color + "m" + label + "\033[0m [" + caller + "] ")
     } else {
-        log.SetPrefix(label + " ")
+        log.SetPrefix(label + "[" + caller + "] ")
     }
 }
 
