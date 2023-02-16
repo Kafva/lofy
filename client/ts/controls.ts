@@ -20,7 +20,7 @@ const queryClick = (selector: string) => {
 */
 const HandleKeyboardEvent = (e:KeyboardEvent) => {
     // Do not trigger shortcuts when writing inside of an <input/>
-    if ((e.target as HTMLElement).tagName == "input") {
+    if ((e.target as HTMLElement).tagName.toLowerCase() == "input") {
         return
     }
     if (e.shiftKey) { // <Shift> bindings
