@@ -75,9 +75,9 @@ func GetYtPlaylist(w http.ResponseWriter, r *http.Request) {
 // sent from the server so we use paging for each `ITEMS_PER_REQ`
 // set of entries, returning incremental results
 //
-//    GET /meta/album/<name>        -> { tracks:[], last_page: false }
-//    GET /meta/album/<name>?page=2 -> { tracks:[], last_page: false }
-//    GET /meta/album/<name>?page=3 -> { tracks:[], last_page: true  }
+//    GET /meta/<album|playlist>/<name>        -> { tracks:[], last_page: false }
+//    GET /meta/<album|playlist>/<name>?page=2 -> { tracks:[], last_page: false }
+//    GET /meta/<album|playlist>/<name>?page=3 -> { tracks:[], last_page: true  }
 func GetLocalMetadata(w http.ResponseWriter, r *http.Request) {
     //== Parameter validation ==//
     endpoint, name, _ :=
