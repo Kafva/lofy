@@ -4,23 +4,23 @@ $font_size: 14px;
 $mobile_font_size: 18px;
 
 //== Color scheme ==
-$body_bg:                 #23283d;
-$nav_bg:                  #1e2233;
-$sidebar_bg:              #212330;
+$body_bg:                 #1e1e1e;
+$nav_bg:                  #222222;
+$sidebar_bg:              #242424;
 $progress_bar_default:    #6a7294;
-$pink:                    #de95c3;
+$progress:                #6e85d3;
 $lilac:                   #6e85d3;
+$input_bg:                #2c2c2c;
 
-$fg_white:                #f5e4f3;
+$fg_white:                #dcccda;
 $fg_grey:                 #8e9297;
-$input_bg:                rgba(47, 52, 63, 0.5);
 $hl_bottom_border:        1px solid $lilac;
 
 // Setting the border to 'none' causes flickering when
 // the visibility of the `hl_border` changes
 $default_bottom_border: 1px solid rgba(#414040, 0.0);
 
-$progress_bar_gradient: linear-gradient(90deg, $pink 93%, transparent 100%);
+$progress_bar_gradient: linear-gradient(90deg, $progress 93%, transparent 100%);
 
 //== Dimensions ==//
 // Breakpoints
